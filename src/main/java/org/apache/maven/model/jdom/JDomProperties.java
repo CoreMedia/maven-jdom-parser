@@ -1,4 +1,4 @@
-package org.apache.maven.shared.release.transform.jdom;
+package org.apache.maven.model.jdom;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -31,6 +31,7 @@ import java.util.InvalidPropertiesFormatException;
 import java.util.Properties;
 import java.util.Set;
 
+import org.apache.maven.shared.release.transform.jdom.JDomUtils;
 import org.jdom.Element;
 
 /**

@@ -1,4 +1,4 @@
-package org.apache.maven.shared.release.transform.jdom;
+package org.apache.maven.model.jdom;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -32,6 +32,7 @@ import org.apache.maven.model.Parent;
 import org.apache.maven.model.Profile;
 import org.apache.maven.model.Reporting;
 import org.apache.maven.model.Scm;
+import org.apache.maven.shared.release.transform.jdom.JDomUtils;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.Text;

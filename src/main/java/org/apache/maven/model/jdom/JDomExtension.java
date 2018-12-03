@@ -1,4 +1,4 @@
-package org.apache.maven.shared.release.transform.jdom;
+package org.apache.maven.model.jdom;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -20,7 +20,6 @@ package org.apache.maven.shared.release.transform.jdom;
  */
 
 import org.apache.maven.model.Extension;
-import org.apache.maven.shared.release.transform.MavenCoordinate;
 import org.jdom.Element;
 
 /**

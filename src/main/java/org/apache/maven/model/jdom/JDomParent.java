@@ -1,4 +1,4 @@
-package org.apache.maven.shared.release.transform.jdom;
+package org.apache.maven.model.jdom;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,69 +19,76 @@ package org.apache.maven.shared.release.transform.jdom;
  * under the License.
  */
 
-import org.apache.maven.model.Scm;
+import org.apache.maven.model.Parent;
+import org.apache.maven.shared.release.transform.jdom.JDomUtils;
 import org.jdom.Element;
 
 /**
- * JDom implementation of poms SCM element
+ * JDom implementation of poms PARENT element
  *
  * @author Robert Scholte
  * @since 3.0
  */
-public class JDomScm extends Scm
+public class JDomParent extends Parent
 {
-    private Element scm;
+    private Element parent;
 
-    JDomScm( Element scm )
+    public JDomParent( Element parent )
     {
-        this.scm = scm;
+        this.parent = parent;
     }
 
     @Override
-    public String getConnection()
+    public String getVersion()
     {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void setConnection( String connection )
+    public void setVersion( String version )
     {
-        JDomUtils.rewriteElement( "connection", connection, scm, scm.getNamespace() );
+        JDomUtils.rewriteElement( "version", version, parent, parent.getNamespace() );
     }
 
     @Override
-    public String getDeveloperConnection()
+    public String getArtifactId()
     {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void setDeveloperConnection( String developerConnection )
-    {
-        JDomUtils.rewriteElement( "developerConnection", developerConnection, scm, scm.getNamespace() );
-    }
-
-    @Override
-    public String getTag()
+    public String getGroupId()
     {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void setTag( String tag )
-    {
-        JDomUtils.rewriteElement( "tag", tag, scm, scm.getNamespace() );
-    }
-
-    @Override
-    public String getUrl()
+    public String getRelativePath()
     {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void setUrl( String url )
+    public void setArtifactId( String artifactId )
     {
-        JDomUtils.rewriteElement( "url", url, scm, scm.getNamespace() );
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setGroupId( String groupId )
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setRelativePath( String relativePath )
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String getId()
+    {
+        throw new UnsupportedOperationException();
     }
 }
