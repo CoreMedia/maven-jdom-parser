@@ -20,7 +20,7 @@ package org.apache.maven.model.jdom;
  */
 
 import org.apache.maven.model.Parent;
-import org.apache.maven.shared.release.transform.jdom.JDomUtils;
+import org.apache.maven.model.jdom.util.JDomUtils;
 import org.jdom.Element;
 
 /**

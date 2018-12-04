@@ -19,7 +19,7 @@ package org.apache.maven.model.jdom;
  * under the License.
  */
 
-import org.apache.maven.shared.release.transform.jdom.JDomUtils;
+import org.apache.maven.model.jdom.util.JDomUtils;
 import org.jdom.Element;
 
 /**

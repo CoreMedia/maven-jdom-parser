@@ -32,7 +32,7 @@ import org.apache.maven.model.Parent;
 import org.apache.maven.model.Profile;
 import org.apache.maven.model.Reporting;
 import org.apache.maven.model.Scm;
-import org.apache.maven.shared.release.transform.jdom.JDomUtils;
+import org.apache.maven.model.jdom.util.JDomUtils;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.Text;

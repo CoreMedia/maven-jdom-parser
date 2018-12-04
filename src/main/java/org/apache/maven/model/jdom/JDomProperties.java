@@ -31,7 +31,7 @@ import java.util.InvalidPropertiesFormatException;
 import java.util.Properties;
 import java.util.Set;
 
-import org.apache.maven.shared.release.transform.jdom.JDomUtils;
+import org.apache.maven.model.jdom.util.JDomUtils;
 import org.jdom.Element;
 
 /**
