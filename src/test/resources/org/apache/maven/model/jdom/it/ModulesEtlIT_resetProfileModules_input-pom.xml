@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.coremedia.test</groupId>
+  <artifactId>my-test-project</artifactId>
+  <version>1.0-SNAPSHOT</version>
+
+  <modules>
+    <module>module-1</module>
+    <module>module-2</module>
+    <module>module-3</module>
+  </modules>
+
+  <profiles>
+    <!-- Profile 1 -->
+    <profile>
+      <id>profile-1</id>
+      <modules>
+        <module>module-4</module>
+      </modules>
+    </profile>
+    <profile>
+      <!-- Profile 2 -->
+      <id>profile-2</id>
+      <modules>
+        <module>module-5</module>
+        <module>module-6</module>
+      </modules>
+    </profile>
+  </profiles>
+
+</project>
