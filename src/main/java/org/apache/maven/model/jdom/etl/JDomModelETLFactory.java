@@ -1,4 +1,4 @@
-package org.apache.maven.shared.release.transform;
+package org.apache.maven.model.jdom.etl;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,25 +19,26 @@ package org.apache.maven.shared.release.transform;
  * under the License.
  */
 
-import java.io.File;
-
-import org.apache.maven.model.Model;
-import org.apache.maven.shared.release.ReleaseExecutionException;
+import org.codehaus.plexus.component.annotations.Component;
 
 /**
- *
  * @author Robert Scholte
  * @since 3.0
  */
-public interface ModelETL
+@Component( role = ModelETLFactory.class, hint = JDomModelETLFactory.ROLE_HINT )
+public class JDomModelETLFactory implements ModelETLFactory
 {
-    void extract( File pomFile ) throws ReleaseExecutionException;
+    public static final String ROLE_HINT = "jdom-sax";
 
-    void transform();
+    @Override
+    public JDomModelETL newInstance( ModelETLRequest request )
+    {
+        JDomModelETL result = new JDomModelETL();
 
-    void load( File pomFile ) throws ReleaseExecutionException;
+        result.setLs( request.getLineSeparator() );
+        result.setProject( request.getProject() );
+        result.setReleaseDescriptor( request.getReleaseDescriptor() );
 
-    // will be removed once transform() is implemented
-    @Deprecated
-    Model getModel();
+        return result;
+    }
 }

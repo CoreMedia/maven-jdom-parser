@@ -1,4 +1,4 @@
-package org.apache.maven.shared.release.transform.jdom;
+package org.apache.maven.model.jdom.etl;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -33,7 +33,6 @@ import org.apache.maven.model.jdom.JDomModel;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.shared.release.ReleaseExecutionException;
 import org.apache.maven.shared.release.config.ReleaseDescriptor;
-import org.apache.maven.shared.release.transform.ModelETL;
 import org.apache.maven.shared.release.util.ReleaseUtil;
 import org.codehaus.plexus.util.WriterFactory;
 import org.jdom.CDATA;

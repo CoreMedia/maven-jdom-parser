@@ -1,4 +1,4 @@
-package org.apache.maven.shared.release.transform;
+package org.apache.maven.model.jdom.etl;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
