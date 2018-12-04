@@ -19,8 +19,6 @@ package org.apache.maven.model.jdom.etl;
  * under the License.
  */
 
-import org.apache.maven.project.MavenProject;
-
 /**
  *
  * @author Robert Scholte
@@ -46,8 +44,6 @@ public class ModelETLRequest
     private boolean addSchema;
     private String lineSeparator = System.getProperty( "line.separator" );
 
-    private MavenProject project;
-
     public boolean isAddSchema()
     {
         return addSchema;
@@ -66,15 +62,5 @@ public class ModelETLRequest
     public void setLineSeparator( String lineSeparator )
     {
         this.lineSeparator = lineSeparator;
-    }
-
-    public MavenProject getProject()
-    {
-        return project;
-    }
-
-    public void setProject( MavenProject project )
-    {
-        this.project = project;
     }
 }

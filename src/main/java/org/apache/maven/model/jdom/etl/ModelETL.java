@@ -38,7 +38,5 @@ public interface ModelETL
 
     void load( File pomFile ) throws IOException;
 
-    // will be removed once transform() is implemented
-    @Deprecated
     Model getModel();
 }

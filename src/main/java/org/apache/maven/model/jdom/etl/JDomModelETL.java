@@ -56,6 +56,8 @@ public class JDomModelETL implements ModelETL
 {
     private ModelETLRequest modelETLRequest = new ModelETLRequest();
 
+    private JDomModel model;
+
     private Document document;
 
     private String intro = null;
@@ -64,6 +66,11 @@ public class JDomModelETL implements ModelETL
     @Override
     public void extract( File pomFile ) throws IOException, JDOMException
     {
+        if ( model != null )
+        {
+            throw new IllegalStateException( "A model has already been extracted" );
+        }
+
         String content = readXmlFile( pomFile, modelETLRequest.getLineSeparator() );
         // we need to eliminate any extra whitespace inside elements, as JDOM will nuke it
         content = content.replaceAll( "<([^!][^>]*?)\\s{2,}([^>]*?)>", "<$1 $2>" );
@@ -115,6 +122,8 @@ public class JDomModelETL implements ModelETL
                 outtro = matcher.group( matcher.groupCount() );
             }
         }
+
+        model = new JDomModel( document );
     }
 
     @Override
@@ -126,13 +135,21 @@ public class JDomModelETL implements ModelETL
     @Override
     public void load( File targetFile ) throws IOException
     {
+        if ( model == null )
+        {
+            throw new IllegalStateException( "A model must be extracted first" );
+        }
         writePom( targetFile );
     }
 
     @Override
     public Model getModel()
     {
-        return new JDomModel( document );
+        if ( model == null )
+        {
+            throw new IllegalStateException( "A model must be extracted first" );
+        }
+        return model;
     }
 
     private void normaliseLineEndings( Document document )
@@ -155,7 +172,7 @@ public class JDomModelETL implements ModelETL
 
         if ( modelETLRequest.isAddSchema() )
         {
-            String modelVersion = modelETLRequest.getProject().getModelVersion();
+            String modelVersion = model.getModelVersion();
             Namespace pomNamespace = Namespace.getNamespace( "", "http://maven.apache.org/POM/" + modelVersion );
             rootElement.setNamespace( pomNamespace );
             Namespace xsiNamespace = Namespace.getNamespace( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
