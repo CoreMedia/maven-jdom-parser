@@ -34,11 +34,10 @@ public class JDomModelETLFactory implements ModelETLFactory
     public JDomModelETL newInstance( ModelETLRequest request )
     {
         JDomModelETL result = new JDomModelETL();
-
-        result.setLs( request.getLineSeparator() );
-        result.setProject( request.getProject() );
-        result.setReleaseDescriptor( request.getReleaseDescriptor() );
-
+        if ( request != null )
+        {
+            result.setModelETLRequest( request );
+        }
         return result;
     }
 }

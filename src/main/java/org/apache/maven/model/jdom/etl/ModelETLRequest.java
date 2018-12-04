@@ -20,7 +20,6 @@ package org.apache.maven.model.jdom.etl;
  */
 
 import org.apache.maven.project.MavenProject;
-import org.apache.maven.shared.release.config.ReleaseDescriptor;
 
 /**
  *
@@ -29,11 +28,35 @@ import org.apache.maven.shared.release.config.ReleaseDescriptor;
  */
 public class ModelETLRequest
 {
-    private String lineSeparator;
+    /**
+     * The Unix line separator
+     */
+    public static final String UNIX_LS = "\n";
+
+    /**
+     * The Windows line separator
+     */
+    public static final String WINDOWS_LS = "\r\n";
+
+    /**
+     * The Classic Mac line separator
+     */
+    public static final String CLASSIC_MAC_LS = "\r";
+
+    private boolean addSchema;
+    private String lineSeparator = System.getProperty( "line.separator" );
 
     private MavenProject project;
 
-    private ReleaseDescriptor releaseDescriptor;
+    public boolean isAddSchema()
+    {
+        return addSchema;
+    }
+
+    public void setAddSchema( boolean addSchema )
+    {
+        this.addSchema = addSchema;
+    }
 
     public String getLineSeparator()
     {
@@ -53,15 +76,5 @@ public class ModelETLRequest
     public void setProject( MavenProject project )
     {
         this.project = project;
-    }
-
-    public ReleaseDescriptor getReleaseDescriptor()
-    {
-        return releaseDescriptor;
-    }
-
-    public void setReleaseDescriptor( ReleaseDescriptor releaseDescriptor )
-    {
-        this.releaseDescriptor = releaseDescriptor;
     }
 }

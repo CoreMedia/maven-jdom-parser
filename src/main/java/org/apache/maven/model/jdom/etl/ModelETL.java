@@ -20,9 +20,10 @@ package org.apache.maven.model.jdom.etl;
  */
 
 import java.io.File;
+import java.io.IOException;
 
 import org.apache.maven.model.Model;
-import org.apache.maven.shared.release.ReleaseExecutionException;
+import org.jdom.JDOMException;
 
 /**
  *
@@ -31,11 +32,11 @@ import org.apache.maven.shared.release.ReleaseExecutionException;
  */
 public interface ModelETL
 {
-    void extract( File pomFile ) throws ReleaseExecutionException;
+    void extract( File pomFile ) throws IOException, JDOMException;
 
     void transform();
 
-    void load( File pomFile ) throws ReleaseExecutionException;
+    void load( File pomFile ) throws IOException;
 
     // will be removed once transform() is implemented
     @Deprecated
