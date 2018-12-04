@@ -19,7 +19,9 @@ package org.apache.maven.model.jdom;
  * under the License.
  */
 
-import static org.junit.Assert.*;
+import static org.apache.maven.model.jdom.util.JDomUtils.getChildElementTextTrim;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.io.StringReader;
 
@@ -31,16 +33,28 @@ public class JDomParentTest
 {
     private SAXBuilder builder = new SAXBuilder();
 
-    @Test( expected = UnsupportedOperationException.class )
-    public void testGetArtifactId()
+    @Test
+    public void testGetArtifactId() throws Exception
     {
-        new JDomParent( null ).getArtifactId();
+        String content = "<parent></parent>";
+        Element parentElm = builder.build( new StringReader( content ) ).getRootElement();
+        assertNull( getChildElementTextTrim( "artifactId", parentElm ) );
+
+        content = "<parent><artifactId>ARTIFACTID</artifactId></parent>";
+        parentElm = builder.build( new StringReader( content ) ).getRootElement();
+        assertEquals( "ARTIFACTID", new JDomParent( parentElm ).getArtifactId() );
     }
 
-    @Test( expected = UnsupportedOperationException.class )
-    public void testGetGroupId()
+    @Test
+    public void testGetGroupId() throws Exception
     {
-        new JDomParent( null ).getGroupId();
+        String content = "<parent></parent>";
+        Element parentElm = builder.build( new StringReader( content ) ).getRootElement();
+        assertNull( getChildElementTextTrim( "groupId", parentElm ) );
+
+        content = "<parent><groupId>GROUPID</groupId></parent>";
+        parentElm = builder.build( new StringReader( content ) ).getRootElement();
+        assertEquals( "GROUPID", new JDomParent( parentElm ).getGroupId() );
     }
 
     @Test( expected = UnsupportedOperationException.class )
@@ -49,22 +63,34 @@ public class JDomParentTest
         new JDomParent( null ).getRelativePath();
     }
 
-    @Test( expected = UnsupportedOperationException.class )
-    public void testGetVersion()
+    @Test
+    public void testGetVersion() throws Exception
     {
-        new JDomParent( null ).getVersion();
+        String content = "<parent></parent>";
+        Element parentElm = builder.build( new StringReader( content ) ).getRootElement();
+        assertNull( getChildElementTextTrim( "version", parentElm ) );
+
+        content = "<parent><version>VERSION</version></parent>";
+        parentElm = builder.build( new StringReader( content ) ).getRootElement();
+        assertEquals( "VERSION", new JDomParent( parentElm ).getVersion() );
     }
 
-    @Test( expected = UnsupportedOperationException.class )
-    public void testSetArtifactId()
+    @Test
+    public void testSetArtifactId() throws Exception
     {
-        new JDomParent( null ).setArtifactId( null );
+        String content = "<parent><artifactId>OLD_ARTIFACTID</artifactId></parent>";
+        Element parentElm = builder.build( new StringReader( content ) ).getRootElement();
+        new JDomParent( parentElm ).setArtifactId( "NEW_ARTIFACTID" );
+        assertEquals( "NEW_ARTIFACTID", getChildElementTextTrim( "artifactId", parentElm ) );
     }
 
-    @Test( expected = UnsupportedOperationException.class )
-    public void testSetGroupId()
+    @Test
+    public void testSetGroupId() throws Exception
     {
-        new JDomParent( null ).setGroupId( null );
+        String content = "<parent><groupId>OLD_GROUPID</groupId></parent>";
+        Element parentElm = builder.build( new StringReader( content ) ).getRootElement();
+        new JDomParent( parentElm ).setGroupId( "NEW_GROUPID" );
+        assertEquals( "NEW_GROUPID", getChildElementTextTrim( "groupId", parentElm ) );
     }
 
     @Test( expected = UnsupportedOperationException.class )
@@ -78,24 +104,17 @@ public class JDomParentTest
     {
         String content = "<parent></parent>";
         Element parentElm = builder.build( new StringReader( content ) ).getRootElement();
+        assertNull( getChildElementTextTrim( "version", parentElm ) );
 
-        assertNull( getVersion( parentElm ) );
+        content = "<parent><version>VERSION</version></parent>";
+        parentElm = builder.build( new StringReader( content ) ).getRootElement();
+        assertEquals( "VERSION", new JDomParent( parentElm ).getVersion() );
 
-        new JDomParent( parentElm ).setVersion( "VERSION" );
-        assertEquals( "VERSION", getVersion( parentElm ) );
-
-        new JDomParent( parentElm ).setVersion( null );
-        assertNull( getVersion( parentElm ) );
     }
 
     @Test( expected = UnsupportedOperationException.class )
     public void testGetId()
     {
         new JDomParent( null ).getId();
-    }
-
-    private String getVersion( Element parentElm )
-    {
-        return parentElm.getChildText( "version", parentElm.getNamespace() );
     }
 }

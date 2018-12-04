@@ -58,13 +58,13 @@ public class JDomExtension extends Extension implements MavenCoordinate
     @Override
     public void setArtifactId( String artifactId )
     {
-        throw new UnsupportedOperationException();
+        coordinate.setArtifactId( artifactId );
     }
 
     @Override
     public void setGroupId( String groupId )
     {
-        throw new UnsupportedOperationException();
+        coordinate.setGroupId( groupId );
     }
 
     @Override

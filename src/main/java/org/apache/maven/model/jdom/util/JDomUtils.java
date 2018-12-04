@@ -21,6 +21,8 @@ package org.apache.maven.model.jdom.util;
 
 import java.util.Iterator;
 
+import org.codehaus.plexus.util.StringUtils;
+import org.jdom2.Content;
 import org.jdom2.Element;
 import org.jdom2.Namespace;
 import org.jdom2.Text;
@@ -37,6 +39,86 @@ public final class JDomUtils
     private JDomUtils()
     {
         // noop
+    }
+
+    /**
+     * Tries to detect the indentation that is used within the given element and returns it.
+     * <p/>
+     * The method actually returns all characters (supposed to be whitespaces) that occur after the last linebreak in a
+     * text element that is followed by an XML element.
+     *
+     * @param element the element whose contents should be used to detect the indentation.
+     * @return the detected indentation or {@code null} if not indentation can be detected.
+     */
+    public static String detectIndentation( Element element )
+    {
+        String indentCandidate = null;
+
+        for ( Content childElement : element.getContent() )
+        {
+            if ( childElement instanceof Text )
+            {
+                String text = ( (Text) childElement ).getText();
+                int lastLsIndex = StringUtils.lastIndexOfAny( text, new String[]{"\n", "\r"} );
+                if ( lastLsIndex > -1 )
+                {
+                    indentCandidate = text.substring( lastLsIndex + 1 );
+                }
+            }
+            else if ( indentCandidate != null )
+            {
+                if ( childElement instanceof Element )
+                {
+                    break;
+                }
+                else
+                {
+                    indentCandidate = null;
+                }
+            }
+        }
+
+        return indentCandidate;
+    }
+
+    /**
+     * Returns the given elements child element with the specified name.
+     *
+     * @param name   the name of the child element.
+     * @param parent the parent of the requested element - must not be {@code null}.
+     * @return the requested element or {@code null}.
+     */
+    public static Element getChildElement( String name, Element parent )
+    {
+        return parent.getChild( name, parent.getNamespace() );
+    }
+
+    /**
+     * Returns the trimmed text value of the given elements child element with the specified name.
+     *
+     * @param name   the name of the child element.
+     * @param parent the parent of the element whose text value is requested - must not be {@code null}.
+     * @return the trimmed text value of the element or {@code null}.
+     */
+    public static String getChildElementTextTrim( String name, Element parent )
+    {
+        Element child = getChildElement( name, parent );
+        if ( child == null )
+        {
+            return null;
+        }
+        else
+        {
+            String text = child.getTextTrim();
+            if ( "null".equals( text ) )
+            {
+                return null;
+            }
+            else
+            {
+                return text;
+            }
+        }
     }
 
     /**

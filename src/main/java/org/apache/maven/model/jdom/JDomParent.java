@@ -20,7 +20,6 @@ package org.apache.maven.model.jdom;
  */
 
 import org.apache.maven.model.Parent;
-import org.apache.maven.model.jdom.util.JDomUtils;
 import org.jdom2.Element;
 
 /**
@@ -29,37 +28,37 @@ import org.jdom2.Element;
  * @author Robert Scholte
  * @since 3.0
  */
-public class JDomParent extends Parent
+public class JDomParent extends Parent implements MavenCoordinate
 {
-    private Element parent;
+    private final MavenCoordinate coordinate;
 
     public JDomParent( Element parent )
     {
-        this.parent = parent;
+        this.coordinate = new JDomMavenCoordinate( parent );
     }
 
     @Override
     public String getVersion()
     {
-        throw new UnsupportedOperationException();
+        return this.coordinate.getVersion();
     }
 
     @Override
     public void setVersion( String version )
     {
-        JDomUtils.rewriteElement( "version", version, parent, parent.getNamespace() );
+        this.coordinate.setVersion( version );
     }
 
     @Override
     public String getArtifactId()
     {
-        throw new UnsupportedOperationException();
+        return this.coordinate.getArtifactId();
     }
 
     @Override
     public String getGroupId()
     {
-        throw new UnsupportedOperationException();
+        return this.coordinate.getGroupId();
     }
 
     @Override
@@ -71,13 +70,13 @@ public class JDomParent extends Parent
     @Override
     public void setArtifactId( String artifactId )
     {
-        throw new UnsupportedOperationException();
+        this.coordinate.setArtifactId( artifactId );
     }
 
     @Override
     public void setGroupId( String groupId )
     {
-        throw new UnsupportedOperationException();
+        this.coordinate.setGroupId( groupId );
     }
 
     @Override
@@ -90,5 +89,11 @@ public class JDomParent extends Parent
     public String getId()
     {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String getName()
+    {
+        return "parent";
     }
 }

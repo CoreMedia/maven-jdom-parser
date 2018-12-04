@@ -19,6 +19,7 @@ package org.apache.maven.model.jdom;
  * under the License.
  */
 
+import static org.apache.maven.model.jdom.util.JDomUtils.getChildElementTextTrim;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
@@ -68,16 +69,22 @@ public class JDomExtensionTest
         assertEquals( "VERSION", new JDomExtension( extensionElm ).getVersion() );
     }
 
-    @Test( expected = UnsupportedOperationException.class )
-    public void testSetArtifactId()
+    @Test
+    public void testSetArtifactIdString() throws Exception
     {
-        new JDomExtension( null ).setArtifactId( null );
+        String content = "<extension><artifactId>OLD_ARTIFACTID</artifactId></extension>";
+        Element extensionElm = builder.build( new StringReader( content ) ).getRootElement();
+        new JDomExtension( extensionElm ).setArtifactId( "NEW_ARTIFACTID" );
+        assertEquals( "NEW_ARTIFACTID", getChildElementTextTrim( "artifactId", extensionElm ) );
     }
 
-    @Test( expected = UnsupportedOperationException.class )
-    public void testSetGroupId()
+    @Test
+    public void testSetGroupId() throws Exception
     {
-        new JDomExtension( null ).setGroupId( null );
+        String content = "<extension><groupId>OLD_GROUPID</groupId></extension>";
+        Element extensionElm = builder.build( new StringReader( content ) ).getRootElement();
+        new JDomExtension( extensionElm ).setGroupId( "NEW_GROUPID" );
+        assertEquals( "NEW_GROUPID", getChildElementTextTrim( "groupId", extensionElm ) );
     }
 
     @Test
@@ -86,17 +93,12 @@ public class JDomExtensionTest
         String content = "<extension><version>OLD_VERSION</version></extension>";
         Element extensionElm = builder.build( new StringReader( content ) ).getRootElement();
         new JDomExtension( extensionElm ).setVersion( "NEW_VERSION" );
-        assertEquals( "NEW_VERSION", getVersion( extensionElm ) );
+        assertEquals( "NEW_VERSION", getChildElementTextTrim( "version", extensionElm ) );
     }
 
     @Test
     public void testGetName()
     {
         assertEquals( "extension", new JDomExtension( null ).getName() );
-    }
-
-    private String getVersion( Element extensionElm )
-    {
-        return extensionElm.getChildTextTrim( "version", extensionElm.getNamespace() );
     }
 }

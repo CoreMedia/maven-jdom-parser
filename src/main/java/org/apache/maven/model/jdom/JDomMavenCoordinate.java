@@ -19,8 +19,13 @@ package org.apache.maven.model.jdom;
  * under the License.
  */
 
-import org.apache.maven.model.jdom.util.JDomUtils;
+import static org.apache.maven.model.jdom.util.JDomUtils.detectIndentation;
+import static org.apache.maven.model.jdom.util.JDomUtils.getChildElement;
+import static org.apache.maven.model.jdom.util.JDomUtils.getChildElementTextTrim;
+import static org.apache.maven.model.jdom.util.JDomUtils.rewriteValue;
+
 import org.jdom2.Element;
+import org.jdom2.Text;
 
 /**
  *
@@ -31,7 +36,7 @@ public class JDomMavenCoordinate implements MavenCoordinate
 {
     private final Element element;
 
-    public JDomMavenCoordinate( Element elm )
+    JDomMavenCoordinate( Element elm )
     {
         this.element = elm;
     }
@@ -39,39 +44,62 @@ public class JDomMavenCoordinate implements MavenCoordinate
     @Override
     public String getGroupId()
     {
-        return element.getChildTextTrim( "groupId", element.getNamespace() );
+        return getChildElementTextTrim( "groupId", element );
+    }
+
+    @Override
+    public void setGroupId( String groupId )
+    {
+        rewriteValue( getChildElement( "groupId", element ), groupId );
     }
 
     @Override
     public String getArtifactId()
     {
-        return element.getChildTextTrim( "artifactId", element.getNamespace() );
+        return getChildElementTextTrim( "artifactId", element );
+    }
+
+    @Override
+    public void setArtifactId( String artifactId )
+    {
+        rewriteValue( getChildElement( "artifactId", element ), artifactId );
     }
 
     @Override
     public String getVersion()
     {
-        Element version = getVersionElement();
-        if ( version == null )
-        {
-            return null;
-        }
-        else
-        {
-            return version.getTextTrim();
-        }
-
-    }
-
-    private Element getVersionElement()
-    {
-        return element.getChild( "version", element.getNamespace() );
+        return getChildElementTextTrim( "version", element );
     }
 
     @Override
     public void setVersion( String version )
     {
-        JDomUtils.rewriteValue( getVersionElement(), version );
+        Element versionElement = getChildElement( "version", element );
+        if ( versionElement == null )
+        {
+            // This 'if' branch should only be executed when the project version is inherited from the parent but now
+            // is changed without having changed the parent version. In this case, the version cannot be inherited
+            // anymore and thus the project version element must be added.
+
+            versionElement = new Element( "version", element.getNamespace() );
+            versionElement.setText( version );
+
+            // Add the new version element after the artifactId.
+            int indexArtifactId = element.indexOf( element.getChild( "artifactId", element.getNamespace() ) );
+
+            // Linebreak and indentation are (tried to be copied) from the existing XML structure.
+            String indent = detectIndentation( element );
+            if ( indent != null )
+            {
+                element.addContent( ++indexArtifactId, new Text( "\n" + indent ) );
+            }
+
+            element.addContent( ++indexArtifactId, versionElement );
+        }
+        else
+        {
+            rewriteValue( versionElement, version );
+        }
     }
 
     @Override

@@ -109,7 +109,7 @@ public class JDomDependency extends Dependency implements MavenCoordinate
     @Override
     public void setArtifactId( String artifactId )
     {
-        throw new UnsupportedOperationException();
+        coordinate.setArtifactId( artifactId );
     }
 
     @Override
@@ -127,7 +127,7 @@ public class JDomDependency extends Dependency implements MavenCoordinate
     @Override
     public void setGroupId( String groupId )
     {
-        throw new UnsupportedOperationException();
+        coordinate.setGroupId( groupId );
     }
 
     @Override

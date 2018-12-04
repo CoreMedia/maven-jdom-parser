@@ -35,7 +35,6 @@ import org.apache.maven.model.Scm;
 import org.apache.maven.model.jdom.util.JDomUtils;
 import org.jdom2.Document;
 import org.jdom2.Element;
-import org.jdom2.Text;
 
 /**
  * JDom implementation of poms PROJECT element
@@ -43,11 +42,12 @@ import org.jdom2.Text;
  * @author Robert Scholte
  * @since 3.0
  */
-public class JDomModel extends Model
+public class JDomModel extends Model implements MavenCoordinate
 {
     private final Element project;
 
     private final JDomModelBase modelBase;
+    private final JDomMavenCoordinate coordinate;
 
     public JDomModel( Document document )
     {
@@ -58,6 +58,19 @@ public class JDomModel extends Model
     {
         this.project = project;
         this.modelBase = new JDomModelBase( project );
+        this.coordinate = new JDomMavenCoordinate( project );
+    }
+
+    @Override
+    public String getArtifactId()
+    {
+        return coordinate.getArtifactId();
+    }
+
+    @Override
+    public void setArtifactId( String artifactId )
+    {
+        coordinate.setArtifactId( artifactId );
     }
 
     @Override
@@ -76,6 +89,18 @@ public class JDomModel extends Model
     public DependencyManagement getDependencyManagement()
     {
         return modelBase.getDependencyManagement();
+    }
+
+    @Override
+    public String getGroupId()
+    {
+        return coordinate.getGroupId();
+    }
+
+    @Override
+    public void setGroupId( String groupId )
+    {
+        coordinate.setGroupId( groupId );
     }
 
     @Override
@@ -191,38 +216,26 @@ public class JDomModel extends Model
     }
 
     @Override
+    public String getVersion()
+    {
+        return coordinate.getVersion();
+    }
+
+    @Override
     public void setVersion( String version )
     {
-        Element versionElement = project.getChild( "version", project.getNamespace() );
-
-        String parentVersion;
-        Element parent = getParentElement();
-        if ( parent != null )
+        String projectVersion = coordinate.getVersion();
+        if ( projectVersion != null )
         {
-            parentVersion = parent.getChildTextTrim( "version", project.getNamespace() );
+            coordinate.setVersion( version );
         }
         else
         {
-            parentVersion = null;
-        }
-
-        if ( versionElement == null )
-        {
-            if ( !version.equals( parentVersion ) )
+            Parent parent = getParent();
+            if ( parent == null || !version.equals( parent.getVersion() ) )
             {
-                // we will add this after artifactId, since it was missing but different from the inherited version
-                Element artifactIdElement = project.getChild( "artifactId", project.getNamespace() );
-                int index = project.indexOf( artifactIdElement );
-
-                versionElement = new Element( "version", project.getNamespace() );
-                versionElement.setText( version );
-                project.addContent( index + 1, new Text( "\n  " ) );
-                project.addContent( index + 2, versionElement );
+                coordinate.setVersion( version );
             }
-        }
-        else
-        {
-            JDomUtils.rewriteValue( versionElement, version );
         }
     }
 }

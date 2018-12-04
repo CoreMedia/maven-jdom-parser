@@ -28,7 +28,11 @@ public interface MavenCoordinate
 {
     String getGroupId();
 
+    void setGroupId( String groupId );
+
     String getArtifactId();
+
+    void setArtifactId( String artifactId );
 
     String getVersion();
 

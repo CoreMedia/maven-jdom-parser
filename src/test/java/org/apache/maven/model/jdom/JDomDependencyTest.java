@@ -19,6 +19,7 @@ package org.apache.maven.model.jdom;
  * under the License.
  */
 
+import static org.apache.maven.model.jdom.util.JDomUtils.getChildElementTextTrim;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
@@ -122,10 +123,13 @@ public class JDomDependencyTest
         new JDomDependency( null ).removeExclusion( null );;
     }
 
-    @Test( expected = UnsupportedOperationException.class )
-    public void testSetArtifactIdString()
+    @Test
+    public void testSetArtifactIdString() throws Exception
     {
-        new JDomDependency( null ).setArtifactId( null );;
+        String content = "<dependency><artifactId>OLD_ARTIFACTID</artifactId></dependency>";
+        Element dependencyElm = builder.build( new StringReader( content ) ).getRootElement();
+        new JDomDependency( dependencyElm ).setArtifactId( "NEW_ARTIFACTID" );
+        assertEquals( "NEW_ARTIFACTID", getChildElementTextTrim( "artifactId", dependencyElm ) );
     }
 
     @Test( expected = UnsupportedOperationException.class )
@@ -140,10 +144,13 @@ public class JDomDependencyTest
         new JDomDependency( null ).setExclusions( null );;
     }
 
-    @Test( expected = UnsupportedOperationException.class )
-    public void testSetGroupIdString()
+    @Test
+    public void testSetGroupIdString() throws Exception
     {
-        new JDomDependency( null ).setGroupId( null );
+        String content = "<dependency><groupId>OLD_GROUPID</groupId></dependency>";
+        Element dependencyElm = builder.build( new StringReader( content ) ).getRootElement();
+        new JDomDependency( dependencyElm ).setGroupId( "NEW_GROUPID" );
+        assertEquals( "NEW_GROUPID", getChildElementTextTrim( "groupId", dependencyElm ) );
     }
 
     @Test( expected = UnsupportedOperationException.class )
@@ -170,17 +177,12 @@ public class JDomDependencyTest
         String content = "<dependency><version>OLD_VERSION</version></dependency>";
         Element dependencyElm = builder.build( new StringReader( content ) ).getRootElement();
         new JDomDependency( dependencyElm ).setVersion( "NEW_VERSION" );
-        assertEquals( "NEW_VERSION", getVersion( dependencyElm ) );
+        assertEquals( "NEW_VERSION", getChildElementTextTrim( "version", dependencyElm ) );
     }
 
     @Test
     public void testGetName()
     {
         assertEquals( "dependency", new JDomDependency( null ).getName() );
-    }
-
-    private String getVersion( Element dependencyElm )
-    {
-        return dependencyElm.getChildTextTrim( "version", dependencyElm.getNamespace() );
     }
 }
