@@ -23,7 +23,7 @@ import java.util.List;
 
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Exclusion;
-import org.jdom.Element;
+import org.jdom2.Element;
 
 /**
  * JDom implementation of poms DEPENDENCY element

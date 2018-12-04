@@ -21,9 +21,9 @@ package org.apache.maven.model.jdom.util;
 
 import java.util.Iterator;
 
-import org.jdom.Element;
-import org.jdom.Namespace;
-import org.jdom.Text;
+import org.jdom2.Element;
+import org.jdom2.Namespace;
+import org.jdom2.Text;
 
 /**
  * Common JDom functions

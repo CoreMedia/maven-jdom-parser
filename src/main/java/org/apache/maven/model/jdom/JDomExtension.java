@@ -20,7 +20,7 @@ package org.apache.maven.model.jdom;
  */
 
 import org.apache.maven.model.Extension;
-import org.jdom.Element;
+import org.jdom2.Element;
 
 /**
  * JDom implementation of poms EXTENSION element

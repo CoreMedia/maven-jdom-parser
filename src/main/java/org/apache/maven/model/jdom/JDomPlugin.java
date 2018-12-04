@@ -27,7 +27,7 @@ import java.util.Map;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.model.PluginExecution;
-import org.jdom.Element;
+import org.jdom2.Element;
 
 /**
  * JDom implementation of poms PLUGIN element

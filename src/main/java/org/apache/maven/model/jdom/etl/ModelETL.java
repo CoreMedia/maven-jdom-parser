@@ -23,7 +23,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.apache.maven.model.Model;
-import org.jdom.JDOMException;
+import org.jdom2.JDOMException;
 
 /**
  *
