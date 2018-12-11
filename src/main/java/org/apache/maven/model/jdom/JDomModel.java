@@ -161,7 +161,7 @@ public class JDomModel extends Model
         }
         else
         {
-            Element scmRoot = new Element( "scm" );
+            Element scmRoot = new Element( "scm", project.getNamespace() );
             scmRoot.addContent( "\n  " );
 
             // Write current values to JDom tree
@@ -171,7 +171,7 @@ public class JDomModel extends Model
             jdomScm.setTag( scm.getTag() );
             jdomScm.setUrl( scm.getUrl() );
 
-            project.addContent( "\n  " ).addContent( scmRoot ).addContent( "\n" );
+            project.addContent( "  " ).addContent( scmRoot ).addContent( "\n" ).addContent( "\n" );
         }
     }
 
