@@ -19,12 +19,17 @@ package org.apache.maven.model.jdom.util;
  * under the License.
  */
 
+import static java.lang.Math.max;
+import static java.util.Arrays.asList;
+
 import java.util.Iterator;
+import java.util.List;
 
 import org.codehaus.plexus.util.StringUtils;
 import org.jdom2.Content;
 import org.jdom2.Element;
 import org.jdom2.Namespace;
+import org.jdom2.Parent;
 import org.jdom2.Text;
 
 /**
@@ -42,6 +47,69 @@ public final class JDomUtils
     }
 
     /**
+     * Inserts a new child element to the given root element. The position where the element is inserted is calculated
+     * using the element order that is defined in the {@link JDomCfg} (see {@link JDomCfg#getElementOrder()}). In the
+     * root element, the new element is always prepended by a text element containing a linebreak followed by the
+     * indentation characters. The indentation characters are (tried to be) detected from the root element (see {@link
+     * #detectIndentation(Element)} ).
+     *
+     * @param name the name of the new element.
+     * @param root the root element.
+     * @return the new element.
+     */
+    public static Element insertNewElement( String name, Element root )
+    {
+        Element newElement;
+
+        String indent = detectIndentation( root );
+
+        newElement = new Element( name, root.getNamespace() );
+        newElement.addContent( "\n" + indent );
+        int newElementIndex = calcNewElementIndex( name, root );
+        root.addContent( newElementIndex, newElement );
+
+        if ( isBlankLineBeforeElement( name ) )
+        {
+            root.addContent( newElementIndex, new Text( "\n\n" + indent ) );
+        }
+        else
+        {
+            root.addContent( newElementIndex, new Text( "\n" + indent ) );
+        }
+
+        return newElement;
+    }
+
+    private static int calcNewElementIndex( String name, Element root )
+    {
+        int addIndex = 0;
+
+        List<String> elementOrder = JDomCfg.getInstance().getElementOrder();
+
+        for ( int i = elementOrder.indexOf( name ) - 1; i >= 0; i-- )
+        {
+            String addAfterElementName = elementOrder.get( i );
+            if ( !addAfterElementName.equals( "" ) )
+            {
+                Element addAfterElement = root.getChild( addAfterElementName, root.getNamespace() );
+                if ( addAfterElement != null )
+                {
+                    addIndex = root.indexOf( addAfterElement ) + 1;
+                    break;
+                }
+            }
+        }
+
+        return addIndex;
+    }
+
+    private static boolean isBlankLineBeforeElement( String name )
+    {
+        List<String> elementOrder = JDomCfg.getInstance().getElementOrder();
+        return elementOrder.get( elementOrder.indexOf( name ) - 1 ).equals( "" );
+    }
+
+    /**
      * Tries to detect the indentation that is used within the given element and returns it.
      * <p/>
      * The method actually returns all characters (supposed to be whitespaces) that occur after the last linebreak in a
@@ -52,8 +120,9 @@ public final class JDomUtils
      */
     public static String detectIndentation( Element element )
     {
-        String indentCandidate = null;
+        String indent = null;
 
+        String indentCandidate = null;
         for ( Content childElement : element.getContent() )
         {
             if ( childElement instanceof Text )
@@ -69,6 +138,7 @@ public final class JDomUtils
             {
                 if ( childElement instanceof Element )
                 {
+                    indent = indentCandidate;
                     break;
                 }
                 else
@@ -78,7 +148,20 @@ public final class JDomUtils
             }
         }
 
-        return indentCandidate;
+        if ( indent == null )
+        {
+            Parent parent = element.getParent();
+            if ( parent instanceof Element )
+            {
+                indent = detectIndentation( (Element) parent ) + "  ";
+            }
+            else
+            {
+                return "";
+            }
+        }
+
+        return indent;
     }
 
     /**
@@ -203,8 +286,12 @@ public final class JDomUtils
             {
                 Element element = new Element( name, namespace );
                 element.setText( value );
-                root.addContent( "  " ).addContent( element ).addContent( "\n  " );
                 tagElement = element;
+                root.addContent(
+                    max( 0, root.getContentSize() - 1 ),
+                    asList(
+                        new Text( "\n" + detectIndentation( root ) ),
+                        element ) );
             }
         }
         return tagElement;

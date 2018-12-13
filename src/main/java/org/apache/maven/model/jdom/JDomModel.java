@@ -19,6 +19,8 @@ package org.apache.maven.model.jdom;
  * under the License.
  */
 
+import static org.apache.maven.model.jdom.util.JDomUtils.insertNewElement;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -186,17 +188,18 @@ public class JDomModel extends Model implements MavenCoordinate
         }
         else
         {
-            Element scmRoot = new Element( "scm", project.getNamespace() );
-            scmRoot.addContent( "\n  " );
+            Scm jdomScm = getScm();
+            if ( jdomScm == null )
+            {
+                Element scmRoot = insertNewElement( "scm", project );
+                jdomScm = new JDomScm( scmRoot );
+            }
 
             // Write current values to JDom tree
-            Scm jdomScm = new JDomScm( scmRoot );
             jdomScm.setConnection( scm.getConnection() );
             jdomScm.setDeveloperConnection( scm.getDeveloperConnection() );
             jdomScm.setTag( scm.getTag() );
             jdomScm.setUrl( scm.getUrl() );
-
-            project.addContent( "  " ).addContent( scmRoot ).addContent( "\n" ).addContent( "\n" );
         }
     }
 
