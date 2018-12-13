@@ -19,6 +19,7 @@ package org.apache.maven.model.jdom;
  * under the License.
  */
 
+import static org.apache.maven.model.jdom.util.JDomUtils.getChildElement;
 import static org.apache.maven.model.jdom.util.JDomUtils.insertNewElement;
 
 import java.util.ArrayList;
@@ -108,21 +109,52 @@ public class JDomModel extends Model implements MavenCoordinate
     @Override
     public Parent getParent()
     {
-        Element elm = getParentElement();
+        Element elm = getChildElement( "parent", project );
         if ( elm == null )
         {
             return null;
         }
         else
         {
-            // this way scm setters change DOM tree immediately
+            // this way parent setters change DOM tree immediately
             return new JDomParent( elm );
         }
     }
 
-    private Element getParentElement()
+    @Override
+    public void setParent( Parent parent )
     {
-        return project.getChild( "parent", project.getNamespace() );
+        if ( parent == null )
+        {
+            JDomUtils.rewriteElement( "parent", null, project, project.getNamespace() );
+        }
+        else
+        {
+            boolean containsRelativePath = false;
+
+            Parent jdomParent = getParent();
+            if ( jdomParent == null )
+            {
+                Element parentRoot = insertNewElement( "parent", project );
+                jdomParent = new JDomParent( parentRoot );
+            }
+            else
+            {
+                containsRelativePath = jdomParent.getRelativePath() != null;
+            }
+
+            // Write current values to JDom tree
+            jdomParent.setGroupId( parent.getGroupId() );
+            jdomParent.setArtifactId( parent.getArtifactId() );
+            jdomParent.setVersion( parent.getVersion() );
+
+            String relativePath = parent.getRelativePath();
+            if ( relativePath != null && !parent.getRelativePath().equals( "../pom.xml" ) || containsRelativePath )
+            {
+                jdomParent.setRelativePath( relativePath );
+            }
+
+        }
     }
 
     @Override

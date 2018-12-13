@@ -22,6 +22,7 @@ package org.apache.maven.model.jdom;
 import static org.apache.maven.model.jdom.util.JDomUtils.detectIndentation;
 import static org.apache.maven.model.jdom.util.JDomUtils.getChildElement;
 import static org.apache.maven.model.jdom.util.JDomUtils.getChildElementTextTrim;
+import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
 import static org.apache.maven.model.jdom.util.JDomUtils.rewriteValue;
 
 import org.jdom2.Element;
@@ -50,7 +51,7 @@ public class JDomMavenCoordinate implements MavenCoordinate
     @Override
     public void setGroupId( String groupId )
     {
-        rewriteValue( getChildElement( "groupId", element ), groupId );
+        rewriteElement( "groupId", groupId, element, element.getNamespace() );
     }
 
     @Override
@@ -62,7 +63,7 @@ public class JDomMavenCoordinate implements MavenCoordinate
     @Override
     public void setArtifactId( String artifactId )
     {
-        rewriteValue( getChildElement( "artifactId", element ), artifactId );
+        rewriteElement( "artifactId", artifactId, element, element.getNamespace() );
     }
 
     @Override

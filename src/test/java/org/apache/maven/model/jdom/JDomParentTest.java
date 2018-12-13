@@ -57,10 +57,16 @@ public class JDomParentTest
         assertEquals( "GROUPID", new JDomParent( parentElm ).getGroupId() );
     }
 
-    @Test( expected = UnsupportedOperationException.class )
-    public void testGetRelativePath()
+    @Test
+    public void testGetRelativePath() throws Exception
     {
-        new JDomParent( null ).getRelativePath();
+        String content = "<parent></parent>";
+        Element parentElm = builder.build( new StringReader( content ) ).getRootElement();
+        assertNull( getChildElementTextTrim( "relativePath", parentElm ) );
+
+        content = "<parent><relativePath>RELATIVEPATH</relativePath></parent>";
+        parentElm = builder.build( new StringReader( content ) ).getRootElement();
+        assertEquals( "RELATIVEPATH", new JDomParent( parentElm ).getRelativePath() );
     }
 
     @Test
@@ -93,10 +99,13 @@ public class JDomParentTest
         assertEquals( "NEW_GROUPID", getChildElementTextTrim( "groupId", parentElm ) );
     }
 
-    @Test( expected = UnsupportedOperationException.class )
-    public void testSetRelativePath()
+    @Test
+    public void testSetRelativePath() throws Exception
     {
-        new JDomParent( null ).setRelativePath( null );
+        String content = "<parent><relativePath>OLD_RELATIVEPATH</relativePath></parent>";
+        Element parentElm = builder.build( new StringReader( content ) ).getRootElement();
+        new JDomParent( parentElm ).setRelativePath( "NEW_RELATIVEPATH" );
+        assertEquals( "NEW_RELATIVEPATH", getChildElementTextTrim( "relativePath", parentElm ) );
     }
 
     @Test

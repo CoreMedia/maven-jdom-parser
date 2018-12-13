@@ -19,6 +19,9 @@ package org.apache.maven.model.jdom;
  * under the License.
  */
 
+import static org.apache.maven.model.jdom.util.JDomUtils.getChildElementTextTrim;
+import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
+
 import org.apache.maven.model.Parent;
 import org.jdom2.Element;
 
@@ -30,10 +33,13 @@ import org.jdom2.Element;
  */
 public class JDomParent extends Parent implements MavenCoordinate
 {
+    private Element parent;
+
     private final MavenCoordinate coordinate;
 
     public JDomParent( Element parent )
     {
+        this.parent = parent;
         this.coordinate = new JDomMavenCoordinate( parent );
     }
 
@@ -64,7 +70,7 @@ public class JDomParent extends Parent implements MavenCoordinate
     @Override
     public String getRelativePath()
     {
-        throw new UnsupportedOperationException();
+        return getChildElementTextTrim( "relativePath", parent );
     }
 
     @Override
@@ -82,7 +88,7 @@ public class JDomParent extends Parent implements MavenCoordinate
     @Override
     public void setRelativePath( String relativePath )
     {
-        throw new UnsupportedOperationException();
+        rewriteElement( "relativePath", relativePath, parent, parent.getNamespace() );
     }
 
     @Override
