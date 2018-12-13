@@ -19,6 +19,9 @@ package org.apache.maven.model.jdom;
  * under the License.
  */
 
+import static org.apache.maven.model.jdom.util.JDomUtils.getChildElementTextTrim;
+import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -26,13 +29,16 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.Writer;
+import java.util.Collection;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.InvalidPropertiesFormatException;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import org.apache.maven.model.jdom.util.JDomUtils;
 import org.jdom2.Element;
+import org.jdom2.filter.ElementFilter;
 
 /**
  * JDom implementation of poms PROPERTIES element
@@ -50,14 +56,32 @@ public class JDomProperties extends Properties
     }
 
     @Override
-    public synchronized Object setProperty( String key, String value )
+    public Set<Map.Entry<Object, Object>> entrySet()
     {
-        Element property = properties.getChild( key, properties.getNamespace() );
+        JDomPropertiesSet entrySet = new JDomPropertiesSet();
 
-        JDomUtils.rewriteValue( property, value );
+        for ( Element property : properties.getContent( new ElementFilter( properties.getNamespace() ) ) )
+        {
+            entrySet.addProperty( new JDomProperty( property ) );
+        }
 
-        // todo follow specs of Hashtable.put
-        return null;
+        return entrySet;
+    }
+
+    @Override
+    public synchronized Object put( Object key, Object value )
+    {
+        String previousValue = getChildElementTextTrim( (String) key, properties );
+        rewriteElement( (String) key, (String) value, properties, properties.getNamespace() );
+        return previousValue;
+    }
+
+    @Override
+    public synchronized Object remove( Object key )
+    {
+        String previousValue = getChildElementTextTrim( (String) key, properties );
+        rewriteElement( (String) key, null, properties, properties.getNamespace() );
+        return previousValue;
     }
 
     @Override
@@ -158,5 +182,82 @@ public class JDomProperties extends Properties
     public void list( PrintWriter out )
     {
         throw new UnsupportedOperationException();
+    }
+
+    private class JDomPropertiesSet extends HashSet<Map.Entry<Object, Object>>
+    {
+        private void addProperty( JDomProperty jDomProperty )
+        {
+            // The 'add' method can only be called internally.
+            // Adding a property from the outside can currently only be supported using the JDomProperties.put() method.
+            super.add( jDomProperty );
+        }
+
+        @Override
+        public boolean add( Map.Entry<Object, Object> objectObjectEntry )
+        {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean remove( Object o )
+        {
+            throw new UnsupportedOperationException();
+        }
+
+
+        @Override
+        public boolean addAll( Collection<? extends Map.Entry<Object, Object>> c )
+        {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean retainAll( Collection<?> c )
+        {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean removeAll( Collection<?> c )
+        {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void clear()
+        {
+            throw new UnsupportedOperationException();
+        }
+    }
+
+    private class JDomProperty implements Map.Entry<Object, Object>
+    {
+        private Element property;
+
+        private JDomProperty( Element property )
+        {
+            this.property = property;
+        }
+
+        @Override
+        public Object getKey()
+        {
+            return property.getName();
+        }
+
+        @Override
+        public Object getValue()
+        {
+            return property.getTextTrim();
+        }
+
+        @Override
+        public Object setValue( Object value )
+        {
+            String previousValue = property.getTextTrim();
+            property.setText( (String) value );
+            return previousValue;
+        }
     }
 }
