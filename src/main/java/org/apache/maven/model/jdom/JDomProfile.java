@@ -60,4 +60,16 @@ public class JDomProfile
     {
         return modelBase.getDependencyManagement();
     }
+
+    @Override
+    public List<String> getModules()
+    {
+        return modelBase.getModules();
+    }
+
+    @Override
+    public void setModules( List<String> modules )
+    {
+        modelBase.setModules( modules );
+    }
 }

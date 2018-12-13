@@ -19,14 +19,25 @@ package org.apache.maven.model.jdom;
  * under the License.
  */
 
+import static java.util.Arrays.asList;
+import static org.apache.maven.model.jdom.util.JDomUtils.detectIndentation;
+import static org.apache.maven.model.jdom.util.JDomUtils.getChildElement;
+import static org.apache.maven.model.jdom.util.JDomUtils.insertNewElement;
+import static org.apache.maven.model.jdom.util.JDomUtils.toElementTextList;
+
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.ListIterator;
 
 import org.apache.maven.model.Build;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.DependencyManagement;
+import org.apache.maven.model.jdom.util.JDomUtils;
 import org.jdom2.Element;
+import org.jdom2.Text;
+import org.jdom2.filter.ElementFilter;
 
 /**
  *
@@ -89,6 +100,145 @@ public class JDomModelBase
         {
             // this way build setters change DOM tree immediately
             return new JDomDependencyManagement( elm );
+        }
+    }
+
+    public List<String> getModules()
+    {
+        Element modulesElement = getChildElement( "modules", modelBase );
+        if ( modulesElement == null )
+        {
+            return Collections.emptyList();
+        }
+        else
+        {
+            return new JDomModules( modulesElement );
+        }
+    }
+
+    public void setModules( List<String> modules )
+    {
+        JDomUtils.rewriteElement( "modules", null, modelBase, modelBase.getNamespace() );
+        new JDomModules( insertNewElement( "modules", modelBase ) ).addAll( modules );
+    }
+
+    private class JDomModules extends ArrayList<String>
+    {
+        private Element modules;
+
+        private JDomModules( Element modules )
+        {
+            super( toElementTextList( modelBase.getContent( new ElementFilter( modelBase.getNamespace() ) ) ) );
+            this.modules = modules;
+        }
+
+        @Override
+        public boolean add( String module )
+        {
+            Element newModule = new Element( "module", modules.getNamespace() );
+            newModule.setText( module );
+
+            modules.addContent(
+                modules.getContentSize() - 1,
+                asList(
+                    new Text( "\n  " + detectIndentation( modelBase ) ),
+                    newModule ) );
+            return super.add( module );
+        }
+
+        @Override
+        public boolean remove( Object module )
+        {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean addAll( Collection<? extends String> modules )
+        {
+            boolean added = false;
+            for ( String module : modules )
+            {
+                added |= this.add( module );
+            }
+            return added;
+        }
+
+        @Override
+        public boolean addAll( int index, Collection<? extends String> modules )
+        {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean removeAll( Collection<?> modules )
+        {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean retainAll( Collection<?> modules )
+        {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void clear()
+        {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public String get( int index )
+        {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public String set( int index, String module )
+        {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void add( int index, String module )
+        {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public String remove( int index )
+        {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public int indexOf( Object module )
+        {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public int lastIndexOf( Object module )
+        {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public ListIterator<String> listIterator()
+        {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public ListIterator<String> listIterator( int index )
+        {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public List<String> subList( int fromIndex, int toIndex )
+        {
+            throw new UnsupportedOperationException();
         }
     }
 }

@@ -158,6 +158,18 @@ public class JDomModel extends Model implements MavenCoordinate
     }
 
     @Override
+    public List<String> getModules()
+    {
+        return modelBase.getModules();
+    }
+
+    @Override
+    public void setModules( List<String> modules )
+    {
+        modelBase.setModules( modules );
+    }
+
+    @Override
     public List<Profile> getProfiles()
     {
         Element profilesElm = project.getChild( "profiles", project.getNamespace() );
