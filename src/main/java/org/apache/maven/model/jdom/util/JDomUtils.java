@@ -49,8 +49,8 @@ public final class JDomUtils
 
     /**
      * Inserts a new child element to the given root element. The position where the element is inserted is calculated
-     * using the element order that is defined in the {@link JDomCfg} (see {@link JDomCfg#getElementOrder()}). In the
-     * root element, the new element is always prepended by a text element containing a linebreak followed by the
+     * using the element order that is defined in the {@link JDomCfg} (see {@link JDomCfg#getElementOrder(String)}). In
+     * the root element, the new element is always prepended by a text element containing a linebreak followed by the
      * indentation characters. The indentation characters are (tried to be) detected from the root element (see {@link
      * #detectIndentation(Element)} ).
      *
@@ -69,7 +69,7 @@ public final class JDomUtils
         int newElementIndex = calcNewElementIndex( name, root );
         root.addContent( newElementIndex, newElement );
 
-        if ( isBlankLineBeforeElement( name ) )
+        if ( isBlankLineBeforeElement( name, root ) )
         {
             root.addContent( newElementIndex, new Text( "\n\n" + indent ) );
         }
@@ -85,7 +85,7 @@ public final class JDomUtils
     {
         int addIndex = 0;
 
-        List<String> elementOrder = JDomCfg.getInstance().getElementOrder();
+        List<String> elementOrder = JDomCfg.getInstance().getElementOrder( root.getName() );
 
         for ( int i = elementOrder.indexOf( name ) - 1; i >= 0; i-- )
         {
@@ -104,9 +104,9 @@ public final class JDomUtils
         return addIndex;
     }
 
-    private static boolean isBlankLineBeforeElement( String name )
+    private static boolean isBlankLineBeforeElement( String name, Element root )
     {
-        List<String> elementOrder = JDomCfg.getInstance().getElementOrder();
+        List<String> elementOrder = JDomCfg.getInstance().getElementOrder( root.getName() );
         return elementOrder.get( elementOrder.indexOf( name ) - 1 ).equals( "" );
     }
 

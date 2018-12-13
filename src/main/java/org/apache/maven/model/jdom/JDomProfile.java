@@ -19,6 +19,8 @@ package org.apache.maven.model.jdom;
  * under the License.
  */
 
+import static org.apache.maven.model.jdom.util.JDomUtils.getChildElementTextTrim;
+
 import java.util.List;
 
 import org.apache.maven.model.BuildBase;
@@ -36,10 +38,13 @@ import org.jdom2.Element;
 public class JDomProfile
     extends Profile
 {
+    private Element profile;
+
     private final JDomModelBase modelBase;
 
     public JDomProfile( Element profile )
     {
+        this.profile = profile;
         this.modelBase = new JDomModelBase( profile ) ;
     }
 
@@ -59,6 +64,12 @@ public class JDomProfile
     public DependencyManagement getDependencyManagement()
     {
         return modelBase.getDependencyManagement();
+    }
+
+    @Override
+    public String getId()
+    {
+        return getChildElementTextTrim( "id", profile );
     }
 
     @Override
