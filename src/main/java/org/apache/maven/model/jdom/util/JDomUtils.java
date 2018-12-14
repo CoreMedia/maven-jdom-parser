@@ -22,7 +22,6 @@ package org.apache.maven.model.jdom.util;
 import static java.lang.Math.max;
 import static java.util.Arrays.asList;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -296,21 +295,5 @@ public final class JDomUtils
             }
         }
         return tagElement;
-    }
-
-    /**
-     * Transform the list of elements to a corresponding list of element texts.
-     *
-     * @param elements the list of elements.
-     * @return the list of element texts.
-     */
-    public static List<String> toElementTextList( List<Element> elements )
-    {
-        List<String> elementTextList = new ArrayList<>( elements.size() );
-        for ( Element element : elements )
-        {
-            elementTextList.add( element.getTextTrim() );
-        }
-        return elementTextList;
     }
 }
