@@ -67,6 +67,12 @@ public class JDomProfile
     }
 
     @Override
+    public void setDependencyManagement( DependencyManagement dependencyManagement )
+    {
+        modelBase.setDependencyManagement( dependencyManagement );
+    }
+
+    @Override
     public String getId()
     {
         return getChildElementTextTrim( "id", profile );

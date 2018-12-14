@@ -21,7 +21,9 @@ package org.apache.maven.model.jdom;
 
 import static org.apache.maven.model.jdom.util.JDomUtils.getChildElementTextTrim;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.StringReader;
 
@@ -33,16 +35,30 @@ public class JDomDependencyTest
 {
     private SAXBuilder builder = new SAXBuilder();
 
-    @Test( expected = UnsupportedOperationException.class )
-    public void testIsOptional()
+    @Test
+    public void testIsOptional() throws Exception
     {
-        new JDomDependency( null ).isOptional();
+        String content = "<dependency></dependency>";
+        Element dependencyElm = builder.build( new StringReader( content ) ).getRootElement();
+        assertFalse( new JDomDependency( dependencyElm ).isOptional() );
+
+        content = "<dependency><optional>true</optional></dependency>";
+        dependencyElm = builder.build( new StringReader( content ) ).getRootElement();
+        assertTrue( new JDomDependency( dependencyElm ).isOptional() );
     }
 
-    @Test( expected = UnsupportedOperationException.class )
-    public void testSetOptional()
+    @Test
+    public void testSetOptional() throws Exception
     {
-        new JDomDependency( null ).setOptional( true );
+        String content = "<dependency><optional>false</optional></dependency>";
+        Element dependencyElm = builder.build( new StringReader( content ) ).getRootElement();
+        new JDomDependency( dependencyElm ).setOptional( true );
+        assertEquals( "true", getChildElementTextTrim( "optional", dependencyElm ) );
+
+        content = "<dependency></dependency>";
+        dependencyElm = builder.build( new StringReader( content ) ).getRootElement();
+        new JDomDependency( dependencyElm ).setOptional( true );
+        assertEquals( "true", getChildElementTextTrim( "optional", dependencyElm ) );
     }
 
     @Test( expected = UnsupportedOperationException.class )
@@ -63,10 +79,16 @@ public class JDomDependencyTest
         assertEquals( "ARTIFACTID", new JDomDependency( dependencyElm ).getArtifactId() );
     }
 
-    @Test( expected = UnsupportedOperationException.class )
-    public void testGetClassifier()
+    @Test
+    public void testGetClassifier() throws Exception
     {
-        new JDomDependency( null ).getClassifier();
+        String content = "<dependency></dependency>";
+        Element dependencyElm = builder.build( new StringReader( content ) ).getRootElement();
+        assertNull( new JDomDependency( dependencyElm ).getClassifier() );
+
+        content = "<dependency><classifier>CLASSIFIER</classifier></dependency>";
+        dependencyElm = builder.build( new StringReader( content ) ).getRootElement();
+        assertEquals( "CLASSIFIER", new JDomDependency( dependencyElm ).getClassifier() );
     }
 
     @Test( expected = UnsupportedOperationException.class )
@@ -87,22 +109,40 @@ public class JDomDependencyTest
         assertEquals( "GROUPID", new JDomDependency( dependencyElm ).getGroupId() );
     }
 
-    @Test( expected = UnsupportedOperationException.class )
-    public void testGetScope()
+    @Test
+    public void testGetScope() throws Exception
     {
-        new JDomDependency( null ).getScope();
+        String content = "<dependency></dependency>";
+        Element dependencyElm = builder.build( new StringReader( content ) ).getRootElement();
+        assertNull( new JDomDependency( dependencyElm ).getScope() );
+
+        content = "<dependency><scope>test</scope></dependency>";
+        dependencyElm = builder.build( new StringReader( content ) ).getRootElement();
+        assertEquals( "test", new JDomDependency( dependencyElm ).getScope() );
     }
 
-    @Test( expected = UnsupportedOperationException.class )
-    public void testGetSystemPath()
+    @Test
+    public void testGetSystemPath() throws Exception
     {
-        new JDomDependency( null ).getSystemPath();
+        String content = "<dependency></dependency>";
+        Element dependencyElm = builder.build( new StringReader( content ) ).getRootElement();
+        assertNull( new JDomDependency( dependencyElm ).getSystemPath() );
+
+        content = "<dependency><systemPath>SYSTEMPATH</systemPath></dependency>";
+        dependencyElm = builder.build( new StringReader( content ) ).getRootElement();
+        assertEquals( "SYSTEMPATH", new JDomDependency( dependencyElm ).getSystemPath() );
     }
 
-    @Test( expected = UnsupportedOperationException.class )
-    public void testGetType()
+    @Test
+    public void testGetType() throws Exception
     {
-        new JDomDependency( null ).getType();
+        String content = "<dependency></dependency>";
+        Element dependencyElm = builder.build( new StringReader( content ) ).getRootElement();
+        assertNull( new JDomDependency( dependencyElm ).getType() );
+
+        content = "<dependency><type>TYPE</type></dependency>";
+        dependencyElm = builder.build( new StringReader( content ) ).getRootElement();
+        assertEquals( "TYPE", new JDomDependency( dependencyElm ).getType() );
     }
 
     @Test
@@ -120,7 +160,7 @@ public class JDomDependencyTest
     @Test( expected = UnsupportedOperationException.class )
     public void testRemoveExclusion()
     {
-        new JDomDependency( null ).removeExclusion( null );;
+        new JDomDependency( null ).removeExclusion( null );
     }
 
     @Test
@@ -132,16 +172,19 @@ public class JDomDependencyTest
         assertEquals( "NEW_ARTIFACTID", getChildElementTextTrim( "artifactId", dependencyElm ) );
     }
 
-    @Test( expected = UnsupportedOperationException.class )
-    public void testSetClassifierString()
+    @Test
+    public void testSetClassifierString() throws Exception
     {
-        new JDomDependency( null ).setClassifier( null );;
+        String content = "<dependency><classifier>OLD_CLASSIFIER</classifier></dependency>";
+        Element dependencyElm = builder.build( new StringReader( content ) ).getRootElement();
+        new JDomDependency( dependencyElm ).setClassifier( "NEW_CLASSIFIER" );
+        assertEquals( "NEW_CLASSIFIER", getChildElementTextTrim( "classifier", dependencyElm ) );
     }
 
     @Test( expected = UnsupportedOperationException.class )
     public void testSetExclusions()
     {
-        new JDomDependency( null ).setExclusions( null );;
+        new JDomDependency( null ).setExclusions( null );
     }
 
     @Test
@@ -153,22 +196,31 @@ public class JDomDependencyTest
         assertEquals( "NEW_GROUPID", getChildElementTextTrim( "groupId", dependencyElm ) );
     }
 
-    @Test( expected = UnsupportedOperationException.class )
-    public void testSetScopeString()
+    @Test
+    public void testSetScopeString() throws Exception
     {
-        new JDomDependency( null ).setScope( null );
+        String content = "<dependency><scope>OLD_SCOPE</scope></dependency>";
+        Element dependencyElm = builder.build( new StringReader( content ) ).getRootElement();
+        new JDomDependency( dependencyElm ).setScope( "NEW_SCOPE" );
+        assertEquals( "NEW_SCOPE", getChildElementTextTrim( "scope", dependencyElm ) );
     }
 
-    @Test( expected = UnsupportedOperationException.class )
-    public void testSetSystemPathString()
+    @Test
+    public void testSetSystemPathString() throws Exception
     {
-        new JDomDependency( null ).setSystemPath( null );
+        String content = "<dependency><systemPath>OLD_SYSTEMPATH</systemPath></dependency>";
+        Element dependencyElm = builder.build( new StringReader( content ) ).getRootElement();
+        new JDomDependency( dependencyElm ).setSystemPath( "NEW_SYSTEMPATH" );
+        assertEquals( "NEW_SYSTEMPATH", getChildElementTextTrim( "systemPath", dependencyElm ) );
     }
 
-    @Test( expected = UnsupportedOperationException.class )
-    public void testSetTypeString()
+    @Test
+    public void testSetTypeString() throws Exception
     {
-        new JDomDependency( null ).setType( null );
+        String content = "<dependency><type>OLD_TYPE</type></dependency>";
+        Element dependencyElm = builder.build( new StringReader( content ) ).getRootElement();
+        new JDomDependency( dependencyElm ).setType( "NEW_TYPE" );
+        assertEquals( "NEW_TYPE", getChildElementTextTrim( "type", dependencyElm ) );
     }
 
     @Test

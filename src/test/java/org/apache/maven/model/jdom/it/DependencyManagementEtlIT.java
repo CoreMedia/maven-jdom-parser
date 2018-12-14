@@ -23,15 +23,19 @@ public class DependencyManagementEtlIT extends DependenciesEtlIT
     @Test
     public void addJDomDependency() throws IOException
     {
+        // NOTE: Adding elements with bad indentations to test if 'resetIndentations' works.
         jDomModelETL.getModel().getDependencyManagement().addDependency(
             new JDomDependency(
-                new Element( "dependency" )
-                    .addContent( new Text( UNIX_LS + "        " ) )
-                    .addContent( new Element( "groupId" ).addContent( "org.apache.commons" ) )
-                    .addContent( new Text( UNIX_LS + "        " ) )
-                    .addContent( new Element( "artifactId" ).addContent( "commons-text" ) )
-                    .addContent( new Text( UNIX_LS + "        " ) )
-                    .addContent( new Element( "version" ).addContent( "1.6" ) )
+                new Element( "dependency", "http://maven.apache.org/POM/4.0.0" )
+                    .addContent( new Text( UNIX_LS + "  " ) )
+                    .addContent( new Element( "groupId", "http://maven.apache.org/POM/4.0.0" )
+                        .addContent( "org.apache.commons" ) )
+                    .addContent( new Text( UNIX_LS + "    " ) )
+                    .addContent( new Element( "artifactId", "http://maven.apache.org/POM/4.0.0" )
+                        .addContent( "commons-text" ) )
+                    .addContent( new Text( UNIX_LS + "      " ) )
+                    .addContent( new Element( "version", "http://maven.apache.org/POM/4.0.0" )
+                        .addContent( "1.6" ) )
                     .addContent( new Text( UNIX_LS + "      " ) )
             )
         );
@@ -54,19 +58,22 @@ public class DependencyManagementEtlIT extends DependenciesEtlIT
     {
         jDomModelETL.getModel().setDependencyManagement(
             new JDomDependencyManagement(
-                new Element( "dependencyManagement" )
+                new Element( "dependencyManagement", "http://maven.apache.org/POM/4.0.0" )
                     .addContent( new Text( UNIX_LS + "    " ) )
                     .addContent(
-                        new Element( "dependencies" )
+                        new Element( "dependencies", "http://maven.apache.org/POM/4.0.0" )
                             .addContent( new Text( UNIX_LS + "      " ) )
                             .addContent(
-                                new Element( "dependency" )
+                                new Element( "dependency", "http://maven.apache.org/POM/4.0.0" )
                                     .addContent( new Text( UNIX_LS + "        " ) )
-                                    .addContent( new Element( "groupId" ).addContent( "org.apache.commons" ) )
+                                    .addContent( new Element( "groupId", "http://maven.apache.org/POM/4.0.0" )
+                                        .addContent( "org.apache.commons" ) )
                                     .addContent( new Text( UNIX_LS + "        " ) )
-                                    .addContent( new Element( "artifactId" ).addContent( "commons-text" ) )
+                                    .addContent( new Element( "artifactId", "http://maven.apache.org/POM/4.0.0" )
+                                        .addContent( "commons-text" ) )
                                     .addContent( new Text( UNIX_LS + "        " ) )
-                                    .addContent( new Element( "version" ).addContent( "1.6" ) )
+                                    .addContent( new Element( "version", "http://maven.apache.org/POM/4.0.0" )
+                                        .addContent( "1.6" ) )
                                     .addContent( new Text( UNIX_LS + "      " ) ) )
                             .addContent( new Text( UNIX_LS + "    " ) ) )
                     .addContent( new Text( UNIX_LS + "  " ) )

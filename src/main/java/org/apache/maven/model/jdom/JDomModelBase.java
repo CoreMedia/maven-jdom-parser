@@ -22,7 +22,6 @@ package org.apache.maven.model.jdom;
 import static org.apache.maven.model.jdom.util.JDomUtils.getChildElement;
 import static org.apache.maven.model.jdom.util.JDomUtils.insertNewElement;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -69,16 +68,7 @@ public class JDomModelBase
         }
         else
         {
-            List<Element> dependencyElms = dependenciesElm.getChildren( "dependency", modelBase.getNamespace() );
-
-            List<Dependency> dependencies = new ArrayList<>( dependencyElms.size() );
-
-            for ( Element dependencyElm : dependencyElms )
-            {
-                dependencies.add( new JDomDependency( dependencyElm ) );
-            }
-
-            return dependencies;
+            return new JDomDependencies( dependenciesElm );
         }
     }
 
@@ -93,6 +83,25 @@ public class JDomModelBase
         {
             // this way build setters change DOM tree immediately
             return new JDomDependencyManagement( elm );
+        }
+    }
+
+    public void setDependencyManagement( DependencyManagement dependencyManagement )
+    {
+        if ( dependencyManagement == null )
+        {
+            JDomUtils.rewriteElement( "dependencyManagement", null, modelBase, modelBase.getNamespace() );
+        }
+        else
+        {
+            DependencyManagement jdomDependencyManagement = getDependencyManagement();
+            if ( jdomDependencyManagement == null )
+            {
+                Element dependencyManagementRoot = insertNewElement( "dependencyManagement", modelBase );
+                jdomDependencyManagement = new JDomDependencyManagement( dependencyManagementRoot );
+            }
+
+            jdomDependencyManagement.setDependencies( dependencyManagement.getDependencies() );
         }
     }
 

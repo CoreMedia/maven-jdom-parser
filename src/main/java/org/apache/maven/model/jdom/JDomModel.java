@@ -95,6 +95,12 @@ public class JDomModel extends Model implements MavenCoordinate
     }
 
     @Override
+    public void setDependencyManagement( DependencyManagement dependencyManagement )
+    {
+        modelBase.setDependencyManagement( dependencyManagement );
+    }
+
+    @Override
     public String getGroupId()
     {
         return coordinate.getGroupId();

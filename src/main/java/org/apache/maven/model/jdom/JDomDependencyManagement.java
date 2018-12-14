@@ -19,12 +19,14 @@ package org.apache.maven.model.jdom;
  * under the License.
  */
 
-import java.util.ArrayList;
+import static org.apache.maven.model.jdom.util.JDomUtils.insertNewElement;
+
 import java.util.Collections;
 import java.util.List;
 
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.DependencyManagement;
+import org.apache.maven.model.jdom.util.JDomUtils;
 import org.jdom2.Element;
 
 /**
@@ -43,12 +45,6 @@ public class JDomDependencyManagement extends DependencyManagement
     }
 
     @Override
-    public void addDependency( Dependency dependency )
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public List<Dependency> getDependencies()
     {
         Element dependenciesElm = dependencyManagement.getChild( "dependencies", dependencyManagement.getNamespace() );
@@ -58,30 +54,21 @@ public class JDomDependencyManagement extends DependencyManagement
         }
         else
         {
-            List<Element> dependencyElms =
-                dependenciesElm.getChildren( "dependency", dependencyManagement.getNamespace() );
-
-            List<Dependency> dependencies = new ArrayList<>( dependencyElms.size() );
-
-            for ( Element dependencyElm : dependencyElms )
-            {
-                dependencies.add( new JDomDependency( dependencyElm ) );
-            }
-
-            return dependencies;
+            return new JDomDependencies( dependenciesElm );
         }
-    }
-
-    @Override
-    public void removeDependency( Dependency dependency )
-    {
-        throw new UnsupportedOperationException();
     }
 
     @Override
     public void setDependencies( List<Dependency> dependencies )
     {
-        throw new UnsupportedOperationException();
+        if ( dependencies == null )
+        {
+            JDomUtils.rewriteElement( "dependencies", null, dependencyManagement, dependencyManagement.getNamespace() );
+        }
+        else
+        {
+            new JDomDependencies( insertNewElement( "dependencies", dependencyManagement ) ).addAll( dependencies );
+        }
     }
 
 }

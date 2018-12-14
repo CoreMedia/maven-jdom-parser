@@ -19,6 +19,10 @@ package org.apache.maven.model.jdom;
  * under the License.
  */
 
+import static org.apache.maven.model.jdom.util.JDomUtils.getChildElementTextTrim;
+import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
+import static org.codehaus.plexus.util.StringUtils.defaultString;
+
 import java.util.List;
 
 import org.apache.maven.model.Dependency;
@@ -33,10 +37,13 @@ import org.jdom2.Element;
  */
 public class JDomDependency extends Dependency implements MavenCoordinate
 {
+    private Element dependency;
+
     private final MavenCoordinate coordinate;
 
     public JDomDependency( Element dependency )
     {
+        this.dependency = dependency;
         this.coordinate = new JDomMavenCoordinate( dependency );
     }
 
@@ -55,7 +62,7 @@ public class JDomDependency extends Dependency implements MavenCoordinate
     @Override
     public String getClassifier()
     {
-        throw new UnsupportedOperationException();
+        return getChildElementTextTrim( "classifier", dependency );
     }
 
     @Override
@@ -73,19 +80,19 @@ public class JDomDependency extends Dependency implements MavenCoordinate
     @Override
     public String getScope()
     {
-        throw new UnsupportedOperationException();
+        return getChildElementTextTrim( "scope", dependency );
     }
 
     @Override
     public String getSystemPath()
     {
-        throw new UnsupportedOperationException();
+        return getChildElementTextTrim( "systemPath", dependency );
     }
 
     @Override
     public String getType()
     {
-        throw new UnsupportedOperationException();
+        return getChildElementTextTrim( "type", dependency );
     }
 
     @Override
@@ -97,7 +104,7 @@ public class JDomDependency extends Dependency implements MavenCoordinate
     @Override
     public boolean isOptional()
     {
-        throw new UnsupportedOperationException();
+        return Boolean.parseBoolean( getChildElementTextTrim( "optional", dependency ) );
     }
 
     @Override
@@ -115,7 +122,7 @@ public class JDomDependency extends Dependency implements MavenCoordinate
     @Override
     public void setClassifier( String classifier )
     {
-        throw new UnsupportedOperationException();
+        rewriteElement( "classifier", classifier, dependency, dependency.getNamespace() );
     }
 
     @Override
@@ -133,25 +140,25 @@ public class JDomDependency extends Dependency implements MavenCoordinate
     @Override
     public void setOptional( boolean optional )
     {
-        throw new UnsupportedOperationException();
+        rewriteElement( "optional", Boolean.toString( optional ), dependency, dependency.getNamespace() );
     }
 
     @Override
     public void setScope( String scope )
     {
-        throw new UnsupportedOperationException();
+        rewriteElement( "scope", scope, dependency, dependency.getNamespace() );
     }
 
     @Override
     public void setSystemPath( String systemPath )
     {
-        throw new UnsupportedOperationException();
+        rewriteElement( "systemPath", systemPath, dependency, dependency.getNamespace() );
     }
 
     @Override
     public void setType( String type )
     {
-        throw new UnsupportedOperationException();
+        rewriteElement( "type", type, dependency, dependency.getNamespace() );
     }
 
     @Override
@@ -164,5 +171,10 @@ public class JDomDependency extends Dependency implements MavenCoordinate
     public String getName()
     {
         return "dependency";
+    }
+
+    public Element getJDomElement()
+    {
+        return dependency;
     }
 }

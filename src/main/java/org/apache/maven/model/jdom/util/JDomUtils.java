@@ -85,17 +85,23 @@ public final class JDomUtils
         int addIndex = 0;
 
         List<String> elementOrder = JDomCfg.getInstance().getElementOrder( root.getName() );
-
-        for ( int i = elementOrder.indexOf( name ) - 1; i >= 0; i-- )
+        if ( elementOrder == null )
         {
-            String addAfterElementName = elementOrder.get( i );
-            if ( !addAfterElementName.equals( "" ) )
+            addIndex = root.getContentSize() - 1;
+        }
+        else
+        {
+            for ( int i = elementOrder.indexOf( name ) - 1; i >= 0; i-- )
             {
-                Element addAfterElement = root.getChild( addAfterElementName, root.getNamespace() );
-                if ( addAfterElement != null )
+                String addAfterElementName = elementOrder.get( i );
+                if ( !addAfterElementName.equals( "" ) )
                 {
-                    addIndex = root.indexOf( addAfterElement ) + 1;
-                    break;
+                    Element addAfterElement = root.getChild( addAfterElementName, root.getNamespace() );
+                    if ( addAfterElement != null )
+                    {
+                        addIndex = root.indexOf( addAfterElement ) + 1;
+                        break;
+                    }
                 }
             }
         }
@@ -106,7 +112,7 @@ public final class JDomUtils
     private static boolean isBlankLineBeforeElement( String name, Element root )
     {
         List<String> elementOrder = JDomCfg.getInstance().getElementOrder( root.getName() );
-        return elementOrder.get( elementOrder.indexOf( name ) - 1 ).equals( "" );
+        return elementOrder != null && elementOrder.get( elementOrder.indexOf( name ) - 1 ).equals( "" );
     }
 
     /**
@@ -200,6 +206,48 @@ public final class JDomUtils
             else
             {
                 return text;
+            }
+        }
+    }
+
+    /**
+     * Remove a child element from the parent.
+     *
+     * @param parent      the parent element.
+     * @param removeChild the child element to be removed.
+     */
+    public static void removeChildElement( Element parent, Element removeChild )
+    {
+        int index = parent.indexOf( removeChild );
+        parent.removeContent( index-- );
+        if ( index >= 0 && parent.getContent( index ) instanceof Text )
+        {
+            // Remove prepending whitespaces (linebreaks and indentation)
+            parent.removeContent( index );
+        }
+    }
+
+    /**
+     * Resets the XML indendations of an element.
+     *
+     * @param element the element whose indentations should be reset.
+     * @param indent  the indentation to be used.
+     */
+    public static void resetIndentations( Element element, String indent )
+    {
+        List<Content> childElements = element.getContent();
+        for ( int i = 1; i < childElements.size(); i++ )
+        {
+            if ( childElements.get( i ) instanceof Element )
+            {
+                Content contentBeforeElement = childElements.get( i - 1 );
+                if ( contentBeforeElement instanceof Text )
+                {
+                    Text whitespaceElement = (Text) contentBeforeElement;
+                    String whitespaces = whitespaceElement.getText();
+                    int lastLsIndex = StringUtils.lastIndexOfAny( whitespaces, new String[]{"\n", "\r"} );
+                    whitespaceElement.setText( "\n" + whitespaces.substring( 0, lastLsIndex ) + indent );
+                }
             }
         }
     }

@@ -2,6 +2,7 @@ package org.apache.maven.model.jdom;
 
 import static java.util.Arrays.asList;
 import static org.apache.maven.model.jdom.util.JDomUtils.detectIndentation;
+import static org.apache.maven.model.jdom.util.JDomUtils.removeChildElement;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -71,13 +72,7 @@ public class JDomModules extends ArrayList<String>
 
         for ( Element removeElement : removeElements )
         {
-            int index = modules.indexOf( removeElement );
-            modules.removeContent( index-- );
-            if ( index >= 0 && modules.getContent( index ) instanceof Text )
-            {
-                // Remove prepending whitespaces (linebreaks and indentation)
-                modules.removeContent( index );
-            }
+            removeChildElement( modules, removeElement );
         }
 
         return super.remove( module );
