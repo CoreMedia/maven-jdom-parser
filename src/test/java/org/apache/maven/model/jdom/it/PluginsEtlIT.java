@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Plugin;
+import org.apache.maven.model.jdom.JDomConfiguration;
 import org.apache.maven.model.jdom.JDomDependency;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.jdom2.Element;
@@ -47,10 +48,13 @@ public class PluginsEtlIT extends AbstractJDomModelEtlIT
     {
         // TODO We should add a class JDomConfiguration
         getPluginsFromModel().get( 0 ).setConfiguration(
-            new Element( "configuration" )
-                .addContent( new Text( UNIX_LS + "            " ) )
-                .addContent( new Element( "skipDeploy" ).addContent( "true" ) )
-                .addContent( new Text( UNIX_LS + "          " ) )
+            new JDomConfiguration(
+                new Element( "configuration", "http://maven.apache.org/POM/4.0.0" )
+                    .addContent( new Text( UNIX_LS + "            " ) )
+                    .addContent( new Element( "skipDeploy", "http://maven.apache.org/POM/4.0.0" )
+                        .addContent( "true" ) )
+                    .addContent( new Text( UNIX_LS + "          " ) )
+            )
         );
         assertTransformation();
     }

@@ -19,7 +19,11 @@ package org.apache.maven.model.jdom;
  * under the License.
  */
 
+import static java.util.Arrays.asList;
+import static org.apache.maven.model.jdom.util.JDomUtils.detectIndentation;
+import static org.apache.maven.model.jdom.util.JDomUtils.getChildElement;
 import static org.apache.maven.model.jdom.util.JDomUtils.insertNewElement;
+import static org.apache.maven.model.jdom.util.JDomUtils.resetIndentations;
 import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
 
 import java.util.ArrayList;
@@ -31,6 +35,7 @@ import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.model.PluginExecution;
 import org.jdom2.Element;
+import org.jdom2.Text;
 
 /**
  * JDom implementation of poms PLUGIN element
@@ -65,6 +70,20 @@ public class JDomPlugin extends Plugin implements MavenCoordinate
     public String getArtifactId()
     {
         return coordinate.getArtifactId();
+    }
+
+    @Override
+    public Object getConfiguration()
+    {
+        Element elm = getChildElement( "configuration", plugin );
+        if ( elm == null )
+        {
+            return null;
+        }
+        else
+        {
+            return new JDomConfiguration( elm );
+        }
     }
 
     @Override
@@ -137,6 +156,38 @@ public class JDomPlugin extends Plugin implements MavenCoordinate
     public void setArtifactId( String artifactId )
     {
         coordinate.setArtifactId( artifactId );
+    }
+
+    @Override
+    public void setConfiguration( Object configuration )
+    {
+        if ( configuration == null )
+        {
+            rewriteElement( "configuration", null, plugin, plugin.getNamespace() );
+        }
+        else if ( configuration instanceof JDomConfiguration )
+        {
+            Element newJDomConfigurationElement = ( (JDomConfiguration) configuration ).getJDomElement();
+
+            JDomConfiguration oldJDomConfiguration = (JDomConfiguration) getConfiguration();
+            if ( oldJDomConfiguration == null )
+            {
+                plugin.addContent(
+                    plugin.getContentSize() - 1,
+                    asList(
+                        new Text( "\n" + detectIndentation( plugin ) ),
+                        newJDomConfigurationElement ) );
+            }
+            else
+            {
+                int replaceIndex = plugin.indexOf( oldJDomConfiguration.getJDomElement() );
+                plugin.removeContent( replaceIndex );
+                plugin.addContent( replaceIndex, newJDomConfigurationElement );
+            }
+
+            resetIndentations( plugin, detectIndentation( plugin ) );
+            resetIndentations( newJDomConfigurationElement, detectIndentation( plugin ) + "  " );
+        }
     }
 
     @Override
