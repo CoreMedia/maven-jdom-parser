@@ -10,6 +10,7 @@ import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.model.jdom.JDomConfiguration;
 import org.apache.maven.model.jdom.JDomDependency;
+import org.apache.maven.model.jdom.JDomPlugin;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.jdom2.Element;
 import org.jdom2.Text;
@@ -25,7 +26,6 @@ public class PluginsEtlIT extends AbstractJDomModelEtlIT
     @Test
     public void changeConfigurationValue() throws IOException
     {
-        // TODO We should add a class JDomConfiguration
         ( (Xpp3Dom) getPluginsFromModel().get( 0 ).getConfiguration() ).getChild( "skipDeploy" ).setValue( "true" );
         assertTransformation();
     }
@@ -44,9 +44,23 @@ public class PluginsEtlIT extends AbstractJDomModelEtlIT
     }
 
     @Test
+    public void resetJDomConfiguration() throws IOException
+    {
+        JDomConfiguration jDomConfiguration = new JDomConfiguration(
+            new Element( "configuration", "http://maven.apache.org/POM/4.0.0" )
+                .addContent( new Text( UNIX_LS + "            " ) )
+                .addContent( new Element( "skipDeploy", "http://maven.apache.org/POM/4.0.0" )
+                    .addContent( "true" ) )
+                .addContent( new Text( UNIX_LS + "          " ) ) );
+        new JDomPlugin( new Element( "plugin", "http://maven.apache.org/POM/4.0.0" )
+            .addContent( jDomConfiguration.getJDomElement() ) );
+        getPluginsFromModel().get( 0 ).setConfiguration( jDomConfiguration );
+        assertTransformation();
+    }
+
+    @Test
     public void setJDomConfiguration() throws IOException
     {
-        // TODO We should add a class JDomConfiguration
         getPluginsFromModel().get( 0 ).setConfiguration(
             new JDomConfiguration(
                 new Element( "configuration", "http://maven.apache.org/POM/4.0.0" )

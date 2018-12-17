@@ -167,7 +167,7 @@ public class JDomPlugin extends Plugin implements MavenCoordinate
         }
         else if ( configuration instanceof JDomConfiguration )
         {
-            Element newJDomConfigurationElement = ( (JDomConfiguration) configuration ).getJDomElement();
+            Element newJDomConfigurationElement = ( (JDomConfiguration) configuration ).getJDomElement().clone();
 
             JDomConfiguration oldJDomConfiguration = (JDomConfiguration) getConfiguration();
             if ( oldJDomConfiguration == null )
