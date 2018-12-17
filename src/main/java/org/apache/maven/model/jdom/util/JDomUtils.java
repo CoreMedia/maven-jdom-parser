@@ -228,27 +228,42 @@ public final class JDomUtils
     }
 
     /**
-     * Resets the XML indendations of an element.
+     * Resets the XML indentations of an element.
      *
      * @param element the element whose indentations should be reset.
      * @param indent  the indentation to be used.
      */
     public static void resetIndentations( Element element, String indent )
     {
-        List<Content> childElements = element.getContent();
-        for ( int i = 1; i < childElements.size(); i++ )
+        List<Content> childContents = element.getContent();
+        for ( int i = 1; i < childContents.size(); i++ )
         {
-            if ( childElements.get( i ) instanceof Element )
+            Content childContent = childContents.get( i );
+            if ( childContent instanceof Element )
             {
-                Content contentBeforeElement = childElements.get( i - 1 );
-                if ( contentBeforeElement instanceof Text )
+                Element childElement = (Element) childContent;
+
+                // Reset indentations of child elements.
+                resetIndentation( childContents.get( i - 1 ), indent );
+
+                // Reset indentations of before closing tags of child elements.
+                List<Content> grandChildElements = childElement.getContent();
+                if ( grandChildElements.size() > 1 )
                 {
-                    Text whitespaceElement = (Text) contentBeforeElement;
-                    String whitespaces = whitespaceElement.getText();
-                    int lastLsIndex = StringUtils.lastIndexOfAny( whitespaces, new String[]{"\n", "\r"} );
-                    whitespaceElement.setText( "\n" + whitespaces.substring( 0, lastLsIndex ) + indent );
+                    resetIndentation( grandChildElements.get( grandChildElements.size() - 1 ), indent );
                 }
             }
+        }
+    }
+
+    private static void resetIndentation( Content whitespaceContentBeforeElement, String indent )
+    {
+        if ( whitespaceContentBeforeElement instanceof Text )
+        {
+            Text whitespaceTextContent = (Text) whitespaceContentBeforeElement;
+            String whitespaces = whitespaceTextContent.getText();
+            int lastLsIndex = StringUtils.lastIndexOfAny( whitespaces, new String[]{"\n", "\r"} );
+            whitespaceTextContent.setText( "\n" + whitespaces.substring( 0, lastLsIndex ) + indent );
         }
     }
 

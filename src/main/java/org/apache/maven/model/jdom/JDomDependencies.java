@@ -4,6 +4,7 @@ import static java.util.Arrays.asList;
 import static org.apache.maven.model.jdom.util.JDomUtils.detectIndentation;
 import static org.apache.maven.model.jdom.util.JDomUtils.insertNewElement;
 import static org.apache.maven.model.jdom.util.JDomUtils.removeChildElement;
+import static org.apache.maven.model.jdom.util.JDomUtils.resetIndentations;
 import static org.codehaus.plexus.util.StringUtils.defaultString;
 
 import java.util.ArrayList;
@@ -13,7 +14,6 @@ import java.util.ListIterator;
 
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Exclusion;
-import org.apache.maven.model.jdom.util.JDomUtils;
 import org.jdom2.Element;
 import org.jdom2.Text;
 import org.jdom2.filter.ElementFilter;
@@ -60,7 +60,8 @@ public class JDomDependencies extends ArrayList<Dependency>
                 asList(
                     new Text( "\n" + detectIndentation( dependencies ) ),
                     newElement ) );
-            JDomUtils.resetIndentations( newElement, detectIndentation( dependencies ) + "  " );
+            resetIndentations( dependencies, detectIndentation( dependencies ) );
+            resetIndentations( newElement, detectIndentation( dependencies ) + "  " );
         }
         else
         {

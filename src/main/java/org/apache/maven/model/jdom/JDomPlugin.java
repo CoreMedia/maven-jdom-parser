@@ -19,6 +19,9 @@ package org.apache.maven.model.jdom;
  * under the License.
  */
 
+import static org.apache.maven.model.jdom.util.JDomUtils.insertNewElement;
+import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -139,7 +142,14 @@ public class JDomPlugin extends Plugin implements MavenCoordinate
     @Override
     public void setDependencies( List<Dependency> dependencies )
     {
-        throw new UnsupportedOperationException();
+        if ( dependencies == null )
+        {
+            rewriteElement( "dependencies", null, plugin, plugin.getNamespace() );
+        }
+        else
+        {
+            new JDomDependencies( insertNewElement( "dependencies", plugin ) ).addAll( dependencies );
+        }
     }
 
     @Override
