@@ -20,6 +20,7 @@ package org.apache.maven.model.jdom;
  */
 
 import static org.apache.maven.model.jdom.util.JDomUtils.getChildElementTextTrim;
+import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
 
 import java.util.List;
 
@@ -79,6 +80,12 @@ public class JDomProfile
     }
 
     @Override
+    public void setId( String id )
+    {
+        rewriteElement( "id", id, profile, profile.getNamespace() );
+    }
+
+    @Override
     public List<String> getModules()
     {
         return modelBase.getModules();
@@ -88,5 +95,10 @@ public class JDomProfile
     public void setModules( List<String> modules )
     {
         modelBase.setModules( modules );
+    }
+
+    public Element getJDomElement()
+    {
+        return profile;
     }
 }

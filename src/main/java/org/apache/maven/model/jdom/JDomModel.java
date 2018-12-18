@@ -22,7 +22,6 @@ package org.apache.maven.model.jdom;
 import static org.apache.maven.model.jdom.util.JDomUtils.getChildElement;
 import static org.apache.maven.model.jdom.util.JDomUtils.insertNewElement;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
@@ -185,19 +184,22 @@ public class JDomModel extends Model implements MavenCoordinate
         }
         else
         {
-            List<Element> profileElms = profilesElm.getChildren( "profile", project.getNamespace() );
-
-            List<Profile> profiles = new ArrayList<>( profileElms.size() );
-
-            for ( Element profileElm : profileElms )
-            {
-                profiles.add( new JDomProfile( profileElm ) );
-            }
-
-            return profiles;
+            return new JDomProfiles( profilesElm );
         }
     }
 
+    @Override
+    public void setProfiles( List<Profile> profiles )
+    {
+        if ( profiles == null )
+        {
+            JDomUtils.rewriteElement( "profiles", null, project, project.getNamespace() );
+        }
+        else
+        {
+            new JDomProfiles( insertNewElement( "profiles", project ) ).addAll( profiles );
+        }
+    }
 
     @Override
     public Properties getProperties()
