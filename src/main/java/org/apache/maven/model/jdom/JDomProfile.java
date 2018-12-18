@@ -23,11 +23,16 @@ import static org.apache.maven.model.jdom.util.JDomUtils.getChildElementTextTrim
 import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
 
 import java.util.List;
+import java.util.Properties;
 
+import org.apache.maven.model.Activation;
 import org.apache.maven.model.BuildBase;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.DependencyManagement;
+import org.apache.maven.model.DistributionManagement;
 import org.apache.maven.model.Profile;
+import org.apache.maven.model.Reporting;
+import org.apache.maven.model.Repository;
 import org.jdom2.Element;
 
 /**
@@ -50,15 +55,39 @@ public class JDomProfile
     }
 
     @Override
+    public Activation getActivation()
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setActivation( Activation activation )
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public BuildBase getBuild()
     {
         return modelBase.getBuild();
     }
 
     @Override
+    public void setBuild( BuildBase build )
+    {
+        modelBase.setBuild( build );
+    }
+
+    @Override
     public List<Dependency> getDependencies()
     {
         return modelBase.getDependencies();
+    }
+
+    @Override
+    public void setDependencies( List<Dependency> dependencies )
+    {
+        modelBase.setDependencies( dependencies );
     }
 
     @Override
@@ -71,6 +100,18 @@ public class JDomProfile
     public void setDependencyManagement( DependencyManagement dependencyManagement )
     {
         modelBase.setDependencyManagement( dependencyManagement );
+    }
+
+    @Override
+    public DistributionManagement getDistributionManagement()
+    {
+        return modelBase.getDistributionManagement();
+    }
+
+    @Override
+    public void setDistributionManagement( DistributionManagement distributionManagement )
+    {
+        modelBase.setDistributionManagement( distributionManagement );
     }
 
     @Override
@@ -95,6 +136,54 @@ public class JDomProfile
     public void setModules( List<String> modules )
     {
         modelBase.setModules( modules );
+    }
+
+    @Override
+    public List<Repository> getPluginRepositories()
+    {
+        return modelBase.getPluginRepositories();
+    }
+
+    @Override
+    public void setPluginRepositories( List<Repository> pluginRepositories )
+    {
+        modelBase.setPluginRepositories( pluginRepositories );
+    }
+
+    @Override
+    public Properties getProperties()
+    {
+        return modelBase.getProperties();
+    }
+
+    @Override
+    public void setProperties( Properties properties )
+    {
+        modelBase.setProperties( properties );
+    }
+
+    @Override
+    public Reporting getReporting()
+    {
+        return modelBase.getReporting();
+    }
+
+    @Override
+    public void setReporting( Reporting reporting )
+    {
+        modelBase.setReporting( reporting );
+    }
+
+    @Override
+    public List<Repository> getRepositories()
+    {
+        return modelBase.getRepositories();
+    }
+
+    @Override
+    public void setRepositories( List<Repository> repositories )
+    {
+        modelBase.setRepositories( repositories );
     }
 
     public Element getJDomElement()

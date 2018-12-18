@@ -32,28 +32,52 @@ public class JDomScmTest
 {
     private SAXBuilder builder = new SAXBuilder();
 
-    @Test( expected = UnsupportedOperationException.class )
-    public void testGetConnection()
+    @Test
+    public void testGetConnection() throws Exception
     {
-        new JDomScm( null ).getConnection();
+        String content = "<scm></scm>";
+        Element scmElm = builder.build( new StringReader( content ) ).getRootElement();
+        assertNull( new JDomScm( scmElm ).getConnection() );
+
+        content = "<scm><connection>CONNECTION</connection></scm>";
+        scmElm = builder.build( new StringReader( content ) ).getRootElement();
+        assertEquals( "CONNECTION", new JDomScm( scmElm ).getConnection() );
     }
 
-    @Test( expected = UnsupportedOperationException.class )
-    public void testGetDeveloperConnection()
+    @Test
+    public void testGetDeveloperConnection() throws Exception
     {
-        new JDomScm( null ).getDeveloperConnection();
+        String content = "<scm></scm>";
+        Element scmElm = builder.build( new StringReader( content ) ).getRootElement();
+        assertNull( new JDomScm( scmElm ).getDeveloperConnection() );
+
+        content = "<scm><developerConnection>DEVELOPERCONNECTION</developerConnection></scm>";
+        scmElm = builder.build( new StringReader( content ) ).getRootElement();
+        assertEquals( "DEVELOPERCONNECTION", new JDomScm( scmElm ).getDeveloperConnection() );
     }
 
-    @Test( expected = UnsupportedOperationException.class )
-    public void testGetTag()
+    @Test
+    public void testGetTag() throws Exception
     {
-        new JDomScm( null ).getTag();
+        String content = "<scm></scm>";
+        Element scmElm = builder.build( new StringReader( content ) ).getRootElement();
+        assertNull( new JDomScm( scmElm ).getTag() );
+
+        content = "<scm><tag>TAG</tag></scm>";
+        scmElm = builder.build( new StringReader( content ) ).getRootElement();
+        assertEquals( "TAG", new JDomScm( scmElm ).getTag() );
     }
 
-    @Test( expected = UnsupportedOperationException.class )
-    public void testGetUrl()
+    @Test
+    public void testGetUrl() throws Exception
     {
-        new JDomScm( null ).getUrl();
+        String content = "<scm></scm>";
+        Element scmElm = builder.build( new StringReader( content ) ).getRootElement();
+        assertNull( new JDomScm( scmElm ).getUrl() );
+
+        content = "<scm><url>URL</url></scm>";
+        scmElm = builder.build( new StringReader( content ) ).getRootElement();
+        assertEquals( "URL", new JDomScm( scmElm ).getUrl() );
     }
 
     @Test

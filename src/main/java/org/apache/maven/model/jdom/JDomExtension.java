@@ -44,27 +44,27 @@ public class JDomExtension extends Extension implements MavenCoordinate
     }
 
     @Override
-    public String getGroupId()
-    {
-        return coordinate.getGroupId();
-    }
-
-    @Override
-    public String getVersion()
-    {
-        return coordinate.getVersion();
-    }
-
-    @Override
     public void setArtifactId( String artifactId )
     {
         coordinate.setArtifactId( artifactId );
     }
 
     @Override
+    public String getGroupId()
+    {
+        return coordinate.getGroupId();
+    }
+
+    @Override
     public void setGroupId( String groupId )
     {
         coordinate.setGroupId( groupId );
+    }
+
+    @Override
+    public String getVersion()
+    {
+        return coordinate.getVersion();
     }
 
     @Override

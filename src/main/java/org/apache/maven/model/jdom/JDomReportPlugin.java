@@ -19,8 +19,10 @@ package org.apache.maven.model.jdom;
  * under the License.
  */
 
+import static org.apache.maven.model.jdom.util.JDomUtils.getChildElementTextTrim;
+import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
+
 import java.util.List;
-import java.util.Map;
 
 import org.apache.maven.model.ReportPlugin;
 import org.apache.maven.model.ReportSet;
@@ -35,17 +37,13 @@ import org.jdom2.Element;
 public class JDomReportPlugin
     extends ReportPlugin implements MavenCoordinate
 {
+    private final Element reportPlugin;
     private final MavenCoordinate coordinate;
 
     public JDomReportPlugin( Element reportPlugin )
     {
+        this.reportPlugin = reportPlugin;
         this.coordinate = new JDomMavenCoordinate( reportPlugin );
-    }
-
-    @Override
-    public void addReportSet( ReportSet reportSet )
-    {
-        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -55,7 +53,19 @@ public class JDomReportPlugin
     }
 
     @Override
+    public void setArtifactId( String artifactId )
+    {
+        coordinate.setArtifactId( artifactId );
+    }
+
+    @Override
     public Object getConfiguration()
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setConfiguration( Object configuration )
     {
         throw new UnsupportedOperationException();
     }
@@ -67,49 +77,37 @@ public class JDomReportPlugin
     }
 
     @Override
-    public String getInherited()
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public List<ReportSet> getReportSets()
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public String getVersion()
-    {
-        return coordinate.getVersion();
-    }
-
-    @Override
-    public void removeReportSet( ReportSet reportSet )
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void setArtifactId( String artifactId )
-    {
-        coordinate.setArtifactId( artifactId );
-    }
-
-    @Override
-    public void setConfiguration( Object configuration )
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public void setGroupId( String groupId )
     {
         coordinate.setGroupId( groupId );
     }
 
     @Override
+    public String getInherited()
+    {
+        return getChildElementTextTrim( "inherited", reportPlugin );
+    }
+
+    @Override
     public void setInherited( String inherited )
+    {
+        rewriteElement( "inherited", inherited, reportPlugin, reportPlugin.getNamespace() );
+    }
+
+    @Override
+    public boolean isInherited()
+    {
+        return Boolean.parseBoolean( getInherited() );
+    }
+
+    @Override
+    public void setInherited( boolean inherited )
+    {
+        setInherited( Boolean.toString( inherited ) );
+    }
+
+    @Override
+    public List<ReportSet> getReportSets()
     {
         throw new UnsupportedOperationException();
     }
@@ -121,39 +119,21 @@ public class JDomReportPlugin
     }
 
     @Override
+    public String getVersion()
+    {
+        return coordinate.getVersion();
+    }
+
+    @Override
     public void setVersion( String version )
     {
         coordinate.setVersion( version );
     }
 
     @Override
-    public void flushReportSetMap()
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Map getReportSetsAsMap()
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public String getKey()
     {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void unsetInheritanceApplied()
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean isInheritanceApplied()
-    {
-        throw new UnsupportedOperationException();
+        return constructKey( getGroupId(), getArtifactId() );
     }
 
     @Override

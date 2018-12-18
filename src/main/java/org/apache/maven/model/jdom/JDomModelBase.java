@@ -24,10 +24,15 @@ import static org.apache.maven.model.jdom.util.JDomUtils.insertNewElement;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Properties;
 
 import org.apache.maven.model.Build;
+import org.apache.maven.model.BuildBase;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.DependencyManagement;
+import org.apache.maven.model.DistributionManagement;
+import org.apache.maven.model.Reporting;
+import org.apache.maven.model.Repository;
 import org.apache.maven.model.jdom.util.JDomUtils;
 import org.jdom2.Element;
 
@@ -59,6 +64,21 @@ public class JDomModelBase
         }
     }
 
+    public void setBuild( BuildBase build )
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    public DistributionManagement getDistributionManagement()
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    public void setDistributionManagement( DistributionManagement distributionManagement )
+    {
+        throw new UnsupportedOperationException();
+    }
+
     public List<Dependency> getDependencies()
     {
         Element dependenciesElm = modelBase.getChild( "dependencies", modelBase.getNamespace() );
@@ -70,6 +90,11 @@ public class JDomModelBase
         {
             return new JDomDependencies( dependenciesElm );
         }
+    }
+
+    public void setDependencies( List<Dependency> dependencies )
+    {
+        throw new UnsupportedOperationException();
     }
 
     public DependencyManagement getDependencyManagement()
@@ -137,5 +162,63 @@ public class JDomModelBase
             }
             jDomModules.addAll( modules );
         }
+    }
+
+    public List<Repository> getPluginRepositories()
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    public void setPluginRepositories( List<Repository> pluginRepositories )
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    public Properties getProperties()
+    {
+        Element properties = modelBase.getChild( "properties", modelBase.getNamespace() );
+
+        if ( properties == null )
+        {
+            return null;
+        }
+        else
+        {
+            return new JDomProperties( properties );
+        }
+    }
+
+    public void setProperties( Properties properties )
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    public Reporting getReporting()
+    {
+        Element reporting = modelBase.getChild( "reporting", modelBase.getNamespace() );
+
+        if ( reporting == null )
+        {
+            return null;
+        }
+        else
+        {
+            return new JDomReporting( reporting );
+        }
+    }
+
+    public void setReporting( Reporting reporting )
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    public List<Repository> getRepositories()
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    public void setRepositories( List<Repository> repositories )
+    {
+        throw new UnsupportedOperationException();
     }
 }

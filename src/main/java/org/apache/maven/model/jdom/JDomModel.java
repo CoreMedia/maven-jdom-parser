@@ -20,19 +20,31 @@ package org.apache.maven.model.jdom;
  */
 
 import static org.apache.maven.model.jdom.util.JDomUtils.getChildElement;
+import static org.apache.maven.model.jdom.util.JDomUtils.getChildElementTextTrim;
 import static org.apache.maven.model.jdom.util.JDomUtils.insertNewElement;
+import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
 import org.apache.maven.model.Build;
+import org.apache.maven.model.CiManagement;
+import org.apache.maven.model.Contributor;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.DependencyManagement;
+import org.apache.maven.model.Developer;
+import org.apache.maven.model.DistributionManagement;
+import org.apache.maven.model.IssueManagement;
+import org.apache.maven.model.License;
+import org.apache.maven.model.MailingList;
 import org.apache.maven.model.Model;
+import org.apache.maven.model.Organization;
 import org.apache.maven.model.Parent;
+import org.apache.maven.model.Prerequisites;
 import org.apache.maven.model.Profile;
 import org.apache.maven.model.Reporting;
+import org.apache.maven.model.Repository;
 import org.apache.maven.model.Scm;
 import org.apache.maven.model.jdom.util.JDomUtils;
 import org.jdom2.Document;
@@ -82,9 +94,45 @@ public class JDomModel extends Model implements MavenCoordinate
     }
 
     @Override
+    public void setBuild( Build build )
+    {
+        modelBase.setBuild( build );
+    }
+
+    @Override
+    public CiManagement getCiManagement()
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setCiManagement( CiManagement ciManagement )
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public List<Contributor> getContributors()
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setContributors( List<Contributor> contributors )
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public List<Dependency> getDependencies()
     {
         return modelBase.getDependencies();
+    }
+
+    @Override
+    public void setDependencies( List<Dependency> dependencies )
+    {
+        modelBase.setDependencies( dependencies );
     }
 
     @Override
@@ -100,6 +148,42 @@ public class JDomModel extends Model implements MavenCoordinate
     }
 
     @Override
+    public String getDescription()
+    {
+        return getChildElementTextTrim( "description", project );
+    }
+
+    @Override
+    public void setDescription( String description )
+    {
+        rewriteElement( "description", description, project, project.getNamespace() );
+    }
+
+    @Override
+    public List<Developer> getDevelopers()
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setDevelopers( List<Developer> developers )
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public DistributionManagement getDistributionManagement()
+    {
+        return modelBase.getDistributionManagement();
+    }
+
+    @Override
+    public void setDistributionManagement( DistributionManagement distributionManagement )
+    {
+        modelBase.setDistributionManagement( distributionManagement );
+    }
+
+    @Override
     public String getGroupId()
     {
         return coordinate.getGroupId();
@@ -109,6 +193,114 @@ public class JDomModel extends Model implements MavenCoordinate
     public void setGroupId( String groupId )
     {
         coordinate.setGroupId( groupId );
+    }
+
+    @Override
+    public String getInceptionYear()
+    {
+        return getChildElementTextTrim( "inceptionYear", project );
+    }
+
+    @Override
+    public void setInceptionYear( String inceptionYear )
+    {
+        rewriteElement( "inceptionYear", inceptionYear, project, project.getNamespace() );
+    }
+
+    @Override
+    public IssueManagement getIssueManagement()
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setIssueManagement( IssueManagement issueManagement )
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public List<License> getLicenses()
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setLicenses( List<License> licenses )
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public List<MailingList> getMailingLists()
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setMailingLists( List<MailingList> mailingLists )
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String getModelVersion()
+    {
+        return getChildElementTextTrim( "modelVersion", project );
+    }
+
+    @Override
+    public void setModelVersion( String modelVersion )
+    {
+        rewriteElement( "modelVersion", modelVersion, project, project.getNamespace() );
+    }
+
+    @Override
+    public List<String> getModules()
+    {
+        return modelBase.getModules();
+    }
+
+    @Override
+    public void setModules( List<String> modules )
+    {
+        modelBase.setModules( modules );
+    }
+
+    @Override
+    public String getName()
+    {
+        return getChildElementTextTrim( "name", project );
+    }
+
+    @Override
+    public void setName( String name )
+    {
+        rewriteElement( "name", name, project, project.getNamespace() );
+    }
+
+    @Override
+    public Organization getOrganization()
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setOrganization( Organization organization )
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String getPackaging()
+    {
+        return getChildElementTextTrim( "packaging", project );
+    }
+
+    @Override
+    public void setPackaging( String packaging )
+    {
+        rewriteElement( "packaging", packaging, project, project.getNamespace() );
     }
 
     @Override
@@ -163,15 +355,27 @@ public class JDomModel extends Model implements MavenCoordinate
     }
 
     @Override
-    public List<String> getModules()
+    public List<Repository> getPluginRepositories()
     {
-        return modelBase.getModules();
+        return modelBase.getPluginRepositories();
     }
 
     @Override
-    public void setModules( List<String> modules )
+    public void setPluginRepositories( List<Repository> pluginRepositories )
     {
-        modelBase.setModules( modules );
+        modelBase.setPluginRepositories( pluginRepositories );
+    }
+
+    @Override
+    public Prerequisites getPrerequisites()
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setPrerequisites( Prerequisites prerequisites )
+    {
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -204,30 +408,51 @@ public class JDomModel extends Model implements MavenCoordinate
     @Override
     public Properties getProperties()
     {
-        Element properties = project.getChild( "properties", project.getNamespace() );
+        return modelBase.getProperties();
+    }
 
-        if ( properties == null )
-        {
-            return null;
-        }
-        else
-        {
-            return new JDomProperties( properties );
-        }
+    @Override
+    public void setProperties( Properties properties )
+    {
+        modelBase.setProperties( properties );
     }
 
     @Override
     public Reporting getReporting()
     {
-        Element reporting = project.getChild( "reporting", project.getNamespace() );
+        return modelBase.getReporting();
+    }
 
-        if ( reporting == null )
+    @Override
+    public void setReporting( Reporting reporting )
+    {
+        modelBase.setReporting( reporting );
+    }
+
+    @Override
+    public List<Repository> getRepositories()
+    {
+        return modelBase.getRepositories();
+    }
+
+    @Override
+    public void setRepositories( List<Repository> repositories )
+    {
+        modelBase.setRepositories( repositories );
+    }
+
+    @Override
+    public Scm getScm()
+    {
+        Element elm = project.getChild( "scm", project.getNamespace() );
+        if ( elm == null )
         {
             return null;
         }
         else
         {
-            return new JDomReporting( reporting );
+            // this way scm setters change DOM tree immediately
+            return new JDomScm( elm );
         }
     }
 
@@ -256,18 +481,15 @@ public class JDomModel extends Model implements MavenCoordinate
     }
 
     @Override
-    public Scm getScm()
+    public String getUrl()
     {
-        Element elm = project.getChild( "scm", project.getNamespace() );
-        if ( elm == null )
-        {
-            return null;
-        }
-        else
-        {
-            // this way scm setters change DOM tree immediately
-            return new JDomScm( elm );
-        }
+        return getChildElementTextTrim( "url", project );
+    }
+
+    @Override
+    public void setUrl( String url )
+    {
+        rewriteElement( "url", url, project, project.getNamespace() );
     }
 
     @Override

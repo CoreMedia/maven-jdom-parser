@@ -79,7 +79,7 @@ public class JDomPluginManagement extends PluginManagement
     }
 
     @Override
-    public Map getPluginsAsMap()
+    public Map<String, Plugin> getPluginsAsMap()
     {
         throw new UnsupportedOperationException();
     }

@@ -45,12 +45,6 @@ public class JDomReporting extends Reporting
     }
 
     @Override
-    public void addPlugin( ReportPlugin reportPlugin )
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public String getOutputDirectory()
     {
         throw new UnsupportedOperationException();
@@ -104,7 +98,7 @@ public class JDomReporting extends Reporting
     }
 
     @Override
-    public Map getReportPluginsAsMap()
+    public Map<String, ReportPlugin> getReportPluginsAsMap()
     {
         throw new UnsupportedOperationException();
     }

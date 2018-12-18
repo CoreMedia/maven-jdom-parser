@@ -19,7 +19,9 @@ package org.apache.maven.model.jdom;
  * under the License.
  */
 
+import static org.apache.maven.model.jdom.util.JDomUtils.getChildElementTextTrim;
 import static org.apache.maven.model.jdom.util.JDomUtils.insertNewElement;
+import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,6 +35,7 @@ import org.apache.maven.model.PluginManagement;
 import org.apache.maven.model.Resource;
 import org.apache.maven.model.jdom.util.JDomUtils;
 import org.jdom2.Element;
+
 /**
  * JDom implementation of poms BUILD element
  *
@@ -50,9 +53,27 @@ public class JDomBuild
     }
 
     @Override
-    public void addExtension( Extension extension )
+    public String getDefaultGoal()
     {
-        throw new UnsupportedOperationException();
+        return getChildElementTextTrim( "defaultGoal", build );
+    }
+
+    @Override
+    public void setDefaultGoal( String defaultGoal )
+    {
+        rewriteElement( "defaultGoal", defaultGoal, build, build.getNamespace() );
+    }
+
+    @Override
+    public String getDirectory()
+    {
+        return getChildElementTextTrim( "directory", build );
+    }
+
+    @Override
+    public void setDirectory( String directory )
+    {
+        rewriteElement( "directory", directory, build, build.getNamespace() );
     }
 
     @Override
@@ -77,103 +98,7 @@ public class JDomBuild
     }
 
     @Override
-    public String getOutputDirectory()
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public String getScriptSourceDirectory()
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public String getSourceDirectory()
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public String getTestOutputDirectory()
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public String getTestSourceDirectory()
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void removeExtension( Extension extension )
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public void setExtensions( List<Extension> extensions )
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void setOutputDirectory( String outputDirectory )
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void setScriptSourceDirectory( String scriptSourceDirectory )
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void setSourceDirectory( String sourceDirectory )
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void setTestOutputDirectory( String testOutputDirectory )
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void setTestSourceDirectory( String testSourceDirectory )
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void addFilter( String string )
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void addResource( Resource resource )
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void addTestResource( Resource resource )
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public String getDefaultGoal()
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public String getDirectory()
     {
         throw new UnsupportedOperationException();
     }
@@ -185,75 +110,33 @@ public class JDomBuild
     }
 
     @Override
-    public String getFinalName()
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public List<Resource> getResources()
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public List<Resource> getTestResources()
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void removeFilter( String string )
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void removeResource( Resource resource )
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void removeTestResource( Resource resource )
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void setDefaultGoal( String defaultGoal )
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void setDirectory( String directory )
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public void setFilters( List<String> filters )
     {
         throw new UnsupportedOperationException();
     }
 
     @Override
+    public String getFinalName()
+    {
+        return getChildElementTextTrim( "finalName", build );
+    }
+
+    @Override
     public void setFinalName( String finalName )
     {
-        throw new UnsupportedOperationException();
+        rewriteElement( "finalName", finalName, build, build.getNamespace() );
     }
 
     @Override
-    public void setResources( List<Resource> resources )
+    public String getOutputDirectory()
     {
-        throw new UnsupportedOperationException();
+        return getChildElementTextTrim( "outputDirectory", build );
     }
 
     @Override
-    public void setTestResources( List<Resource> testResources )
+    public void setOutputDirectory( String outputDirectory )
     {
-        throw new UnsupportedOperationException();
+        rewriteElement( "outputDirectory", outputDirectory, build, build.getNamespace() );
     }
 
     @Override
@@ -305,13 +188,85 @@ public class JDomBuild
     }
 
     @Override
+    public List<Resource> getResources()
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setResources( List<Resource> resources )
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String getScriptSourceDirectory()
+    {
+        return getChildElementTextTrim( "scriptSourceDirectory", build );
+    }
+
+    @Override
+    public void setScriptSourceDirectory( String scriptSourceDirectory )
+    {
+        rewriteElement( "scriptSourceDirectory", scriptSourceDirectory, build, build.getNamespace() );
+    }
+
+    @Override
+    public String getSourceDirectory()
+    {
+        return getChildElementTextTrim( "sourceDirectory", build );
+    }
+
+    @Override
+    public void setSourceDirectory( String sourceDirectory )
+    {
+        rewriteElement( "sourceDirectory", sourceDirectory, build, build.getNamespace() );
+    }
+
+    @Override
+    public String getTestOutputDirectory()
+    {
+        return getChildElementTextTrim( "testOutputDirectory", build );
+    }
+
+    @Override
+    public void setTestOutputDirectory( String testOutputDirectory )
+    {
+        rewriteElement( "testOutputDirectory", testOutputDirectory, build, build.getNamespace() );
+    }
+
+    @Override
+    public List<Resource> getTestResources()
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setTestResources( List<Resource> testResources )
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String getTestSourceDirectory()
+    {
+        return getChildElementTextTrim( "testSourceDirectory", build );
+    }
+
+    @Override
+    public void setTestSourceDirectory( String testSourceDirectory )
+    {
+        rewriteElement( "testSourceDirectory", testSourceDirectory, build, build.getNamespace() );
+    }
+
+    @Override
     public void flushPluginMap()
     {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Map getPluginsAsMap()
+    public Map<String, Plugin> getPluginsAsMap()
     {
         throw new UnsupportedOperationException();
     }

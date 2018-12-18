@@ -43,18 +43,6 @@ public class JDomMavenCoordinate implements MavenCoordinate
     }
 
     @Override
-    public String getGroupId()
-    {
-        return getChildElementTextTrim( "groupId", element );
-    }
-
-    @Override
-    public void setGroupId( String groupId )
-    {
-        rewriteElement( "groupId", groupId, element, element.getNamespace() );
-    }
-
-    @Override
     public String getArtifactId()
     {
         return getChildElementTextTrim( "artifactId", element );
@@ -64,6 +52,18 @@ public class JDomMavenCoordinate implements MavenCoordinate
     public void setArtifactId( String artifactId )
     {
         rewriteElement( "artifactId", artifactId, element, element.getNamespace() );
+    }
+
+    @Override
+    public String getGroupId()
+    {
+        return getChildElementTextTrim( "groupId", element );
+    }
+
+    @Override
+    public void setGroupId( String groupId )
+    {
+        rewriteElement( "groupId", groupId, element, element.getNamespace() );
     }
 
     @Override

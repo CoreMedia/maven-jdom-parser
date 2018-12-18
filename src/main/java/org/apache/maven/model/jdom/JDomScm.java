@@ -19,8 +19,10 @@ package org.apache.maven.model.jdom;
  * under the License.
  */
 
+import static org.apache.maven.model.jdom.util.JDomUtils.getChildElementTextTrim;
+import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
+
 import org.apache.maven.model.Scm;
-import org.apache.maven.model.jdom.util.JDomUtils;
 import org.jdom2.Element;
 
 /**
@@ -33,7 +35,7 @@ public class JDomScm extends Scm
 {
     private Element scm;
 
-    JDomScm( Element scm )
+    public JDomScm( Element scm )
     {
         this.scm = scm;
     }
@@ -41,48 +43,48 @@ public class JDomScm extends Scm
     @Override
     public String getConnection()
     {
-        throw new UnsupportedOperationException();
+        return getChildElementTextTrim( "connection", scm );
     }
 
     @Override
     public void setConnection( String connection )
     {
-        JDomUtils.rewriteElement( "connection", connection, scm, scm.getNamespace() );
+        rewriteElement( "connection", connection, scm, scm.getNamespace() );
     }
 
     @Override
     public String getDeveloperConnection()
     {
-        throw new UnsupportedOperationException();
+        return getChildElementTextTrim( "developerConnection", scm );
     }
 
     @Override
     public void setDeveloperConnection( String developerConnection )
     {
-        JDomUtils.rewriteElement( "developerConnection", developerConnection, scm, scm.getNamespace() );
+        rewriteElement( "developerConnection", developerConnection, scm, scm.getNamespace() );
     }
 
     @Override
     public String getTag()
     {
-        throw new UnsupportedOperationException();
+        return getChildElementTextTrim( "tag", scm );
     }
 
     @Override
     public void setTag( String tag )
     {
-        JDomUtils.rewriteElement( "tag", tag, scm, scm.getNamespace() );
+        rewriteElement( "tag", tag, scm, scm.getNamespace() );
     }
 
     @Override
     public String getUrl()
     {
-        throw new UnsupportedOperationException();
+        return getChildElementTextTrim( "url", scm );
     }
 
     @Override
     public void setUrl( String url )
     {
-        JDomUtils.rewriteElement( "url", url, scm, scm.getNamespace() );
+        rewriteElement( "url", url, scm, scm.getNamespace() );
     }
 }

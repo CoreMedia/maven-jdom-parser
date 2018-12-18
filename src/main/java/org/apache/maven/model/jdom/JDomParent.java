@@ -44,33 +44,9 @@ public class JDomParent extends Parent implements MavenCoordinate
     }
 
     @Override
-    public String getVersion()
-    {
-        return this.coordinate.getVersion();
-    }
-
-    @Override
-    public void setVersion( String version )
-    {
-        this.coordinate.setVersion( version );
-    }
-
-    @Override
     public String getArtifactId()
     {
         return this.coordinate.getArtifactId();
-    }
-
-    @Override
-    public String getGroupId()
-    {
-        return this.coordinate.getGroupId();
-    }
-
-    @Override
-    public String getRelativePath()
-    {
-        return getChildElementTextTrim( "relativePath", parent );
     }
 
     @Override
@@ -80,9 +56,21 @@ public class JDomParent extends Parent implements MavenCoordinate
     }
 
     @Override
+    public String getGroupId()
+    {
+        return this.coordinate.getGroupId();
+    }
+
+    @Override
     public void setGroupId( String groupId )
     {
         this.coordinate.setGroupId( groupId );
+    }
+
+    @Override
+    public String getRelativePath()
+    {
+        return getChildElementTextTrim( "relativePath", parent );
     }
 
     @Override
@@ -92,9 +80,15 @@ public class JDomParent extends Parent implements MavenCoordinate
     }
 
     @Override
-    public String getId()
+    public String getVersion()
     {
-        throw new UnsupportedOperationException();
+        return this.coordinate.getVersion();
+    }
+
+    @Override
+    public void setVersion( String version )
+    {
+        this.coordinate.setVersion( version );
     }
 
     @Override

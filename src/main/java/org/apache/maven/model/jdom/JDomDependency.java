@@ -21,7 +21,6 @@ package org.apache.maven.model.jdom;
 
 import static org.apache.maven.model.jdom.util.JDomUtils.getChildElementTextTrim;
 import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
-import static org.codehaus.plexus.util.StringUtils.defaultString;
 
 import java.util.List;
 
@@ -48,15 +47,15 @@ public class JDomDependency extends Dependency implements MavenCoordinate
     }
 
     @Override
-    public void addExclusion( Exclusion exclusion )
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public String getArtifactId()
     {
         return coordinate.getArtifactId();
+    }
+
+    @Override
+    public void setArtifactId( String artifactId )
+    {
+        coordinate.setArtifactId( artifactId );
     }
 
     @Override
@@ -66,7 +65,19 @@ public class JDomDependency extends Dependency implements MavenCoordinate
     }
 
     @Override
+    public void setClassifier( String classifier )
+    {
+        rewriteElement( "classifier", classifier, dependency, dependency.getNamespace() );
+    }
+
+    @Override
     public List<Exclusion> getExclusions()
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setExclusions( List<Exclusion> exclusions )
     {
         throw new UnsupportedOperationException();
     }
@@ -78,69 +89,39 @@ public class JDomDependency extends Dependency implements MavenCoordinate
     }
 
     @Override
-    public String getScope()
-    {
-        return getChildElementTextTrim( "scope", dependency );
-    }
-
-    @Override
-    public String getSystemPath()
-    {
-        return getChildElementTextTrim( "systemPath", dependency );
-    }
-
-    @Override
-    public String getType()
-    {
-        return getChildElementTextTrim( "type", dependency );
-    }
-
-    @Override
-    public String getVersion()
-    {
-        return coordinate.getVersion();
-    }
-
-    @Override
-    public boolean isOptional()
-    {
-        return Boolean.parseBoolean( getChildElementTextTrim( "optional", dependency ) );
-    }
-
-    @Override
-    public void removeExclusion( Exclusion exclusion )
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void setArtifactId( String artifactId )
-    {
-        coordinate.setArtifactId( artifactId );
-    }
-
-    @Override
-    public void setClassifier( String classifier )
-    {
-        rewriteElement( "classifier", classifier, dependency, dependency.getNamespace() );
-    }
-
-    @Override
-    public void setExclusions( List<Exclusion> exclusions )
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public void setGroupId( String groupId )
     {
         coordinate.setGroupId( groupId );
     }
 
     @Override
+    public String getOptional()
+    {
+        return getChildElementTextTrim( "optional", dependency );
+    }
+
+    @Override
+    public void setOptional( String optional )
+    {
+        rewriteElement( "optional", optional, dependency, dependency.getNamespace() );
+    }
+
+    @Override
+    public boolean isOptional()
+    {
+        return Boolean.parseBoolean( getOptional() );
+    }
+
+    @Override
     public void setOptional( boolean optional )
     {
-        rewriteElement( "optional", Boolean.toString( optional ), dependency, dependency.getNamespace() );
+        setOptional( Boolean.toString( optional ) );
+    }
+
+    @Override
+    public String getScope()
+    {
+        return getChildElementTextTrim( "scope", dependency );
     }
 
     @Override
@@ -150,9 +131,21 @@ public class JDomDependency extends Dependency implements MavenCoordinate
     }
 
     @Override
+    public String getSystemPath()
+    {
+        return getChildElementTextTrim( "systemPath", dependency );
+    }
+
+    @Override
     public void setSystemPath( String systemPath )
     {
         rewriteElement( "systemPath", systemPath, dependency, dependency.getNamespace() );
+    }
+
+    @Override
+    public String getType()
+    {
+        return getChildElementTextTrim( "type", dependency );
     }
 
     @Override
@@ -162,9 +155,21 @@ public class JDomDependency extends Dependency implements MavenCoordinate
     }
 
     @Override
+    public String getVersion()
+    {
+        return coordinate.getVersion();
+    }
+
+    @Override
     public void setVersion( String version )
     {
         coordinate.setVersion( version );
+    }
+
+    @Override
+    public String getManagementKey()
+    {
+        throw new UnsupportedOperationException();
     }
 
     @Override

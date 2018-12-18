@@ -20,6 +20,7 @@ package org.apache.maven.model.jdom;
  */
 
 import static java.util.Arrays.asList;
+import static org.apache.maven.model.jdom.util.JDomUtils.getChildElementTextTrim;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -28,6 +29,7 @@ import java.io.StringReader;
 
 import org.apache.maven.model.Plugin;
 import org.jdom2.Document;
+import org.jdom2.Element;
 import org.jdom2.input.SAXBuilder;
 import org.junit.Test;
 
@@ -90,46 +92,64 @@ public class JDomBuildTest
         new JDomBuild( null ).flushPluginMap();
     }
 
-    @Test( expected = UnsupportedOperationException.class )
-    public void testAddExtension()
+    @Test
+    public void testGetOutputDirectory() throws Exception
     {
-        new JDomBuild( null ).addExtension( null );;
+        String content = "<build></build>";
+        Element buildElm = builder.build( new StringReader( content ) ).getRootElement();
+        assertNull( new JDomBuild( buildElm ).getOutputDirectory() );
+
+        content = "<build><outputDirectory>OUTPUTDIRECTORY</outputDirectory></build>";
+        buildElm = builder.build( new StringReader( content ) ).getRootElement();
+        assertEquals( "OUTPUTDIRECTORY", new JDomBuild( buildElm ).getOutputDirectory() );
     }
 
-    @Test( expected = UnsupportedOperationException.class )
-    public void testGetOutputDirectory()
+    @Test
+    public void testGetScriptSourceDirectory() throws Exception
     {
-        new JDomBuild( null ).getOutputDirectory();
+        String content = "<build></build>";
+        Element buildElm = builder.build( new StringReader( content ) ).getRootElement();
+        assertNull( new JDomBuild( buildElm ).getScriptSourceDirectory() );
+
+        content = "<build><scriptSourceDirectory>SCRIPTSOURCEDIRECTORY</scriptSourceDirectory></build>";
+        buildElm = builder.build( new StringReader( content ) ).getRootElement();
+        assertEquals( "SCRIPTSOURCEDIRECTORY", new JDomBuild( buildElm ).getScriptSourceDirectory() );
     }
 
-    @Test( expected = UnsupportedOperationException.class )
-    public void testGetScriptSourceDirectory()
+    @Test
+    public void testGetSourceDirectory() throws Exception
     {
-        new JDomBuild( null ).getScriptSourceDirectory();
+        String content = "<build></build>";
+        Element buildElm = builder.build( new StringReader( content ) ).getRootElement();
+        assertNull( new JDomBuild( buildElm ).getSourceDirectory() );
+
+        content = "<build><sourceDirectory>SOURCEDIRECTORY</sourceDirectory></build>";
+        buildElm = builder.build( new StringReader( content ) ).getRootElement();
+        assertEquals( "SOURCEDIRECTORY", new JDomBuild( buildElm ).getSourceDirectory() );
     }
 
-    @Test( expected = UnsupportedOperationException.class )
-    public void testGetSourceDirectory()
+    @Test
+    public void testGetTestOutputDirectory() throws Exception
     {
-        new JDomBuild( null ).getSourceDirectory();
+        String content = "<build></build>";
+        Element buildElm = builder.build( new StringReader( content ) ).getRootElement();
+        assertNull( new JDomBuild( buildElm ).getTestOutputDirectory() );
+
+        content = "<build><testOutputDirectory>TESTOUTPUTDIRECTORY</testOutputDirectory></build>";
+        buildElm = builder.build( new StringReader( content ) ).getRootElement();
+        assertEquals( "TESTOUTPUTDIRECTORY", new JDomBuild( buildElm ).getTestOutputDirectory() );
     }
 
-    @Test( expected = UnsupportedOperationException.class )
-    public void testGetTestOutputDirectory()
+    @Test
+    public void testGetTestSourceDirectory() throws Exception
     {
-        new JDomBuild( null ).getTestOutputDirectory();
-    }
+        String content = "<build></build>";
+        Element buildElm = builder.build( new StringReader( content ) ).getRootElement();
+        assertNull( new JDomBuild( buildElm ).getTestSourceDirectory() );
 
-    @Test( expected = UnsupportedOperationException.class )
-    public void testGetTestSourceDirectory()
-    {
-        new JDomBuild( null ).getTestSourceDirectory();
-    }
-
-    @Test( expected = UnsupportedOperationException.class )
-    public void testRemoveExtension()
-    {
-        new JDomBuild( null ).removeExtension( null );
+        content = "<build><testSourceDirectory>TESTSOURCEDIRECTORY</testSourceDirectory></build>";
+        buildElm = builder.build( new StringReader( content ) ).getRootElement();
+        assertEquals( "TESTSOURCEDIRECTORY", new JDomBuild( buildElm ).getTestSourceDirectory() );
     }
 
     @Test( expected = UnsupportedOperationException.class )
@@ -138,34 +158,49 @@ public class JDomBuildTest
         new JDomBuild( null ).setExtensions( null );;
     }
 
-    @Test( expected = UnsupportedOperationException.class )
-    public void testSetOutputDirectory()
+    @Test
+    public void testSetOutputDirectory() throws Exception
     {
-        new JDomBuild( null ).setOutputDirectory( null );
+        String content = "<build><outputDirectory>OLD_OUTPUTDIRECTORY</outputDirectory></build>";
+        Element buildElm = builder.build( new StringReader( content ) ).getRootElement();
+        new JDomBuild( buildElm ).setOutputDirectory( "NEW_OUTPUTDIRECTORY" );
+        assertEquals( "NEW_OUTPUTDIRECTORY", getChildElementTextTrim( "outputDirectory", buildElm ) );
     }
 
-    @Test( expected = UnsupportedOperationException.class )
-    public void testSetScriptSourceDirectory()
+    @Test
+    public void testSetScriptSourceDirectory() throws Exception
     {
-        new JDomBuild( null ).setScriptSourceDirectory( null );
+        String content = "<build><scriptSourceDirectory>OLD_SCRIPTSOURCEDIRECTORY</scriptSourceDirectory></build>";
+        Element buildElm = builder.build( new StringReader( content ) ).getRootElement();
+        new JDomBuild( buildElm ).setScriptSourceDirectory( "NEW_SCRIPTSOURCEDIRECTORY" );
+        assertEquals( "NEW_SCRIPTSOURCEDIRECTORY", getChildElementTextTrim( "scriptSourceDirectory", buildElm ) );
     }
 
-    @Test( expected = UnsupportedOperationException.class )
-    public void testSetSourceDirectory()
+    @Test
+    public void testSetSourceDirectory() throws Exception
     {
-        new JDomBuild( null ).setSourceDirectory( null );
+        String content = "<build><sourceDirectory>OLD_SOURCEDIRECTORY</sourceDirectory></build>";
+        Element buildElm = builder.build( new StringReader( content ) ).getRootElement();
+        new JDomBuild( buildElm ).setSourceDirectory( "NEW_SOURCEDIRECTORY" );
+        assertEquals( "NEW_SOURCEDIRECTORY", getChildElementTextTrim( "sourceDirectory", buildElm ) );
     }
 
-    @Test( expected = UnsupportedOperationException.class )
-    public void testSetTestOutputDirectoryString()
+    @Test
+    public void testSetTestOutputDirectoryString() throws Exception
     {
-        new JDomBuild( null ).setTestOutputDirectory( null );
+        String content = "<build><testOutputDirectory>OLD_TESTOUTPUTDIRECTORY</testOutputDirectory></build>";
+        Element buildElm = builder.build( new StringReader( content ) ).getRootElement();
+        new JDomBuild( buildElm ).setTestOutputDirectory( "NEW_TESTOUTPUTDIRECTORY" );
+        assertEquals( "NEW_TESTOUTPUTDIRECTORY", getChildElementTextTrim( "testOutputDirectory", buildElm ) );
     }
 
-    @Test( expected = UnsupportedOperationException.class )
-    public void testSetTestSourceDirectory()
+    @Test
+    public void testSetTestSourceDirectory() throws Exception
     {
-        new JDomBuild( null ).setTestSourceDirectory( null );
+        String content = "<build><testSourceDirectory>OLD_TESTSOURCEDIRECTORY</testSourceDirectory></build>";
+        Element buildElm = builder.build( new StringReader( content ) ).getRootElement();
+        new JDomBuild( buildElm ).setTestSourceDirectory( "NEW_TESTSOURCEDIRECTORY" );
+        assertEquals( "NEW_TESTSOURCEDIRECTORY", getChildElementTextTrim( "testSourceDirectory", buildElm ) );
     }
 
     @Test( expected = UnsupportedOperationException.class )
@@ -186,16 +221,28 @@ public class JDomBuildTest
         new JDomBuild( null ).addTestResource( null );
     }
 
-    @Test( expected = UnsupportedOperationException.class )
-    public void testGetDefaultGoal()
+    @Test
+    public void testGetDefaultGoal() throws Exception
     {
-        new JDomBuild( null ).getDefaultGoal();
+        String content = "<build></build>";
+        Element buildElm = builder.build( new StringReader( content ) ).getRootElement();
+        assertNull( new JDomBuild( buildElm ).getDefaultGoal() );
+
+        content = "<build><defaultGoal>DEFAULTGOAL</defaultGoal></build>";
+        buildElm = builder.build( new StringReader( content ) ).getRootElement();
+        assertEquals( "DEFAULTGOAL", new JDomBuild( buildElm ).getDefaultGoal() );
     }
 
-    @Test( expected = UnsupportedOperationException.class )
-    public void testGetDirectory()
+    @Test
+    public void testGetDirectory() throws Exception
     {
-        new JDomBuild( null ).getDirectory();
+        String content = "<build></build>";
+        Element buildElm = builder.build( new StringReader( content ) ).getRootElement();
+        assertNull( new JDomBuild( buildElm ).getDirectory() );
+
+        content = "<build><directory>DIRECTORY</directory></build>";
+        buildElm = builder.build( new StringReader( content ) ).getRootElement();
+        assertEquals( "DIRECTORY", new JDomBuild( buildElm ).getDirectory() );
     }
 
     @Test( expected = UnsupportedOperationException.class )
@@ -204,10 +251,16 @@ public class JDomBuildTest
         new JDomBuild( null ).getFilters();
     }
 
-    @Test( expected = UnsupportedOperationException.class )
-    public void testGetFinalName()
+    @Test
+    public void testGetFinalName() throws Exception
     {
-        new JDomBuild( null ).getFinalName();
+        String content = "<build></build>";
+        Element buildElm = builder.build( new StringReader( content ) ).getRootElement();
+        assertNull( new JDomBuild( buildElm ).getFinalName() );
+
+        content = "<build><finalName>FINALNAME</finalName></build>";
+        buildElm = builder.build( new StringReader( content ) ).getRootElement();
+        assertEquals( "FINALNAME", new JDomBuild( buildElm ).getFinalName() );
     }
 
     @Test( expected = UnsupportedOperationException.class )
@@ -240,16 +293,22 @@ public class JDomBuildTest
         new JDomBuild( null ).removeTestResource( null );
     }
 
-    @Test( expected = UnsupportedOperationException.class )
-    public void testSetDefaultGoal()
+    @Test
+    public void testSetDefaultGoal() throws Exception
     {
-        new JDomBuild( null ).setDefaultGoal( null );
+        String content = "<build><defaultGoal>OLD_DEFAULTGOAL</defaultGoal></build>";
+        Element buildElm = builder.build( new StringReader( content ) ).getRootElement();
+        new JDomBuild( buildElm ).setDefaultGoal( "NEW_DEFAULTGOAL" );
+        assertEquals( "NEW_DEFAULTGOAL", getChildElementTextTrim( "defaultGoal", buildElm ) );
     }
 
-    @Test( expected = UnsupportedOperationException.class )
-    public void testSetDirectory()
+    @Test
+    public void testSetDirectory() throws Exception
     {
-        new JDomBuild( null ).setDirectory( null );
+        String content = "<build><directory>OLD_DIRECTORY</directory></build>";
+        Element buildElm = builder.build( new StringReader( content ) ).getRootElement();
+        new JDomBuild( buildElm ).setDirectory( "NEW_DIRECTORY" );
+        assertEquals( "NEW_DIRECTORY", getChildElementTextTrim( "directory", buildElm ) );
     }
 
     @Test( expected = UnsupportedOperationException.class )
@@ -258,10 +317,13 @@ public class JDomBuildTest
         new JDomBuild( null ).setFilters( null );
     }
 
-    @Test( expected = UnsupportedOperationException.class )
-    public void testSetFinalName()
+    @Test
+    public void testSetFinalName() throws Exception
     {
-        new JDomBuild( null ).setFinalName( null );
+        String content = "<build><finalName>OLD_FINALNAME</finalName></build>";
+        Element buildElm = builder.build( new StringReader( content ) ).getRootElement();
+        new JDomBuild( buildElm ).setFinalName( "NEW_FINALNAME" );
+        assertEquals( "NEW_FINALNAME", getChildElementTextTrim( "finalName", buildElm ) );
     }
 
     @Test( expected = UnsupportedOperationException.class )

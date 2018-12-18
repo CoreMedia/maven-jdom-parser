@@ -120,10 +120,4 @@ public class JDomParentTest
         assertEquals( "VERSION", new JDomParent( parentElm ).getVersion() );
 
     }
-
-    @Test( expected = UnsupportedOperationException.class )
-    public void testGetId()
-    {
-        new JDomParent( null ).getId();
-    }
 }
