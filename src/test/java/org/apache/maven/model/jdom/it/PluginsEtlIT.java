@@ -24,13 +24,14 @@ import org.junit.Test;
 public class PluginsEtlIT extends AbstractJDomModelEtlIT
 {
     @Test
-    public void addPlugin()
+    public void addPlugin() throws IOException
     {
         Plugin plugin = new Plugin();
         plugin.setGroupId( "org.apache.maven.plugins" );
         plugin.setArtifactId( "maven-antrun-plugin" );
         plugin.setVersion( "1.8" );
         getPluginPluginContainer().addPlugin( plugin );
+        assertTransformation();
     }
 
     @Test
@@ -54,12 +55,13 @@ public class PluginsEtlIT extends AbstractJDomModelEtlIT
     }
 
     @Test
-    public void removePlugin()
+    public void removePlugin() throws IOException
     {
         Plugin plugin = new Plugin();
         plugin.setGroupId( "org.apache.maven.plugins" );
         plugin.setArtifactId( "maven-site-plugin" );
         getPluginPluginContainer().removePlugin( plugin );
+        assertTransformation();
     }
 
     @Test
