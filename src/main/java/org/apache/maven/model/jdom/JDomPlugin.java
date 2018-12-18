@@ -250,4 +250,9 @@ public class JDomPlugin extends Plugin implements MavenCoordinate
     {
         return "plugin";
     }
+
+    public Element getJDomElement()
+    {
+        return plugin;
+    }
 }

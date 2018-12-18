@@ -4,10 +4,10 @@ import static org.apache.maven.model.jdom.etl.ModelETLRequest.UNIX_LS;
 
 import java.io.IOException;
 import java.util.Collections;
-import java.util.List;
 
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Plugin;
+import org.apache.maven.model.PluginContainer;
 import org.apache.maven.model.jdom.JDomConfiguration;
 import org.apache.maven.model.jdom.JDomDependency;
 import org.apache.maven.model.jdom.JDomPlugin;
@@ -24,16 +24,26 @@ import org.junit.Test;
 public class PluginsEtlIT extends AbstractJDomModelEtlIT
 {
     @Test
+    public void addPlugin()
+    {
+        Plugin plugin = new Plugin();
+        plugin.setGroupId( "org.apache.maven.plugins" );
+        plugin.setArtifactId( "maven-antrun-plugin" );
+        plugin.setVersion( "1.8" );
+        getPluginPluginContainer().addPlugin( plugin );
+    }
+
+    @Test
     public void changeConfigurationValue() throws IOException
     {
-        ( (Xpp3Dom) getPluginsFromModel().get( 0 ).getConfiguration() ).getChild( "skipDeploy" ).setValue( "true" );
+        ( (Xpp3Dom) getPluginPluginContainer().getPlugins().get( 0 ).getConfiguration() ).getChild( "skipDeploy" ).setValue( "true" );
         assertTransformation();
     }
 
     @Test
     public void changePluginVersion() throws IOException
     {
-        for ( Plugin plugin : getPluginsFromModel().toArray( new Plugin[]{} ) )
+        for ( Plugin plugin : getPluginPluginContainer().getPlugins().toArray( new Plugin[]{} ) )
         {
             if ( plugin.getArtifactId().equals( "maven-site-plugin" ) )
             {
@@ -41,6 +51,15 @@ public class PluginsEtlIT extends AbstractJDomModelEtlIT
             }
         }
         assertTransformation();
+    }
+
+    @Test
+    public void removePlugin()
+    {
+        Plugin plugin = new Plugin();
+        plugin.setGroupId( "org.apache.maven.plugins" );
+        plugin.setArtifactId( "maven-site-plugin" );
+        getPluginPluginContainer().removePlugin( plugin );
     }
 
     @Test
@@ -54,14 +73,14 @@ public class PluginsEtlIT extends AbstractJDomModelEtlIT
                 .addContent( new Text( UNIX_LS + "          " ) ) );
         new JDomPlugin( new Element( "plugin", "http://maven.apache.org/POM/4.0.0" )
             .addContent( jDomConfiguration.getJDomElement() ) );
-        getPluginsFromModel().get( 0 ).setConfiguration( jDomConfiguration );
+        getPluginPluginContainer().getPlugins().get( 0 ).setConfiguration( jDomConfiguration );
         assertTransformation();
     }
 
     @Test
     public void setJDomConfiguration() throws IOException
     {
-        getPluginsFromModel().get( 0 ).setConfiguration(
+        getPluginPluginContainer().getPlugins().get( 0 ).setConfiguration(
             new JDomConfiguration(
                 new Element( "configuration", "http://maven.apache.org/POM/4.0.0" )
                     .addContent( new Text( UNIX_LS + "            " ) )
@@ -77,7 +96,7 @@ public class PluginsEtlIT extends AbstractJDomModelEtlIT
     public void setJDomDependencies() throws IOException
     {
         // TODO We should add a class JDomDependencies
-        getPluginsFromModel().get( 0 ).setDependencies(
+        getPluginPluginContainer().getPlugins().get( 0 ).setDependencies(
             Collections.singletonList( (Dependency)
                 new JDomDependency(
                     new Element( "dependency", "http://maven.apache.org/POM/4.0.0" )
@@ -97,8 +116,8 @@ public class PluginsEtlIT extends AbstractJDomModelEtlIT
         assertTransformation();
     }
 
-    protected List<Plugin> getPluginsFromModel()
+    protected PluginContainer getPluginPluginContainer()
     {
-        return jDomModelETL.getModel().getBuild().getPlugins();
+        return jDomModelETL.getModel().getBuild();
     }
 }

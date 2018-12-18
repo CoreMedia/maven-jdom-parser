@@ -19,7 +19,9 @@ package org.apache.maven.model.jdom;
  * under the License.
  */
 
-import java.util.ArrayList;
+import static org.apache.maven.model.jdom.util.JDomUtils.insertNewElement;
+import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -44,12 +46,6 @@ public class JDomPluginManagement extends PluginManagement
     }
 
     @Override
-    public void addPlugin( Plugin plugin )
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public List<Plugin> getPlugins()
     {
         Element pluginsElm = pluginManagement.getChild( "plugins", pluginManagement.getNamespace() );
@@ -59,29 +55,21 @@ public class JDomPluginManagement extends PluginManagement
         }
         else
         {
-            List<Element> pluginElms = pluginsElm.getChildren( "plugin", pluginManagement.getNamespace() );
-
-            List<Plugin> plugins = new ArrayList<>( pluginElms.size() );
-
-            for ( Element pluginElm : pluginElms )
-            {
-                plugins.add( new JDomPlugin( pluginElm ) );
-            }
-
-            return plugins;
+            return new JDomPlugins( pluginsElm );
         }
-    }
-
-    @Override
-    public void removePlugin( Plugin plugin )
-    {
-        throw new UnsupportedOperationException();
     }
 
     @Override
     public void setPlugins( List<Plugin> plugins )
     {
-        throw new UnsupportedOperationException();
+        if ( plugins == null )
+        {
+            rewriteElement( "plugins", null, pluginManagement, pluginManagement.getNamespace() );
+        }
+        else
+        {
+            new JDomPlugins( insertNewElement( "plugins", pluginManagement ) ).addAll( plugins );
+        }
     }
 
     @Override

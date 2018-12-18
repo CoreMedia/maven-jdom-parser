@@ -1,8 +1,6 @@
 package org.apache.maven.model.jdom.it;
 
-import java.util.List;
-
-import org.apache.maven.model.Plugin;
+import org.apache.maven.model.PluginContainer;
 
 /**
  * Tests transformations of {@code plugins} in {@code pluginManagement}.
@@ -12,8 +10,8 @@ import org.apache.maven.model.Plugin;
 public class PluginManagementEtlIT extends PluginsEtlIT
 {
     @Override
-    protected List<Plugin> getPluginsFromModel()
+    protected PluginContainer getPluginPluginContainer()
     {
-        return jDomModelETL.getModel().getBuild().getPluginManagement().getPlugins();
+        return jDomModelETL.getModel().getBuild().getPluginManagement();
     }
 }

@@ -19,6 +19,8 @@ package org.apache.maven.model.jdom;
  * under the License.
  */
 
+import static org.apache.maven.model.jdom.util.JDomUtils.insertNewElement;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -29,6 +31,7 @@ import org.apache.maven.model.Extension;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.model.PluginManagement;
 import org.apache.maven.model.Resource;
+import org.apache.maven.model.jdom.util.JDomUtils;
 import org.jdom2.Element;
 /**
  * JDom implementation of poms BUILD element
@@ -274,12 +277,6 @@ public class JDomBuild
     }
 
     @Override
-    public void addPlugin( Plugin plugin )
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public List<Plugin> getPlugins()
     {
         Element pluginsElm = build.getChild( "plugins", build.getNamespace() );
@@ -289,30 +286,22 @@ public class JDomBuild
         }
         else
         {
-            List<Element> pluginElms =
-                pluginsElm.getChildren( "plugin", build.getNamespace() );
-
-            List<Plugin> plugins = new ArrayList<>( pluginElms.size() );
-
-            for ( Element pluginElm : pluginElms )
-            {
-                plugins.add( new JDomPlugin( pluginElm ) );
-            }
-
-            return plugins;
+            return new JDomPlugins( pluginsElm );
         }
-    }
-
-    @Override
-    public void removePlugin( Plugin plugin )
-    {
-        throw new UnsupportedOperationException();
     }
 
     @Override
     public void setPlugins( List<Plugin> plugins )
     {
-        throw new UnsupportedOperationException();
+        if ( plugins == null )
+        {
+            JDomUtils.rewriteElement( "plugins", null, build, build.getNamespace() );
+        }
+        else
+        {
+            new JDomPlugins( insertNewElement( "plugins", build ) ).addAll( plugins );
+        }
+
     }
 
     @Override

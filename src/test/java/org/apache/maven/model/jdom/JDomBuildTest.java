@@ -19,12 +19,14 @@ package org.apache.maven.model.jdom;
  * under the License.
  */
 
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import java.io.StringReader;
 
+import org.apache.maven.model.Plugin;
 import org.jdom2.Document;
 import org.jdom2.input.SAXBuilder;
 import org.junit.Test;
@@ -280,22 +282,50 @@ public class JDomBuildTest
         new JDomBuild( null ).setPluginManagement( null );
     }
 
-    @Test( expected = UnsupportedOperationException.class )
-    public void testAddPlugin()
+    @Test
+    public void testAddPlugin() throws Exception
     {
-        new JDomBuild( null ).addPlugin( null );
+        Plugin plugin = new Plugin();
+        plugin.setGroupId( "a" );
+        plugin.setArtifactId( "b" );
+
+        String content = "<build><plugins> </plugins></build>";
+        Document document = builder.build( new StringReader( content ) );
+        JDomBuild build = new JDomBuild( document.getRootElement() );
+        assertEquals( 0, build.getPlugins().size() );
+        build.addPlugin( plugin );
+        assertEquals( 1, build.getPlugins().size() );
     }
 
-    @Test( expected = UnsupportedOperationException.class )
-    public void testRemovePlugin()
+    @Test
+    public void testRemovePlugin() throws Exception
     {
-        new JDomBuild( null ).removePlugin( null );
+        String contentPlugin = "<plugin><groupId>a</groupId><artifactId>b</artifactId></plugin>";
+        String contentPluginMgmt = "<build><plugins>" + contentPlugin + "</plugins></build>";
+        Document documentPlugin = builder.build( new StringReader( contentPlugin ) );
+        Document documentPluginMgmt = builder.build( new StringReader( contentPluginMgmt ) );
+        JDomBuild build = new JDomBuild( documentPluginMgmt.getRootElement() );
+        assertEquals( 1, build.getPlugins().size() );
+        build.removePlugin( new JDomPlugin( documentPlugin.getRootElement() ) );
+        assertEquals( 0, build.getPlugins().size() );
     }
 
-    @Test( expected = UnsupportedOperationException.class )
-    public void testSetPlugins()
+    @Test
+    public void testSetPlugins() throws Exception
     {
-        new JDomBuild( null ).setPlugins( null );
+        Plugin plugin1 = new Plugin();
+        plugin1.setGroupId( "a" );
+        plugin1.setArtifactId( "b" );
+        Plugin plugin2 = new Plugin();
+        plugin2.setGroupId( "c" );
+        plugin2.setArtifactId( "d" );
+
+        String content = "<build><plugins> </plugins></build>";
+        Document document = builder.build( new StringReader( content ) );
+        JDomBuild build = new JDomBuild( document.getRootElement() );
+        assertEquals( 0, build.getPlugins().size() );
+        build.setPlugins( asList( plugin1, plugin2 ) );
+        assertEquals( 2, build.getPlugins().size() );
     }
 
     @Test( expected = UnsupportedOperationException.class )
