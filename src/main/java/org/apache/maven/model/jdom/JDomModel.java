@@ -192,7 +192,19 @@ public class JDomModel extends Model implements MavenCoordinate
     @Override
     public void setGroupId( String groupId )
     {
-        coordinate.setGroupId( groupId );
+        String projectGroupId = coordinate.getGroupId();
+        if ( projectGroupId != null )
+        {
+            coordinate.setGroupId( groupId );
+        }
+        else
+        {
+            Parent parent = getParent();
+            if ( parent == null || !groupId.equals( parent.getGroupId() ) )
+            {
+                coordinate.setGroupId( groupId );
+            }
+        }
     }
 
     @Override
@@ -323,7 +335,18 @@ public class JDomModel extends Model implements MavenCoordinate
     {
         if ( parent == null )
         {
-            JDomUtils.rewriteElement( "parent", null, project, project.getNamespace() );
+            Parent removedParent = getParent();
+
+            rewriteElement( "parent", null, project, project.getNamespace() );
+
+            if ( getGroupId() == null )
+            {
+                setGroupId( removedParent.getGroupId() );
+            }
+            if ( getVersion() == null )
+            {
+                setVersion( removedParent.getVersion() );
+            }
         }
         else
         {

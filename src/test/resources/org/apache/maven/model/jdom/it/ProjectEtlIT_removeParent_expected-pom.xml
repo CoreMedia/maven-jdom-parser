@@ -3,6 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.coremedia.test</groupId>
+
   <artifactId>my-test-project</artifactId>
   <version>1-SNAPSHOT</version>
 

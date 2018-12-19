@@ -20,7 +20,6 @@ package org.apache.maven.model.jdom.util;
  */
 
 import static java.lang.Math.max;
-import static java.util.Arrays.asList;
 
 import java.util.Iterator;
 import java.util.List;
@@ -87,7 +86,7 @@ public final class JDomUtils
         List<String> elementOrder = JDomCfg.getInstance().getElementOrder( root.getName() );
         if ( elementOrder == null )
         {
-            addIndex = root.getContentSize() - 1;
+            addIndex = max( 0, root.getContentSize() - 1 );
         }
         else
         {
@@ -112,7 +111,7 @@ public final class JDomUtils
     private static boolean isBlankLineBeforeElement( String name, Element root )
     {
         List<String> elementOrder = JDomCfg.getInstance().getElementOrder( root.getName() );
-        return elementOrder != null && elementOrder.get( elementOrder.indexOf( name ) - 1 ).equals( "" );
+        return elementOrder != null && elementOrder.get( max( 0, elementOrder.indexOf( name ) - 1 ) ).equals( "" );
     }
 
     /**
@@ -347,14 +346,9 @@ public final class JDomUtils
         {
             if ( value != null )
             {
-                Element element = new Element( name, namespace );
+                Element element = insertNewElement( name, root );
                 element.setText( value );
                 tagElement = element;
-                root.addContent(
-                    max( 0, root.getContentSize() - 1 ),
-                    asList(
-                        new Text( "\n" + detectIndentation( root ) ),
-                        element ) );
             }
         }
         return tagElement;
