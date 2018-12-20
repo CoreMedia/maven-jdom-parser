@@ -19,7 +19,7 @@
 
   <groupId>com.coremedia.maven</groupId>
   <artifactId>maven-jdom-parser</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>1.0.0-beta-1-SNAPSHOT</version>
 
   <name>Maven JDom Parser</name>
   <licenses>
