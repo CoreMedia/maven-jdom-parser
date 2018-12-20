@@ -21,8 +21,24 @@ Enables reading and writing of Maven POM files without loosing formats and comme
 It is based on work by [Robert Scholte](https://github.com/rfscholte) for version 3.0 of the
 [Maven Release Plugin](https://github.com/apache/maven-release/).
 
+## Installation
+
+The project/library is (currently) not available in _Maven Central_, hence it must be cloned, built, installed and
+deployed manually.
+
+## Usage
+
+This project used [ETL][etl]. The typical usage is:
+
+1. Instantiate the _JDomModelETL_ (probably using the _JDomModelETLFactory_).
+2. Read the _pom.xml_ file using the _extract_ method.
+3. Get the model object using the using the _getModel_ method and do the desired modifications on it.
+   **NOTE** that the _transform_ method is not implemented.
+4. Write the (modified) _pom.xml_ file using the _load_ method.
+
 ## License
 This code is under the [Apache Licence v2][license]
 
 
+[etl]: https://en.wikipedia.org/wiki/Extract%2C_transform%2C_load
 [license]: https://www.apache.org/licenses/LICENSE-2.0
