@@ -116,7 +116,7 @@ public final class JDomUtils
 
     /**
      * Tries to detect the indentation that is used within the given element and returns it.
-     * <p/>
+     * <p>
      * The method actually returns all characters (supposed to be whitespaces) that occur after the last linebreak in a
      * text element that is followed by an XML element.
      *
