@@ -22,6 +22,7 @@ package org.apache.maven.model.jdom;
 import static org.apache.maven.model.jdom.util.JDomUtils.detectIndentation;
 import static org.apache.maven.model.jdom.util.JDomUtils.getChildElement;
 import static org.apache.maven.model.jdom.util.JDomUtils.getChildElementTextTrim;
+import static org.apache.maven.model.jdom.util.JDomUtils.removeChildElement;
 import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
 import static org.apache.maven.model.jdom.util.JDomUtils.rewriteValue;
 
@@ -76,7 +77,18 @@ public class JDomMavenCoordinate implements MavenCoordinate
     public void setVersion( String version )
     {
         Element versionElement = getChildElement( "version", element );
-        if ( versionElement == null )
+        if ( versionElement != null )
+        {
+            if ( version == null )
+            {
+                removeChildElement( element, versionElement );
+            }
+            else
+            {
+                rewriteValue( versionElement, version );
+            }
+        }
+        else if ( version != null )
         {
             // This 'if' branch should only be executed when the project version is inherited from the parent but now
             // is changed without having changed the parent version. In this case, the version cannot be inherited
@@ -96,10 +108,6 @@ public class JDomMavenCoordinate implements MavenCoordinate
             }
 
             element.addContent( ++indexArtifactId, versionElement );
-        }
-        else
-        {
-            rewriteValue( versionElement, version );
         }
     }
 

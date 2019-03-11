@@ -68,6 +68,19 @@ public class DependenciesEtlIT extends AbstractJDomModelEtlIT
         assertTransformation();
     }
 
+    @Test
+    public void setDependencyVersionNull() throws IOException
+    {
+        for ( Dependency dependency : getDependenciesFromModel().toArray( new Dependency[]{} ) )
+        {
+            if ( dependency.getArtifactId().equals( "commons-lang3" ) )
+            {
+                dependency.setVersion( null );
+            }
+        }
+        assertTransformation();
+    }
+
     protected List<Dependency> getDependenciesFromModel()
     {
         return jDomModelETL.getModel().getDependencies();
