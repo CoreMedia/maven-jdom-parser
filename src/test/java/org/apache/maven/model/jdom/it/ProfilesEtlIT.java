@@ -29,11 +29,38 @@ import org.junit.Test;
 public class ProfilesEtlIT extends AbstractJDomModelEtlIT
 {
     @Test
+    public void addFirstProfile() throws IOException
+    {
+        Profile profile = new Profile();
+        profile.setId( "first-profile" );
+        jDomModelETL.getModel().addProfile( profile );
+        assertTransformation();
+    }
+
+    @Test
     public void addProfile() throws IOException
     {
         Profile profile = new Profile();
         profile.setId( "new-profile-1" );
         jDomModelETL.getModel().addProfile( profile );
+        assertTransformation();
+    }
+
+    @Test
+    public void getEmptyProfiles() throws IOException
+    {
+        // This test seems trivial, but it ensures that no empty <profiles></profiles>
+        // node is added to the POMs just because getProfiles() is called.
+        jDomModelETL.getModel().getProfiles();
+        assertTransformation();
+    }
+
+    @Test
+    public void removeLastProfile() throws IOException
+    {
+        Profile profile = new Profile();
+        profile.setId( "last-profile" );
+        jDomModelETL.getModel().removeProfile( profile );
         assertTransformation();
     }
 

@@ -24,7 +24,6 @@ import static org.apache.maven.model.jdom.util.JDomUtils.getChildElementTextTrim
 import static org.apache.maven.model.jdom.util.JDomUtils.insertNewElement;
 import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
@@ -404,15 +403,7 @@ public class JDomModel extends Model implements MavenCoordinate
     @Override
     public List<Profile> getProfiles()
     {
-        Element profilesElm = project.getChild( "profiles", project.getNamespace() );
-        if ( profilesElm == null )
-        {
-            return Collections.emptyList();
-        }
-        else
-        {
-            return new JDomProfiles( profilesElm );
-        }
+        return new JDomProfiles( project.getChild( "profiles", project.getNamespace() ), this );
     }
 
     @Override
@@ -424,7 +415,7 @@ public class JDomModel extends Model implements MavenCoordinate
         }
         else
         {
-            new JDomProfiles( insertNewElement( "profiles", project ) ).addAll( profiles );
+            new JDomProfiles( insertNewElement( "profiles", project ), this ).addAll( profiles );
         }
     }
 
@@ -537,5 +528,10 @@ public class JDomModel extends Model implements MavenCoordinate
                 coordinate.setVersion( version );
             }
         }
+    }
+
+    public Element getJDomElement()
+    {
+        return project;
     }
 }

@@ -17,6 +17,7 @@ package org.apache.maven.model.jdom;
  */
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static org.apache.maven.model.jdom.util.JDomUtils.detectIndentation;
 import static org.apache.maven.model.jdom.util.JDomUtils.insertNewElement;
 import static org.apache.maven.model.jdom.util.JDomUtils.removeChildElement;
@@ -43,16 +44,25 @@ import org.jdom2.filter.ElementFilter;
 public class JDomProfiles extends ArrayList<Profile>
 {
     private Element profiles;
+    private JDomModel parent;
 
-    public JDomProfiles( Element profiles )
+    public JDomProfiles( Element profiles, JDomModel parent )
     {
         super( transformToJDomProfileList( getProfileElements( profiles ) ) );
         this.profiles = profiles;
+        this.parent = parent;
     }
 
     private static List<Element> getProfileElements( Element profiles )
     {
-        return profiles.getContent( new ElementFilter( "profile", profiles.getNamespace() ) );
+        if ( profiles == null )
+        {
+            return emptyList();
+        }
+        else
+        {
+            return profiles.getContent( new ElementFilter( "profile", profiles.getNamespace() ) );
+        }
     }
 
     private static List<JDomProfile> transformToJDomProfileList( List<Element> profileElements )
@@ -68,6 +78,11 @@ public class JDomProfiles extends ArrayList<Profile>
     @Override
     public boolean add( Profile profile )
     {
+        if ( profiles == null )
+        {
+            profiles = insertNewElement( "profiles", parent.getJDomElement() );
+        }
+
         Element newElement;
         if ( profile instanceof JDomProfile )
         {
@@ -159,7 +174,12 @@ public class JDomProfiles extends ArrayList<Profile>
             if ( candidate.getId().equals( removeProfile.getId() ) )
             {
                 removeChildElement( profiles, ( (JDomProfile) candidate ).getJDomElement() );
-                return super.remove( removeProfile );
+                boolean remove = super.remove( candidate );
+                if ( super.isEmpty() )
+                {
+                    removeChildElement( parent.getJDomElement(), profiles );
+                }
+                return remove;
             }
         }
         return false;
