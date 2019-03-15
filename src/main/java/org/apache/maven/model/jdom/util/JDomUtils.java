@@ -316,6 +316,11 @@ public final class JDomUtils
         }
     }
 
+    public static Element rewriteElement( String name, String value, Element root )
+    {
+        return rewriteElement( name, value, root, root.getNamespace() );
+    }
+
     public static Element rewriteElement( String name, String value, Element root, Namespace namespace )
     {
         Element tagElement = root.getChild( name, namespace );

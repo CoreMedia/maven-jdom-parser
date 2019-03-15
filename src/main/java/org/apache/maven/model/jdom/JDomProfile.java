@@ -20,12 +20,16 @@ package org.apache.maven.model.jdom;
  */
 
 import static org.apache.maven.model.jdom.util.JDomUtils.getChildElementTextTrim;
+import static org.apache.maven.model.jdom.util.JDomUtils.insertNewElement;
 import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
 
 import java.util.List;
 import java.util.Properties;
 
 import org.apache.maven.model.Activation;
+import org.apache.maven.model.ActivationFile;
+import org.apache.maven.model.ActivationOS;
+import org.apache.maven.model.ActivationProperty;
 import org.apache.maven.model.BuildBase;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.DependencyManagement;
@@ -33,6 +37,7 @@ import org.apache.maven.model.DistributionManagement;
 import org.apache.maven.model.Profile;
 import org.apache.maven.model.Reporting;
 import org.apache.maven.model.Repository;
+import org.apache.maven.model.jdom.util.JDomUtils;
 import org.jdom2.Element;
 
 /**
@@ -57,13 +62,61 @@ public class JDomProfile
     @Override
     public Activation getActivation()
     {
-        throw new UnsupportedOperationException();
+        Element elm = profile.getChild( "activation", profile.getNamespace() );
+        if ( elm == null )
+        {
+            return null;
+        }
+        else
+        {
+            return new JDomActivation( elm );
+        }
     }
 
     @Override
     public void setActivation( Activation activation )
     {
-        throw new UnsupportedOperationException();
+        if ( activation == null )
+        {
+            JDomUtils.rewriteElement( "activation", null, profile, profile.getNamespace() );
+        }
+        else
+        {
+            Activation jdomActivation = getActivation();
+            if ( jdomActivation == null )
+            {
+                Element activationRoot = insertNewElement( "activation", profile );
+                jdomActivation = new JDomActivation( activationRoot );
+            }
+
+            jdomActivation.setActiveByDefault( activation.isActiveByDefault() );
+
+            ActivationFile file = activation.getFile();
+            if ( file != null )
+            {
+                jdomActivation.setFile( file );
+            }
+
+            String jdk = activation.getJdk();
+            if ( jdk != null )
+            {
+                jdomActivation.setJdk( jdk );
+            }
+
+            ActivationOS os = activation.getOs();
+            if ( os != null )
+            {
+                jdomActivation.setOs( os );
+            }
+
+            ActivationProperty property = activation.getProperty();
+            if ( property != null )
+            {
+                jdomActivation.setProperty( property );
+            }
+        }
+
+        super.setActivation( activation );
     }
 
     @Override
