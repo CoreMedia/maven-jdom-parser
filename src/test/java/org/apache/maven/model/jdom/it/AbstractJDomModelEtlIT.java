@@ -62,10 +62,10 @@ public abstract class AbstractJDomModelEtlIT
     @Before
     public void setUp() throws IOException, JDOMException, URISyntaxException
     {
-        String filenamePrefix = this.getClass().getSimpleName() + "_" + testName.getMethodName();
-        File inputPomFile = getTestResource( filenamePrefix + "_input-pom.xml" );
-        expectedPomFile = getTestResource( filenamePrefix + "_expected-pom.xml" );
-        outputPomFile = getOutputFile( filenamePrefix + "_output-pom.xml" );
+        String testResourceNamePrefix = getTestResourceNamePrefix();
+        File inputPomFile = getTestResource( testResourceNamePrefix + "_input-pom.xml" );
+        expectedPomFile = getTestResource( testResourceNamePrefix + "_expected-pom.xml" );
+        outputPomFile = getOutputFile( testResourceNamePrefix + "_output-pom.xml" );
 
         final ModelETLRequest modelETLRequest = new ModelETLRequest();
         modelETLRequest.setLineSeparator( UNIX_LS );
@@ -102,7 +102,8 @@ public abstract class AbstractJDomModelEtlIT
 
     }
 
-    private File getTestResource( String filename ) throws FileNotFoundException, URISyntaxException
+    @SuppressWarnings( "WeakerAccess" )
+    protected File getTestResource( String filename ) throws FileNotFoundException, URISyntaxException
     {
         URL resource = this.getClass().getResource( filename );
         if ( resource == null )
@@ -113,5 +114,11 @@ public abstract class AbstractJDomModelEtlIT
         {
             return new File( resource.toURI() );
         }
+    }
+
+    @SuppressWarnings( "WeakerAccess" )
+    protected String getTestResourceNamePrefix()
+    {
+        return this.getClass().getSimpleName() + "_" + testName.getMethodName();
     }
 }

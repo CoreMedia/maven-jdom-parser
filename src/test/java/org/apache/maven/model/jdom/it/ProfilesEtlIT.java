@@ -17,8 +17,15 @@ package org.apache.maven.model.jdom.it;
  */
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 
+import org.apache.maven.model.Activation;
+import org.apache.maven.model.ActivationProperty;
 import org.apache.maven.model.Profile;
+import org.apache.maven.model.jdom.etl.JDomModelETL;
+import org.apache.maven.model.jdom.etl.JDomModelETLFactory;
+import org.apache.maven.model.jdom.etl.ModelETLRequest;
+import org.jdom2.JDOMException;
 import org.junit.Test;
 
 /**
@@ -33,6 +40,34 @@ public class ProfilesEtlIT extends AbstractJDomModelEtlIT
     {
         Profile profile = new Profile();
         profile.setId( "first-profile" );
+        jDomModelETL.getModel().addProfile( profile );
+        assertTransformation();
+    }
+
+    @Test
+    public void addJDomProfileWithActivation() throws IOException, JDOMException, URISyntaxException
+    {
+        JDomModelETL sourcePomModelETL = new JDomModelETLFactory().newInstance( new ModelETLRequest() );
+        sourcePomModelETL.extract( getTestResource( getTestResourceNamePrefix() + "_source-pom.xml" ) );
+        Profile profile = sourcePomModelETL.getModel().getProfiles().get( 0 );
+
+        jDomModelETL.getModel().addProfile( profile );
+        assertTransformation();
+    }
+
+    @Test
+    public void addProfileWithActivation() throws IOException
+    {
+        ActivationProperty activationProperty = new ActivationProperty();
+        activationProperty.setName( "test" );
+
+        Activation activation = new Activation();
+        activation.setProperty( activationProperty );
+
+        Profile profile = new Profile();
+        profile.setId( "deflake" );
+        profile.setActivation( activation );
+
         jDomModelETL.getModel().addProfile( profile );
         assertTransformation();
     }
