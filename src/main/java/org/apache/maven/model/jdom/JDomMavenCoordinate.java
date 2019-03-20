@@ -19,6 +19,9 @@ package org.apache.maven.model.jdom;
  * under the License.
  */
 
+import org.jdom2.Element;
+import org.jdom2.Text;
+
 import static org.apache.maven.model.jdom.util.JDomUtils.detectIndentation;
 import static org.apache.maven.model.jdom.util.JDomUtils.getChildElement;
 import static org.apache.maven.model.jdom.util.JDomUtils.getChildElementTextTrim;
@@ -26,94 +29,75 @@ import static org.apache.maven.model.jdom.util.JDomUtils.removeChildElement;
 import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
 import static org.apache.maven.model.jdom.util.JDomUtils.rewriteValue;
 
-import org.jdom2.Element;
-import org.jdom2.Text;
-
 /**
- *
  * @author Robert Scholte
  * @since 3.0
  */
-public class JDomMavenCoordinate implements MavenCoordinate
-{
-    private final Element element;
+public class JDomMavenCoordinate implements MavenCoordinate {
 
-    JDomMavenCoordinate( Element elm )
-    {
-        this.element = elm;
+  private final Element element;
+
+  JDomMavenCoordinate(Element elm) {
+    this.element = elm;
+  }
+
+  @Override
+  public String getArtifactId() {
+    return getChildElementTextTrim("artifactId", element);
+  }
+
+  @Override
+  public void setArtifactId(String artifactId) {
+    rewriteElement("artifactId", artifactId, element, element.getNamespace());
+  }
+
+  @Override
+  public String getGroupId() {
+    return getChildElementTextTrim("groupId", element);
+  }
+
+  @Override
+  public void setGroupId(String groupId) {
+    rewriteElement("groupId", groupId, element, element.getNamespace());
+  }
+
+  @Override
+  public String getVersion() {
+    return getChildElementTextTrim("version", element);
+  }
+
+  @Override
+  public void setVersion(String version) {
+    Element versionElement = getChildElement("version", element);
+    if (versionElement != null) {
+      if (version == null) {
+        removeChildElement(element, versionElement);
+      } else {
+        rewriteValue(versionElement, version);
+      }
+    } else if (version != null) {
+      // This 'if' branch should only be executed when the project version is inherited from the parent but now
+      // is changed without having changed the parent version. In this case, the version cannot be inherited
+      // anymore and thus the project version element must be added.
+
+      versionElement = new Element("version", element.getNamespace());
+      versionElement.setText(version);
+
+      // Add the new version element after the artifactId.
+      int indexArtifactId = element.indexOf(element.getChild("artifactId", element.getNamespace()));
+
+      // Linebreak and indentation are (tried to be copied) from the existing XML structure.
+      String indent = detectIndentation(element);
+      if (indent != null) {
+        element.addContent(++indexArtifactId, new Text("\n" + indent));
+      }
+
+      element.addContent(++indexArtifactId, versionElement);
     }
+  }
 
-    @Override
-    public String getArtifactId()
-    {
-        return getChildElementTextTrim( "artifactId", element );
-    }
-
-    @Override
-    public void setArtifactId( String artifactId )
-    {
-        rewriteElement( "artifactId", artifactId, element, element.getNamespace() );
-    }
-
-    @Override
-    public String getGroupId()
-    {
-        return getChildElementTextTrim( "groupId", element );
-    }
-
-    @Override
-    public void setGroupId( String groupId )
-    {
-        rewriteElement( "groupId", groupId, element, element.getNamespace() );
-    }
-
-    @Override
-    public String getVersion()
-    {
-        return getChildElementTextTrim( "version", element );
-    }
-
-    @Override
-    public void setVersion( String version )
-    {
-        Element versionElement = getChildElement( "version", element );
-        if ( versionElement != null )
-        {
-            if ( version == null )
-            {
-                removeChildElement( element, versionElement );
-            }
-            else
-            {
-                rewriteValue( versionElement, version );
-            }
-        }
-        else if ( version != null )
-        {
-            // This 'if' branch should only be executed when the project version is inherited from the parent but now
-            // is changed without having changed the parent version. In this case, the version cannot be inherited
-            // anymore and thus the project version element must be added.
-
-            versionElement = new Element( "version", element.getNamespace() );
-            versionElement.setText( version );
-
-            // Add the new version element after the artifactId.
-            int indexArtifactId = element.indexOf( element.getChild( "artifactId", element.getNamespace() ) );
-
-            // Linebreak and indentation are (tried to be copied) from the existing XML structure.
-            String indent = detectIndentation( element );
-            if ( indent != null )
-            {
-                element.addContent( ++indexArtifactId, new Text( "\n" + indent ) );
-            }
-
-            element.addContent( ++indexArtifactId, versionElement );
-        }
-    }
-
-    @Override
-    public String getName()
-    {
-        return element.getName();
-    }
+  @Override
+  public String getName() {
+    return element.getName();
+  }
 }

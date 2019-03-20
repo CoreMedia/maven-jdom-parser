@@ -19,13 +19,6 @@ package org.apache.maven.model.jdom;
  * under the License.
  */
 
-import static org.apache.maven.model.jdom.util.JDomUtils.getChildElementTextTrim;
-import static org.apache.maven.model.jdom.util.JDomUtils.insertNewElement;
-import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
-
-import java.util.List;
-import java.util.Properties;
-
 import org.apache.maven.model.Activation;
 import org.apache.maven.model.ActivationFile;
 import org.apache.maven.model.ActivationOS;
@@ -40,207 +33,178 @@ import org.apache.maven.model.Repository;
 import org.apache.maven.model.jdom.util.JDomUtils;
 import org.jdom2.Element;
 
+import java.util.List;
+import java.util.Properties;
+
+import static org.apache.maven.model.jdom.util.JDomUtils.getChildElementTextTrim;
+import static org.apache.maven.model.jdom.util.JDomUtils.insertNewElement;
+import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
+
 /**
  * JDom implementation of poms PROFILE element
  *
  * @author Robert Scholte
  * @since 3.0
  */
-public class JDomProfile
-    extends Profile
-{
-    private Element profile;
+public class JDomProfile extends Profile {
 
-    private final JDomModelBase modelBase;
+  private Element profile;
 
-    public JDomProfile( Element profile )
-    {
-        this.profile = profile;
-        this.modelBase = new JDomModelBase( profile ) ;
+  private final JDomModelBase modelBase;
+
+  public JDomProfile(Element profile) {
+    this.profile = profile;
+    this.modelBase = new JDomModelBase(profile);
+  }
+
+  @Override
+  public Activation getActivation() {
+    Element elm = profile.getChild("activation", profile.getNamespace());
+    if (elm == null) {
+      return null;
+    } else {
+      return new JDomActivation(elm);
+    }
+  }
+
+  @Override
+  public void setActivation(Activation activation) {
+    if (activation == null) {
+      JDomUtils.rewriteElement("activation", null, profile, profile.getNamespace());
+    } else {
+      Activation jdomActivation = getActivation();
+      if (jdomActivation == null) {
+        Element activationRoot = insertNewElement("activation", profile);
+        jdomActivation = new JDomActivation(activationRoot);
+      }
+
+      jdomActivation.setActiveByDefault(activation.isActiveByDefault());
+
+      ActivationFile file = activation.getFile();
+      if (file != null) {
+        jdomActivation.setFile(file);
+      }
+
+      String jdk = activation.getJdk();
+      if (jdk != null) {
+        jdomActivation.setJdk(jdk);
+      }
+
+      ActivationOS os = activation.getOs();
+      if (os != null) {
+        jdomActivation.setOs(os);
+      }
+
+      ActivationProperty property = activation.getProperty();
+      if (property != null) {
+        jdomActivation.setProperty(property);
+      }
     }
 
-    @Override
-    public Activation getActivation()
-    {
-        Element elm = profile.getChild( "activation", profile.getNamespace() );
-        if ( elm == null )
-        {
-            return null;
-        }
-        else
-        {
-            return new JDomActivation( elm );
-        }
-    }
+    super.setActivation(activation);
+  }
 
-    @Override
-    public void setActivation( Activation activation )
-    {
-        if ( activation == null )
-        {
-            JDomUtils.rewriteElement( "activation", null, profile, profile.getNamespace() );
-        }
-        else
-        {
-            Activation jdomActivation = getActivation();
-            if ( jdomActivation == null )
-            {
-                Element activationRoot = insertNewElement( "activation", profile );
-                jdomActivation = new JDomActivation( activationRoot );
-            }
+  @Override
+  public BuildBase getBuild() {
+    return modelBase.getBuild();
+  }
 
-            jdomActivation.setActiveByDefault( activation.isActiveByDefault() );
+  @Override
+  public void setBuild(BuildBase build) {
+    modelBase.setBuild(build);
+  }
 
-            ActivationFile file = activation.getFile();
-            if ( file != null )
-            {
-                jdomActivation.setFile( file );
-            }
+  @Override
+  public List<Dependency> getDependencies() {
+    return modelBase.getDependencies();
+  }
 
-            String jdk = activation.getJdk();
-            if ( jdk != null )
-            {
-                jdomActivation.setJdk( jdk );
-            }
+  @Override
+  public void setDependencies(List<Dependency> dependencies) {
+    modelBase.setDependencies(dependencies);
+  }
 
-            ActivationOS os = activation.getOs();
-            if ( os != null )
-            {
-                jdomActivation.setOs( os );
-            }
+  @Override
+  public DependencyManagement getDependencyManagement() {
+    return modelBase.getDependencyManagement();
+  }
 
-            ActivationProperty property = activation.getProperty();
-            if ( property != null )
-            {
-                jdomActivation.setProperty( property );
-            }
-        }
+  @Override
+  public void setDependencyManagement(DependencyManagement dependencyManagement) {
+    modelBase.setDependencyManagement(dependencyManagement);
+  }
 
-        super.setActivation( activation );
-    }
+  @Override
+  public DistributionManagement getDistributionManagement() {
+    return modelBase.getDistributionManagement();
+  }
 
-    @Override
-    public BuildBase getBuild()
-    {
-        return modelBase.getBuild();
-    }
+  @Override
+  public void setDistributionManagement(DistributionManagement distributionManagement) {
+    modelBase.setDistributionManagement(distributionManagement);
+  }
 
-    @Override
-    public void setBuild( BuildBase build )
-    {
-        modelBase.setBuild( build );
-    }
+  @Override
+  public String getId() {
+    return getChildElementTextTrim("id", profile);
+  }
 
-    @Override
-    public List<Dependency> getDependencies()
-    {
-        return modelBase.getDependencies();
-    }
+  @Override
+  public void setId(String id) {
+    rewriteElement("id", id, profile, profile.getNamespace());
+  }
 
-    @Override
-    public void setDependencies( List<Dependency> dependencies )
-    {
-        modelBase.setDependencies( dependencies );
-    }
+  @Override
+  public List<String> getModules() {
+    return modelBase.getModules();
+  }
 
-    @Override
-    public DependencyManagement getDependencyManagement()
-    {
-        return modelBase.getDependencyManagement();
-    }
+  @Override
+  public void setModules(List<String> modules) {
+    modelBase.setModules(modules);
+  }
 
-    @Override
-    public void setDependencyManagement( DependencyManagement dependencyManagement )
-    {
-        modelBase.setDependencyManagement( dependencyManagement );
-    }
+  @Override
+  public List<Repository> getPluginRepositories() {
+    return modelBase.getPluginRepositories();
+  }
 
-    @Override
-    public DistributionManagement getDistributionManagement()
-    {
-        return modelBase.getDistributionManagement();
-    }
+  @Override
+  public void setPluginRepositories(List<Repository> pluginRepositories) {
+    modelBase.setPluginRepositories(pluginRepositories);
+  }
 
-    @Override
-    public void setDistributionManagement( DistributionManagement distributionManagement )
-    {
-        modelBase.setDistributionManagement( distributionManagement );
-    }
+  @Override
+  public Properties getProperties() {
+    return modelBase.getProperties();
+  }
 
-    @Override
-    public String getId()
-    {
-        return getChildElementTextTrim( "id", profile );
-    }
+  @Override
+  public void setProperties(Properties properties) {
+    modelBase.setProperties(properties);
+  }
 
-    @Override
-    public void setId( String id )
-    {
-        rewriteElement( "id", id, profile, profile.getNamespace() );
-    }
+  @Override
+  public Reporting getReporting() {
+    return modelBase.getReporting();
+  }
 
-    @Override
-    public List<String> getModules()
-    {
-        return modelBase.getModules();
-    }
+  @Override
+  public void setReporting(Reporting reporting) {
+    modelBase.setReporting(reporting);
+  }
 
-    @Override
-    public void setModules( List<String> modules )
-    {
-        modelBase.setModules( modules );
-    }
+  @Override
+  public List<Repository> getRepositories() {
+    return modelBase.getRepositories();
+  }
 
-    @Override
-    public List<Repository> getPluginRepositories()
-    {
-        return modelBase.getPluginRepositories();
-    }
+  @Override
+  public void setRepositories(List<Repository> repositories) {
+    modelBase.setRepositories(repositories);
+  }
 
-    @Override
-    public void setPluginRepositories( List<Repository> pluginRepositories )
-    {
-        modelBase.setPluginRepositories( pluginRepositories );
-    }
-
-    @Override
-    public Properties getProperties()
-    {
-        return modelBase.getProperties();
-    }
-
-    @Override
-    public void setProperties( Properties properties )
-    {
-        modelBase.setProperties( properties );
-    }
-
-    @Override
-    public Reporting getReporting()
-    {
-        return modelBase.getReporting();
-    }
-
-    @Override
-    public void setReporting( Reporting reporting )
-    {
-        modelBase.setReporting( reporting );
-    }
-
-    @Override
-    public List<Repository> getRepositories()
-    {
-        return modelBase.getRepositories();
-    }
-
-    @Override
-    public void setRepositories( List<Repository> repositories )
-    {
-        modelBase.setRepositories( repositories );
-    }
-
-    public Element getJDomElement()
-    {
-        return profile;
-    }
+  public Element getJDomElement() {
+    return profile;
+  }
 }

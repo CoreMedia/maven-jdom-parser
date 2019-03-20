@@ -19,14 +19,14 @@ package org.apache.maven.model.jdom;
  * under the License.
  */
 
-import static org.apache.maven.model.jdom.util.JDomUtils.getChildElementTextTrim;
-import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
-
-import java.util.List;
-
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Exclusion;
 import org.jdom2.Element;
+
+import java.util.List;
+
+import static org.apache.maven.model.jdom.util.JDomUtils.getChildElementTextTrim;
+import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
 
 /**
  * JDom implementation of poms DEPENDENCY element
@@ -34,152 +34,128 @@ import org.jdom2.Element;
  * @author Robert Scholte
  * @since 3.0
  */
-public class JDomDependency extends Dependency implements MavenCoordinate
-{
-    private Element dependency;
+public class JDomDependency extends Dependency implements MavenCoordinate {
 
-    private final MavenCoordinate coordinate;
+  private Element dependency;
 
-    public JDomDependency( Element dependency )
-    {
-        this.dependency = dependency;
-        this.coordinate = new JDomMavenCoordinate( dependency );
-    }
+  private final MavenCoordinate coordinate;
 
-    @Override
-    public String getArtifactId()
-    {
-        return coordinate.getArtifactId();
-    }
+  public JDomDependency(Element dependency) {
+    this.dependency = dependency;
+    this.coordinate = new JDomMavenCoordinate(dependency);
+  }
 
-    @Override
-    public void setArtifactId( String artifactId )
-    {
-        coordinate.setArtifactId( artifactId );
-    }
+  @Override
+  public String getArtifactId() {
+    return coordinate.getArtifactId();
+  }
 
-    @Override
-    public String getClassifier()
-    {
-        return getChildElementTextTrim( "classifier", dependency );
-    }
+  @Override
+  public void setArtifactId(String artifactId) {
+    coordinate.setArtifactId(artifactId);
+  }
 
-    @Override
-    public void setClassifier( String classifier )
-    {
-        rewriteElement( "classifier", classifier, dependency, dependency.getNamespace() );
-    }
+  @Override
+  public String getClassifier() {
+    return getChildElementTextTrim("classifier", dependency);
+  }
 
-    @Override
-    public List<Exclusion> getExclusions()
-    {
-        throw new UnsupportedOperationException();
-    }
+  @Override
+  public void setClassifier(String classifier) {
+    rewriteElement("classifier", classifier, dependency, dependency.getNamespace());
+  }
 
-    @Override
-    public void setExclusions( List<Exclusion> exclusions )
-    {
-        throw new UnsupportedOperationException();
-    }
+  @Override
+  public List<Exclusion> getExclusions() {
+    throw new UnsupportedOperationException();
+  }
 
-    @Override
-    public String getGroupId()
-    {
-        return coordinate.getGroupId();
-    }
+  @Override
+  public void setExclusions(List<Exclusion> exclusions) {
+    throw new UnsupportedOperationException();
+  }
 
-    @Override
-    public void setGroupId( String groupId )
-    {
-        coordinate.setGroupId( groupId );
-    }
+  @Override
+  public String getGroupId() {
+    return coordinate.getGroupId();
+  }
 
-    @Override
-    public String getOptional()
-    {
-        return getChildElementTextTrim( "optional", dependency );
-    }
+  @Override
+  public void setGroupId(String groupId) {
+    coordinate.setGroupId(groupId);
+  }
 
-    @Override
-    public void setOptional( String optional )
-    {
-        rewriteElement( "optional", optional, dependency, dependency.getNamespace() );
-    }
+  @Override
+  public String getOptional() {
+    return getChildElementTextTrim("optional", dependency);
+  }
 
-    @Override
-    public boolean isOptional()
-    {
-        return Boolean.parseBoolean( getOptional() );
-    }
+  @Override
+  public void setOptional(String optional) {
+    rewriteElement("optional", optional, dependency, dependency.getNamespace());
+  }
 
-    @Override
-    public void setOptional( boolean optional )
-    {
-        setOptional( Boolean.toString( optional ) );
-    }
+  @Override
+  public boolean isOptional() {
+    return Boolean.parseBoolean(getOptional());
+  }
 
-    @Override
-    public String getScope()
-    {
-        return getChildElementTextTrim( "scope", dependency );
-    }
+  @Override
+  public void setOptional(boolean optional) {
+    setOptional(Boolean.toString(optional));
+  }
 
-    @Override
-    public void setScope( String scope )
-    {
-        rewriteElement( "scope", scope, dependency, dependency.getNamespace() );
-    }
+  @Override
+  public String getScope() {
+    return getChildElementTextTrim("scope", dependency);
+  }
 
-    @Override
-    public String getSystemPath()
-    {
-        return getChildElementTextTrim( "systemPath", dependency );
-    }
+  @Override
+  public void setScope(String scope) {
+    rewriteElement("scope", scope, dependency, dependency.getNamespace());
+  }
 
-    @Override
-    public void setSystemPath( String systemPath )
-    {
-        rewriteElement( "systemPath", systemPath, dependency, dependency.getNamespace() );
-    }
+  @Override
+  public String getSystemPath() {
+    return getChildElementTextTrim("systemPath", dependency);
+  }
 
-    @Override
-    public String getType()
-    {
-        return getChildElementTextTrim( "type", dependency );
-    }
+  @Override
+  public void setSystemPath(String systemPath) {
+    rewriteElement("systemPath", systemPath, dependency, dependency.getNamespace());
+  }
 
-    @Override
-    public void setType( String type )
-    {
-        rewriteElement( "type", type, dependency, dependency.getNamespace() );
-    }
+  @Override
+  public String getType() {
+    return getChildElementTextTrim("type", dependency);
+  }
 
-    @Override
-    public String getVersion()
-    {
-        return coordinate.getVersion();
-    }
+  @Override
+  public void setType(String type) {
+    rewriteElement("type", type, dependency, dependency.getNamespace());
+  }
 
-    @Override
-    public void setVersion( String version )
-    {
-        coordinate.setVersion( version );
-    }
+  @Override
+  public String getVersion() {
+    return coordinate.getVersion();
+  }
 
-    @Override
-    public String getManagementKey()
-    {
-        throw new UnsupportedOperationException();
-    }
+  @Override
+  public void setVersion(String version) {
+    coordinate.setVersion(version);
+  }
 
-    @Override
-    public String getName()
-    {
-        return "dependency";
-    }
+  @Override
+  public String getManagementKey() {
+    throw new UnsupportedOperationException();
+  }
 
-    public Element getJDomElement()
-    {
-        return dependency;
-    }
+  @Override
+  public String getName() {
+    return "dependency";
+  }
+
+  public Element getJDomElement() {
+    return dependency;
+  }
 }

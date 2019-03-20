@@ -19,24 +19,23 @@ package org.apache.maven.model.jdom.etl;
  * under the License.
  */
 
-import java.io.File;
-import java.io.IOException;
-
 import org.apache.maven.model.Model;
 import org.jdom2.JDOMException;
 
+import java.io.File;
+import java.io.IOException;
+
 /**
- *
  * @author Robert Scholte
  * @since 3.0
  */
-public interface ModelETL
-{
-    void extract( File pomFile ) throws IOException, JDOMException;
+public interface ModelETL {
 
-    void transform();
+  void extract(File pomFile) throws IOException, JDOMException;
 
-    void load( File pomFile ) throws IOException;
+  void transform();
 
-    Model getModel();
+  void load(File pomFile) throws IOException;
+
+  Model getModel();
 }

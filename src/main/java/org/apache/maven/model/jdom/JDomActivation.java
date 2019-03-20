@@ -16,121 +16,104 @@ package org.apache.maven.model.jdom;
  * limitations under the License.
  */
 
-import static java.lang.Boolean.parseBoolean;
-import static org.apache.maven.model.jdom.util.JDomUtils.getChildElement;
-import static org.apache.maven.model.jdom.util.JDomUtils.getChildElementTextTrim;
-import static org.apache.maven.model.jdom.util.JDomUtils.insertNewElement;
-import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
-
 import org.apache.maven.model.Activation;
 import org.apache.maven.model.ActivationFile;
 import org.apache.maven.model.ActivationOS;
 import org.apache.maven.model.ActivationProperty;
 import org.jdom2.Element;
 
+import static java.lang.Boolean.parseBoolean;
+import static org.apache.maven.model.jdom.util.JDomUtils.getChildElement;
+import static org.apache.maven.model.jdom.util.JDomUtils.getChildElementTextTrim;
+import static org.apache.maven.model.jdom.util.JDomUtils.insertNewElement;
+import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
+
 /**
  * JDOM implementation of POMs {@code activation} element.
  *
  * @author Marc Rohlfs, CoreMedia AG
  */
-public class JDomActivation extends Activation
-{
-    private static final String ELEMENT_ACTIVE_BY_DEFAULT = "activeByDefault";
-    private static final String ELEMENT_JDK = "jdk";
-    private static final String ELEMENT_PROPERTY = "property";
+public class JDomActivation extends Activation {
 
-    private Element jdomElement;
+  private static final String ELEMENT_ACTIVE_BY_DEFAULT = "activeByDefault";
+  private static final String ELEMENT_JDK = "jdk";
+  private static final String ELEMENT_PROPERTY = "property";
 
-    public JDomActivation( Element element )
-    {
-        jdomElement = element;
+  private Element jdomElement;
 
-        super.setActiveByDefault( parseBoolean( getChildElementTextTrim( ELEMENT_ACTIVE_BY_DEFAULT, jdomElement ) ) );
-        super.setJdk( getChildElementTextTrim( ELEMENT_JDK, jdomElement ) );
+  public JDomActivation(Element element) {
+    jdomElement = element;
 
-        Element propertyElement = getChildElement( ELEMENT_PROPERTY, jdomElement );
-        if ( propertyElement != null )
-        {
-            super.setProperty( new JDomActivationProperty( propertyElement ) );
-        }
+    super.setActiveByDefault(parseBoolean(getChildElementTextTrim(ELEMENT_ACTIVE_BY_DEFAULT, jdomElement)));
+    super.setJdk(getChildElementTextTrim(ELEMENT_JDK, jdomElement));
+
+    Element propertyElement = getChildElement(ELEMENT_PROPERTY, jdomElement);
+    if (propertyElement != null) {
+      super.setProperty(new JDomActivationProperty(propertyElement));
+    }
+  }
+
+  @Override
+  public void setActiveByDefault(boolean activeByDefault) {
+    if (activeByDefault || super.isActiveByDefault()) {
+      // Don't touch if original was 'true' and isn't actually changed. Otherwise remove on 'false'.
+      rewriteElement(ELEMENT_ACTIVE_BY_DEFAULT, activeByDefault ? Boolean.TRUE.toString() : null, jdomElement);
+    }
+    super.setActiveByDefault(activeByDefault);
+  }
+
+  @Override
+  public ActivationFile getFile() {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void setFile(ActivationFile file) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void setJdk(String jdk) {
+    rewriteElement(ELEMENT_JDK, jdk, jdomElement);
+    super.setJdk(jdk);
+  }
+
+  @Override
+  public ActivationOS getOs() {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void setOs(ActivationOS os) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void setProperty(ActivationProperty property) {
+    if (property == null) {
+      rewriteElement(ELEMENT_PROPERTY, null, jdomElement);
+    } else {
+      JDomActivationProperty jdomProperty = (JDomActivationProperty) super.getProperty();
+      if (jdomProperty == null) {
+        Element element = insertNewElement(ELEMENT_PROPERTY, jdomElement);
+        jdomProperty = new JDomActivationProperty(element);
+      }
+
+      String name = property.getName();
+      if (name != null || jdomProperty.getName() != null) {
+        jdomProperty.setName(name);
+      }
+
+      String value = property.getValue();
+      if (value != null || jdomProperty.getValue() != null) {
+        jdomProperty.setValue(value);
+      }
     }
 
-    @Override
-    public void setActiveByDefault( boolean activeByDefault )
-    {
-        if ( activeByDefault || super.isActiveByDefault() )
-        {
-            // Don't touch if original was 'true' and isn't actually changed. Otherwise remove on 'false'.
-            rewriteElement( ELEMENT_ACTIVE_BY_DEFAULT, activeByDefault ? Boolean.TRUE.toString() : null, jdomElement );
-        }
-        super.setActiveByDefault( activeByDefault );
-    }
+    super.setProperty(property);
+  }
 
-    @Override
-    public ActivationFile getFile()
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void setFile( ActivationFile file )
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void setJdk( String jdk )
-    {
-        rewriteElement( ELEMENT_JDK, jdk, jdomElement );
-        super.setJdk( jdk );
-    }
-
-    @Override
-    public ActivationOS getOs()
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void setOs( ActivationOS os )
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void setProperty( ActivationProperty property )
-    {
-        if ( property == null )
-        {
-            rewriteElement( ELEMENT_PROPERTY, null, jdomElement );
-        }
-        else
-        {
-            JDomActivationProperty jdomProperty = (JDomActivationProperty) super.getProperty();
-            if ( jdomProperty == null )
-            {
-                Element element = insertNewElement( ELEMENT_PROPERTY, jdomElement );
-                jdomProperty = new JDomActivationProperty( element );
-            }
-
-            String name = property.getName();
-            if ( name != null || jdomProperty.getName() != null )
-            {
-                jdomProperty.setName( name );
-            }
-
-            String value = property.getValue();
-            if ( value != null || jdomProperty.getValue() != null )
-            {
-                jdomProperty.setValue( value );
-            }
-        }
-
-        super.setProperty( property );
-    }
-
-    public Element getJDomElement()
-    {
-        return jdomElement;
-    }
+  public Element getJDomElement() {
+    return jdomElement;
+  }
 }

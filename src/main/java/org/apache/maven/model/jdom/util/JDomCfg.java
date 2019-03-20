@@ -16,22 +16,21 @@ package org.apache.maven.model.jdom.util;
  * limitations under the License.
  */
 
-import static java.util.Arrays.asList;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class JDomCfg
-{
-    private static JDomCfg instance = new JDomCfg();
+import static java.util.Arrays.asList;
 
-    private Map<String, List<String>> elementOrder = new HashMap<>();
+public class JDomCfg {
 
-    // Singleton
-    private JDomCfg()
-    {
-        elementOrder.put( "project", asList(
+  private static JDomCfg instance = new JDomCfg();
+
+  private Map<String, List<String>> elementOrder = new HashMap<>();
+
+  // Singleton
+  private JDomCfg() {
+    elementOrder.put("project", asList(
             "modelVersion",
             "",
             "parent",
@@ -76,8 +75,8 @@ public class JDomCfg
             "",
             "profiles"
             )
-        );
-        elementOrder.put( "profile", asList(
+    );
+    elementOrder.put("profile", asList(
             "id",
             "activation",
             "modules",
@@ -90,22 +89,18 @@ public class JDomCfg
             "build",
             "reporting"
             )
-        );
+    );
+  }
 
-    }
+  public static JDomCfg getInstance() {
+    return instance;
+  }
 
-    public static JDomCfg getInstance()
-    {
-        return instance;
-    }
+  public List<String> getElementOrder(String type) {
+    return elementOrder.get(type);
+  }
 
-    public List<String> getElementOrder( String type )
-    {
-        return elementOrder.get( type );
-    }
-
-    public void setElementOrder( String type, List<String> elementOrder )
-    {
-        this.elementOrder.put( type, elementOrder );
-    }
+  public void setElementOrder(String type, List<String> elementOrder) {
+    this.elementOrder.put(type, elementOrder);
+  }
 }

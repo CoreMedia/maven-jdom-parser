@@ -19,6 +19,17 @@ package org.apache.maven.model.jdom;
  * under the License.
  */
 
+import org.apache.maven.model.Dependency;
+import org.apache.maven.model.Plugin;
+import org.apache.maven.model.PluginExecution;
+import org.jdom2.Element;
+import org.jdom2.Text;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
 import static java.util.Arrays.asList;
 import static org.apache.maven.model.jdom.util.JDomUtils.detectIndentation;
 import static org.apache.maven.model.jdom.util.JDomUtils.getChildElement;
@@ -27,251 +38,192 @@ import static org.apache.maven.model.jdom.util.JDomUtils.insertNewElement;
 import static org.apache.maven.model.jdom.util.JDomUtils.resetIndentations;
 import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.maven.model.Dependency;
-import org.apache.maven.model.Plugin;
-import org.apache.maven.model.PluginExecution;
-import org.jdom2.Element;
-import org.jdom2.Text;
-
 /**
  * JDom implementation of poms PLUGIN element
  *
  * @author Robert Scholte
  * @since 3.0
  */
-public class JDomPlugin extends Plugin implements MavenCoordinate
-{
-    private Element plugin;
-    private final MavenCoordinate coordinate;
+public class JDomPlugin extends Plugin implements MavenCoordinate {
 
-    public JDomPlugin( Element plugin )
-    {
-        this.plugin = plugin;
-        this.coordinate = new JDomMavenCoordinate( plugin );
+  private Element plugin;
+  private final MavenCoordinate coordinate;
+
+  public JDomPlugin(Element plugin) {
+    this.plugin = plugin;
+    this.coordinate = new JDomMavenCoordinate(plugin);
+  }
+
+  @Override
+  public String getArtifactId() {
+    return coordinate.getArtifactId();
+  }
+
+  @Override
+  public void setArtifactId(String artifactId) {
+    coordinate.setArtifactId(artifactId);
+  }
+
+  @Override
+  public Object getConfiguration() {
+    Element elm = getChildElement("configuration", plugin);
+    if (elm == null) {
+      return null;
+    } else {
+      return new JDomConfiguration(elm);
     }
+  }
 
-    @Override
-    public String getArtifactId()
-    {
-        return coordinate.getArtifactId();
+  @Override
+  public void setConfiguration(Object configuration) {
+    if (configuration == null) {
+      rewriteElement("configuration", null, plugin, plugin.getNamespace());
+    } else if (configuration instanceof JDomConfiguration) {
+      Element newJDomConfigurationElement = ((JDomConfiguration) configuration).getJDomElement().clone();
+
+      JDomConfiguration oldJDomConfiguration = (JDomConfiguration) getConfiguration();
+      if (oldJDomConfiguration == null) {
+        plugin.addContent(
+                plugin.getContentSize() - 1,
+                asList(
+                        new Text("\n" + detectIndentation(plugin)),
+                        newJDomConfigurationElement));
+      } else {
+        int replaceIndex = plugin.indexOf(oldJDomConfiguration.getJDomElement());
+        plugin.removeContent(replaceIndex);
+        plugin.addContent(replaceIndex, newJDomConfigurationElement);
+      }
+
+      resetIndentations(plugin, detectIndentation(plugin));
+      resetIndentations(newJDomConfigurationElement, detectIndentation(plugin) + "  ");
     }
+  }
 
-    @Override
-    public void setArtifactId( String artifactId )
-    {
-        coordinate.setArtifactId( artifactId );
+  @Override
+  public List<Dependency> getDependencies() {
+    Element dependenciesElm = plugin.getChild("dependencies", plugin.getNamespace());
+    if (dependenciesElm == null) {
+      return Collections.emptyList();
+    } else {
+      List<Element> dependencyElms = dependenciesElm.getChildren("dependency", plugin.getNamespace());
+      List<Dependency> dependencies = new ArrayList<>(dependencyElms.size());
+      for (Element dependencyElm : dependencyElms) {
+        dependencies.add(new JDomDependency(dependencyElm));
+      }
+      return dependencies;
     }
+  }
 
-    @Override
-    public Object getConfiguration()
-    {
-        Element elm = getChildElement( "configuration", plugin );
-        if ( elm == null )
-        {
-            return null;
-        }
-        else
-        {
-            return new JDomConfiguration( elm );
-        }
+  @Override
+  public void setDependencies(List<Dependency> dependencies) {
+    if (dependencies == null) {
+      rewriteElement("dependencies", null, plugin, plugin.getNamespace());
+    } else {
+      new JDomDependencies(insertNewElement("dependencies", plugin)).addAll(dependencies);
     }
+  }
 
-    @Override
-    public void setConfiguration( Object configuration )
-    {
-        if ( configuration == null )
-        {
-            rewriteElement( "configuration", null, plugin, plugin.getNamespace() );
-        }
-        else if ( configuration instanceof JDomConfiguration )
-        {
-            Element newJDomConfigurationElement = ( (JDomConfiguration) configuration ).getJDomElement().clone();
+  @Override
+  public List<PluginExecution> getExecutions() {
+    throw new UnsupportedOperationException();
+  }
 
-            JDomConfiguration oldJDomConfiguration = (JDomConfiguration) getConfiguration();
-            if ( oldJDomConfiguration == null )
-            {
-                plugin.addContent(
-                    plugin.getContentSize() - 1,
-                    asList(
-                        new Text( "\n" + detectIndentation( plugin ) ),
-                        newJDomConfigurationElement ) );
-            }
-            else
-            {
-                int replaceIndex = plugin.indexOf( oldJDomConfiguration.getJDomElement() );
-                plugin.removeContent( replaceIndex );
-                plugin.addContent( replaceIndex, newJDomConfigurationElement );
-            }
+  @Override
+  public void setExecutions(List<PluginExecution> executions) {
+    throw new UnsupportedOperationException();
+  }
 
-            resetIndentations( plugin, detectIndentation( plugin ) );
-            resetIndentations( newJDomConfigurationElement, detectIndentation( plugin ) + "  " );
-        }
-    }
+  @Override
+  public String getExtensions() {
+    return getChildElementTextTrim("extensions", plugin);
+  }
 
-    @Override
-    public List<Dependency> getDependencies()
-    {
-        Element dependenciesElm = plugin.getChild( "dependencies", plugin.getNamespace() );
-        if ( dependenciesElm == null )
-        {
-            return Collections.emptyList();
-        }
-        else
-        {
-            List<Element> dependencyElms =
-                dependenciesElm.getChildren( "dependency", plugin.getNamespace() );
+  @Override
+  public void setExtensions(String extensions) {
+    rewriteElement("extensions", extensions, plugin, plugin.getNamespace());
+  }
 
-            List<Dependency> dependencies = new ArrayList<>( dependencyElms.size() );
+  @Override
+  public boolean isExtensions() {
+    return Boolean.parseBoolean(getExtensions());
+  }
 
-            for ( Element dependencyElm : dependencyElms )
-            {
-                dependencies.add( new JDomDependency( dependencyElm ) );
-            }
+  @Override
+  public void setExtensions(boolean extensions) {
+    setExtensions(Boolean.toString(extensions));
+  }
 
-            return dependencies;
-        }
-    }
+  @Override
+  public Object getGoals() {
+    throw new UnsupportedOperationException();
+  }
 
-    @Override
-    public void setDependencies( List<Dependency> dependencies )
-    {
-        if ( dependencies == null )
-        {
-            rewriteElement( "dependencies", null, plugin, plugin.getNamespace() );
-        }
-        else
-        {
-            new JDomDependencies( insertNewElement( "dependencies", plugin ) ).addAll( dependencies );
-        }
-    }
+  @Override
+  public void setGoals(Object goals) {
+    throw new UnsupportedOperationException();
+  }
 
-    @Override
-    public List<PluginExecution> getExecutions()
-    {
-        throw new UnsupportedOperationException();
-    }
+  @Override
+  public String getGroupId() {
+    return coordinate.getGroupId();
+  }
 
-    @Override
-    public void setExecutions( List<PluginExecution> executions )
-    {
-        throw new UnsupportedOperationException();
-    }
+  @Override
+  public void setGroupId(String groupId) {
+    coordinate.setGroupId(groupId);
+  }
 
-    @Override
-    public String getExtensions()
-    {
-        return getChildElementTextTrim( "extensions", plugin );
-    }
+  @Override
+  public String getInherited() {
+    return getChildElementTextTrim("inherited", plugin);
+  }
 
-    @Override
-    public void setExtensions( String extensions )
-    {
-        rewriteElement( "extensions", extensions, plugin, plugin.getNamespace() );
-    }
+  @Override
+  public void setInherited(String inherited) {
+    rewriteElement("inherited", inherited, plugin, plugin.getNamespace());
+  }
 
-    @Override
-    public boolean isExtensions()
-    {
-        return Boolean.parseBoolean( getExtensions() );
-    }
+  @Override
+  public boolean isInherited() {
+    return Boolean.parseBoolean(getInherited());
+  }
 
-    @Override
-    public void setExtensions( boolean extensions )
-    {
-        setExtensions( Boolean.toString( extensions ) );
-    }
+  @Override
+  public void setInherited(boolean inherited) {
+    setInherited(Boolean.toString(inherited));
+  }
 
-    @Override
-    public Object getGoals()
-    {
-        throw new UnsupportedOperationException();
-    }
+  @Override
+  public String getVersion() {
+    return coordinate.getVersion();
+  }
 
-    @Override
-    public void setGoals( Object goals )
-    {
-        throw new UnsupportedOperationException();
-    }
+  @Override
+  public void setVersion(String version) {
+    coordinate.setVersion(version);
+  }
 
-    @Override
-    public String getGroupId()
-    {
-        return coordinate.getGroupId();
-    }
+  @Override
+  public void flushExecutionMap() {
+    throw new UnsupportedOperationException();
+  }
 
-    @Override
-    public void setGroupId( String groupId )
-    {
-        coordinate.setGroupId( groupId );
-    }
+  @Override
+  public Map<String, PluginExecution> getExecutionsAsMap() {
+    throw new UnsupportedOperationException();
+  }
 
-    @Override
-    public String getInherited()
-    {
-        return getChildElementTextTrim( "inherited", plugin );
-    }
+  @Override
+  public String getKey() {
+    return constructKey(getGroupId(), getArtifactId());
+  }
 
-    @Override
-    public void setInherited( String inherited )
-    {
-        rewriteElement( "inherited", inherited, plugin, plugin.getNamespace() );
-    }
+  @Override
+  public String getName() {
+    return "plugin";
+  }
 
-    @Override
-    public boolean isInherited()
-    {
-        return Boolean.parseBoolean( getInherited() );
-    }
-
-    @Override
-    public void setInherited( boolean inherited )
-    {
-        setInherited( Boolean.toString( inherited ) );
-    }
-
-    @Override
-    public String getVersion()
-    {
-        return coordinate.getVersion();
-    }
-
-    @Override
-    public void setVersion( String version )
-    {
-        coordinate.setVersion( version );
-    }
-
-    @Override
-    public void flushExecutionMap()
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Map<String, PluginExecution> getExecutionsAsMap()
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public String getKey()
-    {
-        return constructKey( getGroupId(), getArtifactId() );
-    }
-
-    @Override
-    public String getName()
-    {
-        return "plugin";
-    }
-
-    public Element getJDomElement()
-    {
-        return plugin;
-    }
+  public Element getJDomElement() {
+    return plugin;
+  }
 }

@@ -19,144 +19,132 @@ package org.apache.maven.model.jdom;
  * under the License.
  */
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-
-import java.io.StringReader;
-
 import org.jdom2.Element;
 import org.jdom2.input.SAXBuilder;
 import org.junit.Test;
 
-public class JDomScmTest
-{
-    private SAXBuilder builder = new SAXBuilder();
+import java.io.StringReader;
 
-    @Test
-    public void testGetConnection() throws Exception
-    {
-        String content = "<scm></scm>";
-        Element scmElm = builder.build( new StringReader( content ) ).getRootElement();
-        assertNull( new JDomScm( scmElm ).getConnection() );
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
-        content = "<scm><connection>CONNECTION</connection></scm>";
-        scmElm = builder.build( new StringReader( content ) ).getRootElement();
-        assertEquals( "CONNECTION", new JDomScm( scmElm ).getConnection() );
-    }
+public class JDomScmTest {
 
-    @Test
-    public void testGetDeveloperConnection() throws Exception
-    {
-        String content = "<scm></scm>";
-        Element scmElm = builder.build( new StringReader( content ) ).getRootElement();
-        assertNull( new JDomScm( scmElm ).getDeveloperConnection() );
+  private SAXBuilder builder = new SAXBuilder();
 
-        content = "<scm><developerConnection>DEVELOPERCONNECTION</developerConnection></scm>";
-        scmElm = builder.build( new StringReader( content ) ).getRootElement();
-        assertEquals( "DEVELOPERCONNECTION", new JDomScm( scmElm ).getDeveloperConnection() );
-    }
+  @Test
+  public void testGetConnection() throws Exception {
+    String content = "<scm></scm>";
+    Element scmElm = builder.build(new StringReader(content)).getRootElement();
+    assertNull(new JDomScm(scmElm).getConnection());
 
-    @Test
-    public void testGetTag() throws Exception
-    {
-        String content = "<scm></scm>";
-        Element scmElm = builder.build( new StringReader( content ) ).getRootElement();
-        assertNull( new JDomScm( scmElm ).getTag() );
+    content = "<scm><connection>CONNECTION</connection></scm>";
+    scmElm = builder.build(new StringReader(content)).getRootElement();
+    assertEquals("CONNECTION", new JDomScm(scmElm).getConnection());
+  }
 
-        content = "<scm><tag>TAG</tag></scm>";
-        scmElm = builder.build( new StringReader( content ) ).getRootElement();
-        assertEquals( "TAG", new JDomScm( scmElm ).getTag() );
-    }
+  @Test
+  public void testGetDeveloperConnection() throws Exception {
+    String content = "<scm></scm>";
+    Element scmElm = builder.build(new StringReader(content)).getRootElement();
+    assertNull(new JDomScm(scmElm).getDeveloperConnection());
 
-    @Test
-    public void testGetUrl() throws Exception
-    {
-        String content = "<scm></scm>";
-        Element scmElm = builder.build( new StringReader( content ) ).getRootElement();
-        assertNull( new JDomScm( scmElm ).getUrl() );
+    content = "<scm><developerConnection>DEVELOPERCONNECTION</developerConnection></scm>";
+    scmElm = builder.build(new StringReader(content)).getRootElement();
+    assertEquals("DEVELOPERCONNECTION", new JDomScm(scmElm).getDeveloperConnection());
+  }
 
-        content = "<scm><url>URL</url></scm>";
-        scmElm = builder.build( new StringReader( content ) ).getRootElement();
-        assertEquals( "URL", new JDomScm( scmElm ).getUrl() );
-    }
+  @Test
+  public void testGetTag() throws Exception {
+    String content = "<scm></scm>";
+    Element scmElm = builder.build(new StringReader(content)).getRootElement();
+    assertNull(new JDomScm(scmElm).getTag());
 
-    @Test
-    public void testSetConnectionString() throws Exception
-    {
-        String content = "<scm></scm>";
-        Element scmElm = builder.build( new StringReader( content ) ).getRootElement();
+    content = "<scm><tag>TAG</tag></scm>";
+    scmElm = builder.build(new StringReader(content)).getRootElement();
+    assertEquals("TAG", new JDomScm(scmElm).getTag());
+  }
 
-        assertNull( getConnection( scmElm ) );
+  @Test
+  public void testGetUrl() throws Exception {
+    String content = "<scm></scm>";
+    Element scmElm = builder.build(new StringReader(content)).getRootElement();
+    assertNull(new JDomScm(scmElm).getUrl());
 
-        new JDomScm( scmElm ).setConnection( "CONNECTION" );
-        assertEquals( "CONNECTION", getConnection( scmElm ) );
+    content = "<scm><url>URL</url></scm>";
+    scmElm = builder.build(new StringReader(content)).getRootElement();
+    assertEquals("URL", new JDomScm(scmElm).getUrl());
+  }
 
-        new JDomScm( scmElm ).setConnection( null );
-        assertNull( getConnection( scmElm ) );
-    }
+  @Test
+  public void testSetConnectionString() throws Exception {
+    String content = "<scm></scm>";
+    Element scmElm = builder.build(new StringReader(content)).getRootElement();
 
-    @Test
-    public void testSetDeveloperConnectionString() throws Exception
-    {
-        String content = "<scm></scm>";
-        Element scmElm = builder.build( new StringReader( content ) ).getRootElement();
+    assertNull(getConnection(scmElm));
 
-        assertNull( getDeveloperConnection( scmElm ) );
+    new JDomScm(scmElm).setConnection("CONNECTION");
+    assertEquals("CONNECTION", getConnection(scmElm));
 
-        new JDomScm( scmElm ).setDeveloperConnection( "DEVELOPERCONNECTION" );
-        assertEquals( "DEVELOPERCONNECTION", getDeveloperConnection( scmElm ) );
+    new JDomScm(scmElm).setConnection(null);
+    assertNull(getConnection(scmElm));
+  }
 
-        new JDomScm( scmElm ).setDeveloperConnection( null );
-        assertNull( getDeveloperConnection( scmElm ) );
-    }
+  @Test
+  public void testSetDeveloperConnectionString() throws Exception {
+    String content = "<scm></scm>";
+    Element scmElm = builder.build(new StringReader(content)).getRootElement();
 
-    @Test
-    public void testSetTagString() throws Exception
-    {
-        String content = "<scm></scm>";
-        Element scmElm = builder.build( new StringReader( content ) ).getRootElement();
+    assertNull(getDeveloperConnection(scmElm));
 
-        assertNull( getUrl( scmElm ) );
+    new JDomScm(scmElm).setDeveloperConnection("DEVELOPERCONNECTION");
+    assertEquals("DEVELOPERCONNECTION", getDeveloperConnection(scmElm));
 
-        new JDomScm( scmElm ).setUrl( "URL" );
-        assertEquals( "URL", getUrl( scmElm ) );
+    new JDomScm(scmElm).setDeveloperConnection(null);
+    assertNull(getDeveloperConnection(scmElm));
+  }
 
-        new JDomScm( scmElm ).setUrl( null );
-        assertNull( getUrl( scmElm ) );
-    }
+  @Test
+  public void testSetTagString() throws Exception {
+    String content = "<scm></scm>";
+    Element scmElm = builder.build(new StringReader(content)).getRootElement();
 
-    @Test
-    public void testSetUrlString() throws Exception
-    {
-        String content = "<scm></scm>";
-        Element scmElm = builder.build( new StringReader( content ) ).getRootElement();
+    assertNull(getUrl(scmElm));
 
-        assertNull( getTag( scmElm ) );
+    new JDomScm(scmElm).setUrl("URL");
+    assertEquals("URL", getUrl(scmElm));
 
-        new JDomScm( scmElm ).setTag( "TAG" );
-        assertEquals( "TAG", getTag( scmElm ) );
+    new JDomScm(scmElm).setUrl(null);
+    assertNull(getUrl(scmElm));
+  }
 
-        new JDomScm( scmElm ).setTag( null );
-        assertNull( getTag( scmElm ) );
-    }
+  @Test
+  public void testSetUrlString() throws Exception {
+    String content = "<scm></scm>";
+    Element scmElm = builder.build(new StringReader(content)).getRootElement();
 
-    private String getConnection( Element scmElm )
-    {
-        return scmElm.getChildText( "connection", scmElm.getNamespace() );
-    }
+    assertNull(getTag(scmElm));
 
-    private String getDeveloperConnection( Element scmElm )
-    {
-        return scmElm.getChildText( "developerConnection", scmElm.getNamespace() );
-    }
+    new JDomScm(scmElm).setTag("TAG");
+    assertEquals("TAG", getTag(scmElm));
 
-    private String getTag( Element scmElm )
-    {
-        return scmElm.getChildText( "tag", scmElm.getNamespace() );
-    }
+    new JDomScm(scmElm).setTag(null);
+    assertNull(getTag(scmElm));
+  }
 
-    private String getUrl( Element scmElm )
-    {
-        return scmElm.getChildText( "url", scmElm.getNamespace() );
-    }
+  private String getConnection(Element scmElm) {
+    return scmElm.getChildText("connection", scmElm.getNamespace());
+  }
+
+  private String getDeveloperConnection(Element scmElm) {
+    return scmElm.getChildText("developerConnection", scmElm.getNamespace());
+  }
+
+  private String getTag(Element scmElm) {
+    return scmElm.getChildText("tag", scmElm.getNamespace());
+  }
+
+  private String getUrl(Element scmElm) {
+    return scmElm.getChildText("url", scmElm.getNamespace());
+  }
 }

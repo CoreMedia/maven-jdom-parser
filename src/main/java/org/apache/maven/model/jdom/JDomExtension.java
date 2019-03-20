@@ -28,54 +28,46 @@ import org.jdom2.Element;
  * @author Robert Scholte
  * @since 3.0
  */
-public class JDomExtension extends Extension implements MavenCoordinate
-{
-    private final MavenCoordinate coordinate;
+public class JDomExtension extends Extension implements MavenCoordinate {
 
-    public JDomExtension( Element extension )
-    {
-        this.coordinate = new JDomMavenCoordinate( extension );
-    }
+  private final MavenCoordinate coordinate;
 
-    @Override
-    public String getArtifactId()
-    {
-        return coordinate.getArtifactId();
-    }
+  public JDomExtension(Element extension) {
+    this.coordinate = new JDomMavenCoordinate(extension);
+  }
 
-    @Override
-    public void setArtifactId( String artifactId )
-    {
-        coordinate.setArtifactId( artifactId );
-    }
+  @Override
+  public String getArtifactId() {
+    return coordinate.getArtifactId();
+  }
 
-    @Override
-    public String getGroupId()
-    {
-        return coordinate.getGroupId();
-    }
+  @Override
+  public void setArtifactId(String artifactId) {
+    coordinate.setArtifactId(artifactId);
+  }
 
-    @Override
-    public void setGroupId( String groupId )
-    {
-        coordinate.setGroupId( groupId );
-    }
+  @Override
+  public String getGroupId() {
+    return coordinate.getGroupId();
+  }
 
-    @Override
-    public String getVersion()
-    {
-        return coordinate.getVersion();
-    }
+  @Override
+  public void setGroupId(String groupId) {
+    coordinate.setGroupId(groupId);
+  }
 
-    @Override
-    public void setVersion( String version )
-    {
-        coordinate.setVersion( version );
-    }
+  @Override
+  public String getVersion() {
+    return coordinate.getVersion();
+  }
 
-    @Override
-    public String getName()
-    {
-        return "extension";
-    }
+  @Override
+  public void setVersion(String version) {
+    coordinate.setVersion(version);
+  }
+
+  @Override
+  public String getName() {
+    return "extension";
+  }
 }

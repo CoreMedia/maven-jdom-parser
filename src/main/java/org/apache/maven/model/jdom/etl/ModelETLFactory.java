@@ -20,11 +20,9 @@ package org.apache.maven.model.jdom.etl;
  */
 
 /**
- *
  * @author Robert Scholte
  * @since 3.0
  */
-public interface ModelETLFactory
-{
-    ModelETL newInstance( ModelETLRequest request );
+public interface ModelETLFactory {
+  ModelETL newInstance(ModelETLRequest request);
 }

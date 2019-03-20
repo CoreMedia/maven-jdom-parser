@@ -20,24 +20,23 @@ package org.apache.maven.model.jdom;
  */
 
 /**
- *
  * @author Robert Scholte
  * @since 3.0
  */
-public interface MavenCoordinate
-{
-    String getGroupId();
+public interface MavenCoordinate {
 
-    void setGroupId( String groupId );
+  String getGroupId();
 
-    String getArtifactId();
+  void setGroupId(String groupId);
 
-    void setArtifactId( String artifactId );
+  String getArtifactId();
 
-    String getVersion();
+  void setArtifactId(String artifactId);
 
-    void setVersion( String version );
+  String getVersion();
 
-    // @todo helper method during refactoring, will be removed
-    String getName();
+  void setVersion(String version);
+
+  // @todo helper method during refactoring, will be removed
+  String getName();
 }

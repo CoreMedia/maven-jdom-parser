@@ -19,15 +19,15 @@ package org.apache.maven.model.jdom;
  * under the License.
  */
 
-import static org.apache.maven.model.jdom.util.JDomUtils.insertNewElement;
-
-import java.util.Collections;
-import java.util.List;
-
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.DependencyManagement;
 import org.apache.maven.model.jdom.util.JDomUtils;
 import org.jdom2.Element;
+
+import java.util.Collections;
+import java.util.List;
+
+import static org.apache.maven.model.jdom.util.JDomUtils.insertNewElement;
 
 /**
  * JDom implementation of poms DEPENDENCYMANAGEMENT element
@@ -35,40 +35,30 @@ import org.jdom2.Element;
  * @author Robert Scholte
  * @since 3.0
  */
-public class JDomDependencyManagement extends DependencyManagement
-{
-    private final Element dependencyManagement;
+public class JDomDependencyManagement extends DependencyManagement {
 
-    public JDomDependencyManagement( Element dependencyManagement )
-    {
-        this.dependencyManagement = dependencyManagement;
+  private final Element dependencyManagement;
+
+  public JDomDependencyManagement(Element dependencyManagement) {
+    this.dependencyManagement = dependencyManagement;
+  }
+
+  @Override
+  public List<Dependency> getDependencies() {
+    Element dependenciesElm = dependencyManagement.getChild("dependencies", dependencyManagement.getNamespace());
+    if (dependenciesElm == null) {
+      return Collections.emptyList();
+    } else {
+      return new JDomDependencies(dependenciesElm);
     }
+  }
 
-    @Override
-    public List<Dependency> getDependencies()
-    {
-        Element dependenciesElm = dependencyManagement.getChild( "dependencies", dependencyManagement.getNamespace() );
-        if ( dependenciesElm == null )
-        {
-            return Collections.emptyList();
-        }
-        else
-        {
-            return new JDomDependencies( dependenciesElm );
-        }
+  @Override
+  public void setDependencies(List<Dependency> dependencies) {
+    if (dependencies == null) {
+      JDomUtils.rewriteElement("dependencies", null, dependencyManagement, dependencyManagement.getNamespace());
+    } else {
+      new JDomDependencies(insertNewElement("dependencies", dependencyManagement)).addAll(dependencies);
     }
-
-    @Override
-    public void setDependencies( List<Dependency> dependencies )
-    {
-        if ( dependencies == null )
-        {
-            JDomUtils.rewriteElement( "dependencies", null, dependencyManagement, dependencyManagement.getNamespace() );
-        }
-        else
-        {
-            new JDomDependencies( insertNewElement( "dependencies", dependencyManagement ) ).addAll( dependencies );
-        }
-    }
-
+  }
 }

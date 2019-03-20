@@ -20,47 +20,42 @@ package org.apache.maven.model.jdom.etl;
  */
 
 /**
- *
  * @author Robert Scholte
  * @since 3.0
  */
-public class ModelETLRequest
-{
-    /**
-     * The Unix line separator
-     */
-    public static final String UNIX_LS = "\n";
+public class ModelETLRequest {
 
-    /**
-     * The Windows line separator
-     */
-    public static final String WINDOWS_LS = "\r\n";
+  /**
+   * The Unix line separator
+   */
+  public static final String UNIX_LS = "\n";
 
-    /**
-     * The Classic Mac line separator
-     */
-    public static final String CLASSIC_MAC_LS = "\r";
+  /**
+   * The Windows line separator
+   */
+  public static final String WINDOWS_LS = "\r\n";
 
-    private boolean addSchema;
-    private String lineSeparator = System.getProperty( "line.separator" );
+  /**
+   * The Classic Mac line separator
+   */
+  public static final String CLASSIC_MAC_LS = "\r";
 
-    public boolean isAddSchema()
-    {
-        return addSchema;
-    }
+  private boolean addSchema;
+  private String lineSeparator = System.getProperty("line.separator");
 
-    public void setAddSchema( boolean addSchema )
-    {
-        this.addSchema = addSchema;
-    }
+  public boolean isAddSchema() {
+    return addSchema;
+  }
 
-    public String getLineSeparator()
-    {
-        return lineSeparator;
-    }
+  public void setAddSchema(boolean addSchema) {
+    this.addSchema = addSchema;
+  }
 
-    public void setLineSeparator( String lineSeparator )
-    {
-        this.lineSeparator = lineSeparator;
-    }
+  public String getLineSeparator() {
+    return lineSeparator;
+  }
+
+  public void setLineSeparator(String lineSeparator) {
+    this.lineSeparator = lineSeparator;
+  }
 }

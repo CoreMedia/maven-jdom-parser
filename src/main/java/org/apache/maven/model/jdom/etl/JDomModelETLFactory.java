@@ -25,19 +25,17 @@ import org.codehaus.plexus.component.annotations.Component;
  * @author Robert Scholte
  * @since 3.0
  */
-@Component( role = ModelETLFactory.class, hint = JDomModelETLFactory.ROLE_HINT )
-public class JDomModelETLFactory implements ModelETLFactory
-{
-    public static final String ROLE_HINT = "jdom-sax";
+@Component(role = ModelETLFactory.class, hint = JDomModelETLFactory.ROLE_HINT)
+public class JDomModelETLFactory implements ModelETLFactory {
 
-    @Override
-    public JDomModelETL newInstance( ModelETLRequest request )
-    {
-        JDomModelETL result = new JDomModelETL();
-        if ( request != null )
-        {
-            result.setModelETLRequest( request );
-        }
-        return result;
+  public static final String ROLE_HINT = "jdom-sax";
+
+  @Override
+  public JDomModelETL newInstance(ModelETLRequest request) {
+    JDomModelETL result = new JDomModelETL();
+    if (request != null) {
+      result.setModelETLRequest(request);
     }
+    return result;
+  }
 }

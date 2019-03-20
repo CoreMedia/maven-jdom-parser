@@ -19,86 +19,79 @@ package org.apache.maven.model.jdom;
  * under the License.
  */
 
-import static org.apache.maven.model.jdom.util.JDomUtils.getChildElementTextTrim;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-
-import java.io.StringReader;
-
 import org.jdom2.Element;
 import org.jdom2.input.SAXBuilder;
 import org.junit.Test;
 
-public class JDomExtensionTest
-{
-    private SAXBuilder builder = new SAXBuilder();
+import java.io.StringReader;
 
-    @Test
-    public void testGetArtifactId() throws Exception
-    {
-        String content = "<extension></extension>";
-        Element extensionElm = builder.build( new StringReader( content ) ).getRootElement();
-        assertNull( new JDomExtension( extensionElm ).getArtifactId() );
+import static org.apache.maven.model.jdom.util.JDomUtils.getChildElementTextTrim;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
-        content = "<extension><artifactId>ARTIFACTID</artifactId></extension>";
-        extensionElm = builder.build( new StringReader( content ) ).getRootElement();
-        assertEquals( "ARTIFACTID", new JDomExtension( extensionElm ).getArtifactId() );
-    }
+public class JDomExtensionTest {
 
-    @Test
-    public void testGetGroupId() throws Exception
-    {
-        String content = "<extension></extension>";
-        Element extensionElm = builder.build( new StringReader( content ) ).getRootElement();
-        assertNull( new JDomExtension( extensionElm ).getGroupId() );
+  private SAXBuilder builder = new SAXBuilder();
 
-        content = "<extension><groupId>GROUPID</groupId></extension>";
-        extensionElm = builder.build( new StringReader( content ) ).getRootElement();
-        assertEquals( "GROUPID", new JDomExtension( extensionElm ).getGroupId() );
-    }
+  @Test
+  public void testGetArtifactId() throws Exception {
+    String content = "<extension></extension>";
+    Element extensionElm = builder.build(new StringReader(content)).getRootElement();
+    assertNull(new JDomExtension(extensionElm).getArtifactId());
 
-    @Test
-    public void testGetVersion() throws Exception
-    {
-        String content = "<extension></extension>";
-        Element extensionElm = builder.build( new StringReader( content ) ).getRootElement();
-        assertNull( new JDomExtension( extensionElm ).getVersion() );
+    content = "<extension><artifactId>ARTIFACTID</artifactId></extension>";
+    extensionElm = builder.build(new StringReader(content)).getRootElement();
+    assertEquals("ARTIFACTID", new JDomExtension(extensionElm).getArtifactId());
+  }
 
-        content = "<extension><version>VERSION</version></extension>";
-        extensionElm = builder.build( new StringReader( content ) ).getRootElement();
-        assertEquals( "VERSION", new JDomExtension( extensionElm ).getVersion() );
-    }
+  @Test
+  public void testGetGroupId() throws Exception {
+    String content = "<extension></extension>";
+    Element extensionElm = builder.build(new StringReader(content)).getRootElement();
+    assertNull(new JDomExtension(extensionElm).getGroupId());
 
-    @Test
-    public void testSetArtifactIdString() throws Exception
-    {
-        String content = "<extension><artifactId>OLD_ARTIFACTID</artifactId></extension>";
-        Element extensionElm = builder.build( new StringReader( content ) ).getRootElement();
-        new JDomExtension( extensionElm ).setArtifactId( "NEW_ARTIFACTID" );
-        assertEquals( "NEW_ARTIFACTID", getChildElementTextTrim( "artifactId", extensionElm ) );
-    }
+    content = "<extension><groupId>GROUPID</groupId></extension>";
+    extensionElm = builder.build(new StringReader(content)).getRootElement();
+    assertEquals("GROUPID", new JDomExtension(extensionElm).getGroupId());
+  }
 
-    @Test
-    public void testSetGroupId() throws Exception
-    {
-        String content = "<extension><groupId>OLD_GROUPID</groupId></extension>";
-        Element extensionElm = builder.build( new StringReader( content ) ).getRootElement();
-        new JDomExtension( extensionElm ).setGroupId( "NEW_GROUPID" );
-        assertEquals( "NEW_GROUPID", getChildElementTextTrim( "groupId", extensionElm ) );
-    }
+  @Test
+  public void testGetVersion() throws Exception {
+    String content = "<extension></extension>";
+    Element extensionElm = builder.build(new StringReader(content)).getRootElement();
+    assertNull(new JDomExtension(extensionElm).getVersion());
 
-    @Test
-    public void testSetVersion() throws Exception
-    {
-        String content = "<extension><version>OLD_VERSION</version></extension>";
-        Element extensionElm = builder.build( new StringReader( content ) ).getRootElement();
-        new JDomExtension( extensionElm ).setVersion( "NEW_VERSION" );
-        assertEquals( "NEW_VERSION", getChildElementTextTrim( "version", extensionElm ) );
-    }
+    content = "<extension><version>VERSION</version></extension>";
+    extensionElm = builder.build(new StringReader(content)).getRootElement();
+    assertEquals("VERSION", new JDomExtension(extensionElm).getVersion());
+  }
 
-    @Test
-    public void testGetName()
-    {
-        assertEquals( "extension", new JDomExtension( null ).getName() );
-    }
+  @Test
+  public void testSetArtifactIdString() throws Exception {
+    String content = "<extension><artifactId>OLD_ARTIFACTID</artifactId></extension>";
+    Element extensionElm = builder.build(new StringReader(content)).getRootElement();
+    new JDomExtension(extensionElm).setArtifactId("NEW_ARTIFACTID");
+    assertEquals("NEW_ARTIFACTID", getChildElementTextTrim("artifactId", extensionElm));
+  }
+
+  @Test
+  public void testSetGroupId() throws Exception {
+    String content = "<extension><groupId>OLD_GROUPID</groupId></extension>";
+    Element extensionElm = builder.build(new StringReader(content)).getRootElement();
+    new JDomExtension(extensionElm).setGroupId("NEW_GROUPID");
+    assertEquals("NEW_GROUPID", getChildElementTextTrim("groupId", extensionElm));
+  }
+
+  @Test
+  public void testSetVersion() throws Exception {
+    String content = "<extension><version>OLD_VERSION</version></extension>";
+    Element extensionElm = builder.build(new StringReader(content)).getRootElement();
+    new JDomExtension(extensionElm).setVersion("NEW_VERSION");
+    assertEquals("NEW_VERSION", getChildElementTextTrim("version", extensionElm));
+  }
+
+  @Test
+  public void testGetName() {
+    assertEquals("extension", new JDomExtension(null).getName());
+  }
 }

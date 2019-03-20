@@ -16,15 +16,6 @@ package org.apache.maven.model.jdom.it;
  * limitations under the License.
  */
 
-import static org.apache.maven.model.jdom.etl.ModelETLRequest.UNIX_LS;
-import static org.junit.Assert.assertEquals;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
-
 import org.apache.maven.model.jdom.etl.JDomModelETL;
 import org.apache.maven.model.jdom.etl.JDomModelETLFactory;
 import org.apache.maven.model.jdom.etl.ModelETLRequest;
@@ -34,6 +25,15 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 import org.junit.rules.TestName;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+
+import static org.apache.maven.model.jdom.etl.ModelETLRequest.UNIX_LS;
+import static org.junit.Assert.assertEquals;
 
 /**
  * This abstract class offers the base implementation that allows to add tests consisting of the transformation code, an
@@ -45,80 +45,68 @@ import org.junit.rules.TestName;
  *
  * @author Marc Rohlfs, CoreMedia AG
  */
-public abstract class AbstractJDomModelEtlIT
-{
-    @Rule
-    public TestName testName = new TestName();
+public abstract class AbstractJDomModelEtlIT {
 
-    @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
+  @Rule
+  public TestName testName = new TestName();
 
-    @SuppressWarnings( "WeakerAccess" )
-    protected JDomModelETL jDomModelETL;
+  @Rule
+  public TemporaryFolder folder = new TemporaryFolder();
 
-    private File expectedPomFile;
-    private File outputPomFile;
+  @SuppressWarnings("WeakerAccess")
+  protected JDomModelETL jDomModelETL;
 
-    @Before
-    public void setUp() throws IOException, JDOMException, URISyntaxException
-    {
-        String testResourceNamePrefix = getTestResourceNamePrefix();
-        File inputPomFile = getTestResource( testResourceNamePrefix + "_input-pom.xml" );
-        expectedPomFile = getTestResource( testResourceNamePrefix + "_expected-pom.xml" );
-        outputPomFile = getOutputFile( testResourceNamePrefix + "_output-pom.xml" );
+  private File expectedPomFile;
+  private File outputPomFile;
 
-        final ModelETLRequest modelETLRequest = new ModelETLRequest();
-        modelETLRequest.setLineSeparator( UNIX_LS );
-        jDomModelETL = new JDomModelETLFactory().newInstance( modelETLRequest );
-        jDomModelETL.extract( inputPomFile );
+  @Before
+  public void setUp() throws IOException, JDOMException, URISyntaxException {
+    String testResourceNamePrefix = getTestResourceNamePrefix();
+    File inputPomFile = getTestResource(testResourceNamePrefix + "_input-pom.xml");
+    expectedPomFile = getTestResource(testResourceNamePrefix + "_expected-pom.xml");
+    outputPomFile = getOutputFile(testResourceNamePrefix + "_output-pom.xml");
+
+    final ModelETLRequest modelETLRequest = new ModelETLRequest();
+    modelETLRequest.setLineSeparator(UNIX_LS);
+    jDomModelETL = new JDomModelETLFactory().newInstance(modelETLRequest);
+    jDomModelETL.extract(inputPomFile);
+  }
+
+  @SuppressWarnings("WeakerAccess")
+  protected void assertTransformation() throws IOException {
+    jDomModelETL.load(outputPomFile);
+
+    String actualXml = FileUtils.fileRead(outputPomFile);
+    String expectedXml = FileUtils.fileRead(expectedPomFile);
+    String message = "Unexpected contents in output file " + outputPomFile + System.getProperty("line.separator");
+    assertEquals(message, expectedXml, actualXml);
+  }
+
+  private File getOutputFile(String filename) throws IOException {
+    String outputDirectory = (System.getProperty("test.output.directory"));
+    if (outputDirectory == null) {
+      // Write the output to a tmp file - applies when tests are executed in the IDE.
+      return folder.newFile(filename);
+    } else {
+      // Write the output to a file in the output dir - applies when tests are executed by the Maven build.
+      File outputDir = new File(outputDirectory);
+      outputDir.mkdirs();
+      return new File(outputDirectory, this.getClass().getPackage().getName() + "." + filename);
     }
+  }
 
-    @SuppressWarnings( "WeakerAccess" )
-    protected void assertTransformation() throws IOException
-    {
-        jDomModelETL.load( outputPomFile );
-
-        String actualXml = FileUtils.fileRead( outputPomFile );
-        String expectedXml = FileUtils.fileRead( expectedPomFile );
-        String message = "Unexpected contents in output file " + outputPomFile + System.getProperty( "line.separator" );
-        assertEquals( message, expectedXml, actualXml );
+  @SuppressWarnings("WeakerAccess")
+  protected File getTestResource(String filename) throws FileNotFoundException, URISyntaxException {
+    URL resource = this.getClass().getResource(filename);
+    if (resource == null) {
+      throw new FileNotFoundException("Test resource not found: " + filename);
+    } else {
+      return new File(resource.toURI());
     }
+  }
 
-    private File getOutputFile( String filename ) throws IOException
-    {
-        String outputDirectory = ( System.getProperty( "test.output.directory" ) );
-        if ( outputDirectory == null )
-        {
-            // Write the output to a tmp file - applies when tests are executed in the IDE.
-            return folder.newFile( filename );
-        }
-        else
-        {
-            // Write the output to a file in the output dir - applies when tests are executed by the Maven build.
-            File outputDir = new File( outputDirectory );
-            outputDir.mkdirs();
-            return new File( outputDirectory, this.getClass().getPackage().getName() + "." + filename );
-        }
-
-    }
-
-    @SuppressWarnings( "WeakerAccess" )
-    protected File getTestResource( String filename ) throws FileNotFoundException, URISyntaxException
-    {
-        URL resource = this.getClass().getResource( filename );
-        if ( resource == null )
-        {
-            throw new FileNotFoundException( "Test resource not found: " + filename );
-        }
-        else
-        {
-            return new File( resource.toURI() );
-        }
-    }
-
-    @SuppressWarnings( "WeakerAccess" )
-    protected String getTestResourceNamePrefix()
-    {
-        return this.getClass().getSimpleName() + "_" + testName.getMethodName();
-    }
+  @SuppressWarnings("WeakerAccess")
+  protected String getTestResourceNamePrefix() {
+    return this.getClass().getSimpleName() + "_" + testName.getMethodName();
+  }
 }

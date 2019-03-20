@@ -19,11 +19,11 @@ package org.apache.maven.model.jdom;
  * under the License.
  */
 
-import static org.apache.maven.model.jdom.util.JDomUtils.getChildElementTextTrim;
-import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
-
 import org.apache.maven.model.Scm;
 import org.jdom2.Element;
+
+import static org.apache.maven.model.jdom.util.JDomUtils.getChildElementTextTrim;
+import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
 
 /**
  * JDom implementation of poms SCM element
@@ -31,60 +31,51 @@ import org.jdom2.Element;
  * @author Robert Scholte
  * @since 3.0
  */
-public class JDomScm extends Scm
-{
-    private Element scm;
+public class JDomScm extends Scm {
 
-    public JDomScm( Element scm )
-    {
-        this.scm = scm;
-    }
+  private Element scm;
 
-    @Override
-    public String getConnection()
-    {
-        return getChildElementTextTrim( "connection", scm );
-    }
+  public JDomScm(Element scm) {
+    this.scm = scm;
+  }
 
-    @Override
-    public void setConnection( String connection )
-    {
-        rewriteElement( "connection", connection, scm, scm.getNamespace() );
-    }
+  @Override
+  public String getConnection() {
+    return getChildElementTextTrim("connection", scm);
+  }
 
-    @Override
-    public String getDeveloperConnection()
-    {
-        return getChildElementTextTrim( "developerConnection", scm );
-    }
+  @Override
+  public void setConnection(String connection) {
+    rewriteElement("connection", connection, scm, scm.getNamespace());
+  }
 
-    @Override
-    public void setDeveloperConnection( String developerConnection )
-    {
-        rewriteElement( "developerConnection", developerConnection, scm, scm.getNamespace() );
-    }
+  @Override
+  public String getDeveloperConnection() {
+    return getChildElementTextTrim("developerConnection", scm);
+  }
 
-    @Override
-    public String getTag()
-    {
-        return getChildElementTextTrim( "tag", scm );
-    }
+  @Override
+  public void setDeveloperConnection(String developerConnection) {
+    rewriteElement("developerConnection", developerConnection, scm, scm.getNamespace());
+  }
 
-    @Override
-    public void setTag( String tag )
-    {
-        rewriteElement( "tag", tag, scm, scm.getNamespace() );
-    }
+  @Override
+  public String getTag() {
+    return getChildElementTextTrim("tag", scm);
+  }
 
-    @Override
-    public String getUrl()
-    {
-        return getChildElementTextTrim( "url", scm );
-    }
+  @Override
+  public void setTag(String tag) {
+    rewriteElement("tag", tag, scm, scm.getNamespace());
+  }
 
-    @Override
-    public void setUrl( String url )
-    {
-        rewriteElement( "url", url, scm, scm.getNamespace() );
-    }
+  @Override
+  public String getUrl() {
+    return getChildElementTextTrim("url", scm);
+  }
+
+  @Override
+  public void setUrl(String url) {
+    rewriteElement("url", url, scm, scm.getNamespace());
+  }
 }

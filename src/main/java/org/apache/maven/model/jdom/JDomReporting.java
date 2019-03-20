@@ -19,14 +19,14 @@ package org.apache.maven.model.jdom;
  * under the License.
  */
 
+import org.apache.maven.model.ReportPlugin;
+import org.apache.maven.model.Reporting;
+import org.jdom2.Element;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.maven.model.ReportPlugin;
-import org.apache.maven.model.Reporting;
-import org.jdom2.Element;
 
 /**
  * JDom implementation of poms REPORTING element
@@ -34,84 +34,69 @@ import org.jdom2.Element;
  * @author Robert Scholte
  * @since 3.0
  */
-public class JDomReporting extends Reporting
-{
+public class JDomReporting extends Reporting {
 
-    private final Element reporting;
+  private final Element reporting;
 
-    public JDomReporting( Element reporting )
-    {
-        this.reporting = reporting;
+  public JDomReporting(Element reporting) {
+    this.reporting = reporting;
+  }
+
+  @Override
+  public String getOutputDirectory() {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public List<ReportPlugin> getPlugins() {
+    Element pluginsElm = reporting.getChild("plugins", reporting.getNamespace());
+    if (pluginsElm == null) {
+      return Collections.emptyList();
+    } else {
+      List<Element> pluginElms = pluginsElm.getChildren("plugin", reporting.getNamespace());
+
+      List<ReportPlugin> plugins = new ArrayList<>(pluginElms.size());
+
+      for (Element pluginElm : pluginElms) {
+        plugins.add(new JDomReportPlugin(pluginElm));
+      }
+
+      return plugins;
     }
+  }
 
-    @Override
-    public String getOutputDirectory()
-    {
-        throw new UnsupportedOperationException();
-    }
+  @Override
+  public void removePlugin(ReportPlugin reportPlugin) {
+    throw new UnsupportedOperationException();
+  }
 
-    @Override
-    public List<ReportPlugin> getPlugins()
-    {
-        Element pluginsElm = reporting.getChild( "plugins", reporting.getNamespace() );
-        if ( pluginsElm == null )
-        {
-            return Collections.emptyList();
-        }
-        else
-        {
-            List<Element> pluginElms = pluginsElm.getChildren( "plugin", reporting.getNamespace() );
+  @Override
+  public void setOutputDirectory(String outputDirectory) {
+    throw new UnsupportedOperationException();
+  }
 
-            List<ReportPlugin> plugins = new ArrayList<>( pluginElms.size() );
+  @Override
+  public void setPlugins(List<ReportPlugin> plugins) {
+    throw new UnsupportedOperationException();
+  }
 
-            for ( Element pluginElm : pluginElms )
-            {
-                plugins.add( new JDomReportPlugin( pluginElm ) );
-            }
+  @Override
+  public void flushReportPluginMap() {
+    throw new UnsupportedOperationException();
+  }
 
-            return plugins;
-        }
-    }
+  @Override
+  public Map<String, ReportPlugin> getReportPluginsAsMap() {
+    throw new UnsupportedOperationException();
+  }
 
-    @Override
-    public void removePlugin( ReportPlugin reportPlugin )
-    {
-        throw new UnsupportedOperationException();
-    }
+  @Override
+  public boolean isExcludeDefaults() {
+    throw new UnsupportedOperationException();
+  }
 
-    @Override
-    public void setOutputDirectory( String outputDirectory )
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void setPlugins( List<ReportPlugin> plugins )
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void flushReportPluginMap()
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Map<String, ReportPlugin> getReportPluginsAsMap()
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean isExcludeDefaults()
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void setExcludeDefaults( boolean excludeDefaults )
-    {
-        throw new UnsupportedOperationException();
-    }
+  @Override
+  public void setExcludeDefaults(boolean excludeDefaults) {
+    throw new UnsupportedOperationException();
+  }
 }

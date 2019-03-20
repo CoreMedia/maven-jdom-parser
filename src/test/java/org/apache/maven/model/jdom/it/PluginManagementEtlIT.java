@@ -23,11 +23,10 @@ import org.apache.maven.model.PluginContainer;
  *
  * @author Marc Rohlfs, CoreMedia AG
  */
-public class PluginManagementEtlIT extends PluginsEtlIT
-{
-    @Override
-    protected PluginContainer getPluginPluginContainer()
-    {
-        return jDomModelETL.getModel().getBuild().getPluginManagement();
-    }
+public class PluginManagementEtlIT extends PluginsEtlIT {
+
+  @Override
+  protected PluginContainer getPluginPluginContainer() {
+    return jDomModelETL.getModel().getBuild().getPluginManagement();
+  }
 }

@@ -19,12 +19,6 @@ package org.apache.maven.model.jdom;
  * under the License.
  */
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-
-import java.io.StringReader;
-
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Scm;
 import org.jdom2.Document;
@@ -32,67 +26,68 @@ import org.jdom2.Element;
 import org.jdom2.input.SAXBuilder;
 import org.junit.Test;
 
-public class JDomModelTest
-{
-    private SAXBuilder builder = new SAXBuilder();
+import java.io.StringReader;
 
-    @Test
-    public void testGetScm() throws Exception
-    {
-        String content = "<project></project>";
-        Document document = builder.build( new StringReader( content ) );
-        assertNull( new JDomModel( document ).getScm() );
-    }
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
-    @Test
-    public void testSetScm() throws Exception
-    {
-        String content = "<project></project>";
-        Document document = builder.build( new StringReader( content ) );
-        Model model = new JDomModel( document );
-        assertNull( model.getScm() );
+public class JDomModelTest {
 
-        model.setScm( new Scm() );
-        assertNotNull( model.getScm() );
+  private SAXBuilder builder = new SAXBuilder();
 
-        model.setScm( null );
-        assertNull( model.getScm() );
-    }
+  @Test
+  public void testGetScm() throws Exception {
+    String content = "<project></project>";
+    Document document = builder.build(new StringReader(content));
+    assertNull(new JDomModel(document).getScm());
+  }
 
-    @Test
-    public void testSetVersion() throws Exception
-    {
-        String content = "<project></project>";
-        Element projectElm = builder.build( new StringReader( content ) ).getRootElement();
-        Model model = new JDomModel( projectElm );
-        assertNull( model.getVersion() );
+  @Test
+  public void testSetScm() throws Exception {
+    String content = "<project></project>";
+    Document document = builder.build(new StringReader(content));
+    Model model = new JDomModel(document);
+    assertNull(model.getScm());
 
-        model.setVersion( "VERSION" );
-        assertEquals( "VERSION", getVersion( projectElm ) );
+    model.setScm(new Scm());
+    assertNotNull(model.getScm());
 
-        model.setVersion( null );
-        assertNull( model.getVersion() );
+    model.setScm(null);
+    assertNull(model.getScm());
+  }
 
-        // inherit from parent
-        // this business logic might need to moved.
-        content = "<project><parent><version>PARENT_VERSION</version></parent></project>";
-        projectElm = builder.build( new StringReader( content ) ).getRootElement();
-        model = new JDomModel( projectElm );
-        assertNull( model.getVersion() );
+  @Test
+  public void testSetVersion() throws Exception {
+    String content = "<project></project>";
+    Element projectElm = builder.build(new StringReader(content)).getRootElement();
+    Model model = new JDomModel(projectElm);
+    assertNull(model.getVersion());
 
-        model.setVersion( "PARENT_VERSION" );
-        assertNull( getVersion( projectElm ) );
+    model.setVersion("VERSION");
+    assertEquals("VERSION", getVersion(projectElm));
 
-        model.setVersion( "VERSION" );
-        assertEquals( "VERSION", getVersion( projectElm ) );
+    model.setVersion(null);
+    assertNull(model.getVersion());
 
-        model.setVersion( null );
-        assertNull( model.getVersion() );
-    }
+    // inherit from parent
+    // this business logic might need to moved.
+    content = "<project><parent><version>PARENT_VERSION</version></parent></project>";
+    projectElm = builder.build(new StringReader(content)).getRootElement();
+    model = new JDomModel(projectElm);
+    assertNull(model.getVersion());
 
-    private String getVersion( Element projectElm )
-    {
-        return projectElm.getChildText( "version", projectElm.getNamespace() );
-    }
+    model.setVersion("PARENT_VERSION");
+    assertNull(getVersion(projectElm));
 
+    model.setVersion("VERSION");
+    assertEquals("VERSION", getVersion(projectElm));
+
+    model.setVersion(null);
+    assertNull(model.getVersion());
+  }
+
+  private String getVersion(Element projectElm) {
+    return projectElm.getChildText("version", projectElm.getNamespace());
+  }
 }

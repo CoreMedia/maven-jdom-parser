@@ -16,43 +16,40 @@ package org.apache.maven.model.jdom;
  * limitations under the License.
  */
 
-import static org.apache.maven.model.jdom.util.JDomUtils.getChildElementTextTrim;
-import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
-
 import org.apache.maven.model.ActivationProperty;
 import org.jdom2.Element;
+
+import static org.apache.maven.model.jdom.util.JDomUtils.getChildElementTextTrim;
+import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
 
 /**
  * JDOM implementation of POMs {@code property} element.
  *
  * @author Marc Rohlfs, CoreMedia AG
  */
-public class JDomActivationProperty extends ActivationProperty
-{
-    private static final String ELEMENT_NAME = "name";
-    private static final String ELEMENT_VALUE = "value";
+public class JDomActivationProperty extends ActivationProperty {
 
-    private final Element jdomElement;
+  private static final String ELEMENT_NAME = "name";
+  private static final String ELEMENT_VALUE = "value";
 
-    public JDomActivationProperty( Element element )
-    {
-        jdomElement = element;
+  private final Element jdomElement;
 
-        super.setName( getChildElementTextTrim( ELEMENT_NAME, jdomElement ) );
-        super.setValue( getChildElementTextTrim( ELEMENT_VALUE, jdomElement ) );
-    }
+  public JDomActivationProperty(Element element) {
+    jdomElement = element;
 
-    @Override
-    public void setName( String name )
-    {
-        rewriteElement( ELEMENT_NAME, name, jdomElement );
-        super.setName( name );
-    }
+    super.setName(getChildElementTextTrim(ELEMENT_NAME, jdomElement));
+    super.setValue(getChildElementTextTrim(ELEMENT_VALUE, jdomElement));
+  }
 
-    @Override
-    public void setValue( String value )
-    {
-        rewriteElement( ELEMENT_VALUE, value, jdomElement );
-        super.setValue( value );
-    }
+  @Override
+  public void setName(String name) {
+    rewriteElement(ELEMENT_NAME, name, jdomElement);
+    super.setName(name);
+  }
+
+  @Override
+  public void setValue(String value) {
+    rewriteElement(ELEMENT_VALUE, value, jdomElement);
+    super.setValue(value);
+  }
 }

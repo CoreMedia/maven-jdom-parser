@@ -19,8 +19,8 @@ package org.apache.maven.model.jdom;
  * under the License.
  */
 
-import static org.apache.maven.model.jdom.util.JDomUtils.getChildElementTextTrim;
-import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
+import org.jdom2.Element;
+import org.jdom2.filter.ElementFilter;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,8 +37,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import org.jdom2.Element;
-import org.jdom2.filter.ElementFilter;
+import static org.apache.maven.model.jdom.util.JDomUtils.getChildElementTextTrim;
+import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
 
 /**
  * JDom implementation of poms PROPERTIES element
@@ -46,218 +46,183 @@ import org.jdom2.filter.ElementFilter;
  * @author Robert Scholte
  * @since 3.0
  */
-public class JDomProperties extends Properties
-{
-    private final Element properties;
+public class JDomProperties extends Properties {
 
-    public JDomProperties( Element properties )
-    {
-        this.properties = properties;
+  private final Element properties;
+
+  public JDomProperties(Element properties) {
+    this.properties = properties;
+  }
+
+  @Override
+  public Set<Map.Entry<Object, Object>> entrySet() {
+    JDomPropertiesSet entrySet = new JDomPropertiesSet();
+
+    for (Element property : properties.getContent(new ElementFilter(properties.getNamespace()))) {
+      entrySet.addProperty(new JDomProperty(property));
+    }
+
+    return entrySet;
+  }
+
+  @Override
+  public synchronized Object put(Object key, Object value) {
+    String previousValue = getChildElementTextTrim((String) key, properties);
+    rewriteElement((String) key, (String) value, properties, properties.getNamespace());
+    return previousValue;
+  }
+
+  @Override
+  public synchronized Object remove(Object key) {
+    String previousValue = getChildElementTextTrim((String) key, properties);
+    rewriteElement((String) key, null, properties, properties.getNamespace());
+    return previousValue;
+  }
+
+  @Override
+  public synchronized void load(Reader reader)
+          throws IOException {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public synchronized void load(InputStream inStream)
+          throws IOException {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void save(OutputStream out, String comments) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void store(Writer writer, String comments)
+          throws IOException {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void store(OutputStream out, String comments)
+          throws IOException {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public synchronized void loadFromXML(InputStream in)
+          throws IOException {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void storeToXML(OutputStream os, String comment)
+          throws IOException {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void storeToXML(OutputStream os, String comment, String encoding)
+          throws IOException {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public String getProperty(String key) {
+    Element property = properties.getChild(key, properties.getNamespace());
+
+    if (property == null) {
+      return null;
+    } else {
+      return property.getTextTrim();
+    }
+  }
+
+  @Override
+  public String getProperty(String key, String defaultValue) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public Enumeration<?> propertyNames() {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public Set<String> stringPropertyNames() {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void list(PrintStream out) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void list(PrintWriter out) {
+    throw new UnsupportedOperationException();
+  }
+
+  private class JDomPropertiesSet extends HashSet<Map.Entry<Object, Object>> {
+    private void addProperty(JDomProperty jDomProperty) {
+      // The 'add' method can only be called internally.
+      // Adding a property from the outside can currently only be supported using the JDomProperties.put() method.
+      super.add(jDomProperty);
     }
 
     @Override
-    public Set<Map.Entry<Object, Object>> entrySet()
-    {
-        JDomPropertiesSet entrySet = new JDomPropertiesSet();
-
-        for ( Element property : properties.getContent( new ElementFilter( properties.getNamespace() ) ) )
-        {
-            entrySet.addProperty( new JDomProperty( property ) );
-        }
-
-        return entrySet;
+    public boolean add(Map.Entry<Object, Object> objectObjectEntry) {
+      throw new UnsupportedOperationException();
     }
 
     @Override
-    public synchronized Object put( Object key, Object value )
-    {
-        String previousValue = getChildElementTextTrim( (String) key, properties );
-        rewriteElement( (String) key, (String) value, properties, properties.getNamespace() );
-        return previousValue;
+    public boolean remove(Object o) {
+      throw new UnsupportedOperationException();
+    }
+
+
+    @Override
+    public boolean addAll(Collection<? extends Map.Entry<Object, Object>> c) {
+      throw new UnsupportedOperationException();
     }
 
     @Override
-    public synchronized Object remove( Object key )
-    {
-        String previousValue = getChildElementTextTrim( (String) key, properties );
-        rewriteElement( (String) key, null, properties, properties.getNamespace() );
-        return previousValue;
+    public boolean retainAll(Collection<?> c) {
+      throw new UnsupportedOperationException();
     }
 
     @Override
-    public synchronized void load( Reader reader )
-        throws IOException
-    {
-        throw new UnsupportedOperationException();
+    public boolean removeAll(Collection<?> c) {
+      throw new UnsupportedOperationException();
     }
 
     @Override
-    public synchronized void load( InputStream inStream )
-        throws IOException
-    {
-        throw new UnsupportedOperationException();
+    public void clear() {
+      throw new UnsupportedOperationException();
+    }
+  }
+
+  private class JDomProperty implements Map.Entry<Object, Object> {
+    private Element property;
+
+    private JDomProperty(Element property) {
+      this.property = property;
     }
 
     @Override
-    public void save( OutputStream out, String comments )
-    {
-        throw new UnsupportedOperationException();
+    public Object getKey() {
+      return property.getName();
     }
 
     @Override
-    public void store( Writer writer, String comments )
-        throws IOException
-    {
-        throw new UnsupportedOperationException();
+    public Object getValue() {
+      return property.getTextTrim();
     }
 
     @Override
-    public void store( OutputStream out, String comments )
-        throws IOException
-    {
-        throw new UnsupportedOperationException();
+    public Object setValue(Object value) {
+      String previousValue = property.getTextTrim();
+      property.setText((String) value);
+      return previousValue;
     }
-
-    @Override
-    public synchronized void loadFromXML( InputStream in )
-        throws IOException, InvalidPropertiesFormatException
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void storeToXML( OutputStream os, String comment )
-        throws IOException
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void storeToXML( OutputStream os, String comment, String encoding )
-        throws IOException
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public String getProperty( String key )
-    {
-        Element property = properties.getChild( key, properties.getNamespace() );
-
-        if ( property == null )
-        {
-            return null;
-        }
-        else
-        {
-            return property.getTextTrim();
-        }
-    }
-
-    @Override
-    public String getProperty( String key, String defaultValue )
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Enumeration<?> propertyNames()
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Set<String> stringPropertyNames()
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void list( PrintStream out )
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void list( PrintWriter out )
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    private class JDomPropertiesSet extends HashSet<Map.Entry<Object, Object>>
-    {
-        private void addProperty( JDomProperty jDomProperty )
-        {
-            // The 'add' method can only be called internally.
-            // Adding a property from the outside can currently only be supported using the JDomProperties.put() method.
-            super.add( jDomProperty );
-        }
-
-        @Override
-        public boolean add( Map.Entry<Object, Object> objectObjectEntry )
-        {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public boolean remove( Object o )
-        {
-            throw new UnsupportedOperationException();
-        }
-
-
-        @Override
-        public boolean addAll( Collection<? extends Map.Entry<Object, Object>> c )
-        {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public boolean retainAll( Collection<?> c )
-        {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public boolean removeAll( Collection<?> c )
-        {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public void clear()
-        {
-            throw new UnsupportedOperationException();
-        }
-    }
-
-    private class JDomProperty implements Map.Entry<Object, Object>
-    {
-        private Element property;
-
-        private JDomProperty( Element property )
-        {
-            this.property = property;
-        }
-
-        @Override
-        public Object getKey()
-        {
-            return property.getName();
-        }
-
-        @Override
-        public Object getValue()
-        {
-            return property.getTextTrim();
-        }
-
-        @Override
-        public Object setValue( Object value )
-        {
-            String previousValue = property.getTextTrim();
-            property.setText( (String) value );
-            return previousValue;
-        }
-    }
+  }
 }

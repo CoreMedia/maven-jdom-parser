@@ -19,13 +19,6 @@ package org.apache.maven.model.jdom;
  * under the License.
  */
 
-import static org.apache.maven.model.jdom.util.JDomUtils.getChildElement;
-import static org.apache.maven.model.jdom.util.JDomUtils.insertNewElement;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Properties;
-
 import org.apache.maven.model.Build;
 import org.apache.maven.model.BuildBase;
 import org.apache.maven.model.Dependency;
@@ -36,189 +29,148 @@ import org.apache.maven.model.Repository;
 import org.apache.maven.model.jdom.util.JDomUtils;
 import org.jdom2.Element;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Properties;
+
+import static org.apache.maven.model.jdom.util.JDomUtils.getChildElement;
+import static org.apache.maven.model.jdom.util.JDomUtils.insertNewElement;
+
 /**
- *
  * @author Robert Scholte
  * @since 3.0
  */
-public class JDomModelBase
-{
-    private final Element modelBase;
+public class JDomModelBase {
 
-    public JDomModelBase( Element modelBase )
-    {
-        this.modelBase = modelBase;
+  private final Element modelBase;
+
+  public JDomModelBase(Element modelBase) {
+    this.modelBase = modelBase;
+  }
+
+  public Build getBuild() {
+    Element elm = modelBase.getChild("build", modelBase.getNamespace());
+    if (elm == null) {
+      return null;
+    } else {
+      // this way build setters change DOM tree immediately
+      return new JDomBuild(elm);
     }
+  }
 
-    public Build getBuild()
-    {
-        Element elm = modelBase.getChild( "build", modelBase.getNamespace() );
-        if ( elm == null )
-        {
-            return null;
-        }
-        else
-        {
-            // this way build setters change DOM tree immediately
-            return new JDomBuild( elm );
-        }
+  public void setBuild(BuildBase build) {
+    throw new UnsupportedOperationException();
+  }
+
+  public DistributionManagement getDistributionManagement() {
+    throw new UnsupportedOperationException();
+  }
+
+  public void setDistributionManagement(DistributionManagement distributionManagement) {
+    throw new UnsupportedOperationException();
+  }
+
+  public List<Dependency> getDependencies() {
+    Element dependenciesElm = modelBase.getChild("dependencies", modelBase.getNamespace());
+    if (dependenciesElm == null) {
+      return Collections.emptyList();
+    } else {
+      return new JDomDependencies(dependenciesElm);
     }
+  }
 
-    public void setBuild( BuildBase build )
-    {
-        throw new UnsupportedOperationException();
+  public void setDependencies(List<Dependency> dependencies) {
+    throw new UnsupportedOperationException();
+  }
+
+  public DependencyManagement getDependencyManagement() {
+    Element elm = modelBase.getChild("dependencyManagement", modelBase.getNamespace());
+    if (elm == null) {
+      return null;
+    } else {
+      // this way build setters change DOM tree immediately
+      return new JDomDependencyManagement(elm);
     }
+  }
 
-    public DistributionManagement getDistributionManagement()
-    {
-        throw new UnsupportedOperationException();
+  public void setDependencyManagement(DependencyManagement dependencyManagement) {
+    if (dependencyManagement == null) {
+      JDomUtils.rewriteElement("dependencyManagement", null, modelBase, modelBase.getNamespace());
+    } else {
+      DependencyManagement jdomDependencyManagement = getDependencyManagement();
+      if (jdomDependencyManagement == null) {
+        Element dependencyManagementRoot = insertNewElement("dependencyManagement", modelBase);
+        jdomDependencyManagement = new JDomDependencyManagement(dependencyManagementRoot);
+      }
+
+      jdomDependencyManagement.setDependencies(dependencyManagement.getDependencies());
     }
+  }
 
-    public void setDistributionManagement( DistributionManagement distributionManagement )
-    {
-        throw new UnsupportedOperationException();
+  public List<String> getModules() {
+    Element modulesElement = getChildElement("modules", modelBase);
+    if (modulesElement == null) {
+      return Collections.emptyList();
+    } else {
+      return new JDomModules(modulesElement);
     }
+  }
 
-    public List<Dependency> getDependencies()
-    {
-        Element dependenciesElm = modelBase.getChild( "dependencies", modelBase.getNamespace() );
-        if ( dependenciesElm == null )
-        {
-            return Collections.emptyList();
-        }
-        else
-        {
-            return new JDomDependencies( dependenciesElm );
-        }
+  public void setModules(List<String> modules) {
+    if (modules == null) {
+      JDomUtils.rewriteElement("modules", null, modelBase, modelBase.getNamespace());
+    } else {
+      List<String> jDomModules = getModules();
+      if (jDomModules instanceof JDomModules) {
+        jDomModules.clear();
+      } else {
+        jDomModules = new JDomModules(insertNewElement("modules", modelBase));
+      }
+      jDomModules.addAll(modules);
     }
+  }
 
-    public void setDependencies( List<Dependency> dependencies )
-    {
-        throw new UnsupportedOperationException();
+  public List<Repository> getPluginRepositories() {
+    throw new UnsupportedOperationException();
+  }
+
+  public void setPluginRepositories(List<Repository> pluginRepositories) {
+    throw new UnsupportedOperationException();
+  }
+
+  public Properties getProperties() {
+    Element properties = modelBase.getChild("properties", modelBase.getNamespace());
+
+    if (properties == null) {
+      return null;
+    } else {
+      return new JDomProperties(properties);
     }
+  }
 
-    public DependencyManagement getDependencyManagement()
-    {
-        Element elm = modelBase.getChild( "dependencyManagement", modelBase.getNamespace() );
-        if ( elm == null )
-        {
-            return null;
-        }
-        else
-        {
-            // this way build setters change DOM tree immediately
-            return new JDomDependencyManagement( elm );
-        }
+  public void setProperties(Properties properties) {
+    throw new UnsupportedOperationException();
+  }
+
+  public Reporting getReporting() {
+    Element reporting = modelBase.getChild("reporting", modelBase.getNamespace());
+
+    if (reporting == null) {
+      return null;
+    } else {
+      return new JDomReporting(reporting);
     }
+  }
 
-    public void setDependencyManagement( DependencyManagement dependencyManagement )
-    {
-        if ( dependencyManagement == null )
-        {
-            JDomUtils.rewriteElement( "dependencyManagement", null, modelBase, modelBase.getNamespace() );
-        }
-        else
-        {
-            DependencyManagement jdomDependencyManagement = getDependencyManagement();
-            if ( jdomDependencyManagement == null )
-            {
-                Element dependencyManagementRoot = insertNewElement( "dependencyManagement", modelBase );
-                jdomDependencyManagement = new JDomDependencyManagement( dependencyManagementRoot );
-            }
+  public void setReporting(Reporting reporting) {
+    throw new UnsupportedOperationException();
+  }
 
-            jdomDependencyManagement.setDependencies( dependencyManagement.getDependencies() );
-        }
-    }
+  public List<Repository> getRepositories() {
+    throw new UnsupportedOperationException();
+  }
 
-    public List<String> getModules()
-    {
-        Element modulesElement = getChildElement( "modules", modelBase );
-        if ( modulesElement == null )
-        {
-            return Collections.emptyList();
-        }
-        else
-        {
-            return new JDomModules( modulesElement );
-        }
-    }
-
-    public void setModules( List<String> modules )
-    {
-        if ( modules == null )
-        {
-            JDomUtils.rewriteElement( "modules", null, modelBase, modelBase.getNamespace() );
-        }
-        else
-        {
-            List<String> jDomModules = getModules();
-            if ( jDomModules instanceof JDomModules )
-            {
-                jDomModules.clear();
-            }
-            else
-            {
-                jDomModules = new JDomModules( insertNewElement( "modules", modelBase ) );
-            }
-            jDomModules.addAll( modules );
-        }
-    }
-
-    public List<Repository> getPluginRepositories()
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    public void setPluginRepositories( List<Repository> pluginRepositories )
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    public Properties getProperties()
-    {
-        Element properties = modelBase.getChild( "properties", modelBase.getNamespace() );
-
-        if ( properties == null )
-        {
-            return null;
-        }
-        else
-        {
-            return new JDomProperties( properties );
-        }
-    }
-
-    public void setProperties( Properties properties )
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    public Reporting getReporting()
-    {
-        Element reporting = modelBase.getChild( "reporting", modelBase.getNamespace() );
-
-        if ( reporting == null )
-        {
-            return null;
-        }
-        else
-        {
-            return new JDomReporting( reporting );
-        }
-    }
-
-    public void setReporting( Reporting reporting )
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    public List<Repository> getRepositories()
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    public void setRepositories( List<Repository> repositories )
-    {
-        throw new UnsupportedOperationException();
-    }
+  public void setRepositories(List<Repository> repositories) {
+    throw new UnsupportedOperationException();
+  }
 }

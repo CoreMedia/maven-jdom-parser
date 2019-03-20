@@ -19,14 +19,14 @@ package org.apache.maven.model.jdom;
  * under the License.
  */
 
-import static org.apache.maven.model.jdom.util.JDomUtils.getChildElementTextTrim;
-import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
-
-import java.util.List;
-
 import org.apache.maven.model.ReportPlugin;
 import org.apache.maven.model.ReportSet;
 import org.jdom2.Element;
+
+import java.util.List;
+
+import static org.apache.maven.model.jdom.util.JDomUtils.getChildElementTextTrim;
+import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
 
 /**
  * JDom implementation of poms reports PLUGIN element
@@ -34,111 +34,93 @@ import org.jdom2.Element;
  * @author Robert Scholte
  * @since 3.0
  */
-public class JDomReportPlugin
-    extends ReportPlugin implements MavenCoordinate
-{
-    private final Element reportPlugin;
-    private final MavenCoordinate coordinate;
+public class JDomReportPlugin extends ReportPlugin implements MavenCoordinate {
 
-    public JDomReportPlugin( Element reportPlugin )
-    {
-        this.reportPlugin = reportPlugin;
-        this.coordinate = new JDomMavenCoordinate( reportPlugin );
-    }
+  private final Element reportPlugin;
+  private final MavenCoordinate coordinate;
 
-    @Override
-    public String getArtifactId()
-    {
-        return coordinate.getArtifactId();
-    }
+  public JDomReportPlugin(Element reportPlugin) {
+    this.reportPlugin = reportPlugin;
+    this.coordinate = new JDomMavenCoordinate(reportPlugin);
+  }
 
-    @Override
-    public void setArtifactId( String artifactId )
-    {
-        coordinate.setArtifactId( artifactId );
-    }
+  @Override
+  public String getArtifactId() {
+    return coordinate.getArtifactId();
+  }
 
-    @Override
-    public Object getConfiguration()
-    {
-        throw new UnsupportedOperationException();
-    }
+  @Override
+  public void setArtifactId(String artifactId) {
+    coordinate.setArtifactId(artifactId);
+  }
 
-    @Override
-    public void setConfiguration( Object configuration )
-    {
-        throw new UnsupportedOperationException();
-    }
+  @Override
+  public Object getConfiguration() {
+    throw new UnsupportedOperationException();
+  }
 
-    @Override
-    public String getGroupId()
-    {
-        return coordinate.getGroupId();
-    }
+  @Override
+  public void setConfiguration(Object configuration) {
+    throw new UnsupportedOperationException();
+  }
 
-    @Override
-    public void setGroupId( String groupId )
-    {
-        coordinate.setGroupId( groupId );
-    }
+  @Override
+  public String getGroupId() {
+    return coordinate.getGroupId();
+  }
 
-    @Override
-    public String getInherited()
-    {
-        return getChildElementTextTrim( "inherited", reportPlugin );
-    }
+  @Override
+  public void setGroupId(String groupId) {
+    coordinate.setGroupId(groupId);
+  }
 
-    @Override
-    public void setInherited( String inherited )
-    {
-        rewriteElement( "inherited", inherited, reportPlugin, reportPlugin.getNamespace() );
-    }
+  @Override
+  public String getInherited() {
+    return getChildElementTextTrim("inherited", reportPlugin);
+  }
 
-    @Override
-    public boolean isInherited()
-    {
-        return Boolean.parseBoolean( getInherited() );
-    }
+  @Override
+  public void setInherited(String inherited) {
+    rewriteElement("inherited", inherited, reportPlugin, reportPlugin.getNamespace());
+  }
 
-    @Override
-    public void setInherited( boolean inherited )
-    {
-        setInherited( Boolean.toString( inherited ) );
-    }
+  @Override
+  public boolean isInherited() {
+    return Boolean.parseBoolean(getInherited());
+  }
 
-    @Override
-    public List<ReportSet> getReportSets()
-    {
-        throw new UnsupportedOperationException();
-    }
+  @Override
+  public void setInherited(boolean inherited) {
+    setInherited(Boolean.toString(inherited));
+  }
 
-    @Override
-    public void setReportSets( List<ReportSet> reportSets )
-    {
-        throw new UnsupportedOperationException();
-    }
+  @Override
+  public List<ReportSet> getReportSets() {
+    throw new UnsupportedOperationException();
+  }
 
-    @Override
-    public String getVersion()
-    {
-        return coordinate.getVersion();
-    }
+  @Override
+  public void setReportSets(List<ReportSet> reportSets) {
+    throw new UnsupportedOperationException();
+  }
 
-    @Override
-    public void setVersion( String version )
-    {
-        coordinate.setVersion( version );
-    }
+  @Override
+  public String getVersion() {
+    return coordinate.getVersion();
+  }
 
-    @Override
-    public String getKey()
-    {
-        return constructKey( getGroupId(), getArtifactId() );
-    }
+  @Override
+  public void setVersion(String version) {
+    coordinate.setVersion(version);
+  }
 
-    @Override
-    public String getName()
-    {
-        return "plugin";
-    }
+  @Override
+  public String getKey() {
+    return constructKey(getGroupId(), getArtifactId());
+  }
+
+  @Override
+  public String getName() {
+    return "plugin";
+  }
 }

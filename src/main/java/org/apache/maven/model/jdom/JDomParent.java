@@ -19,11 +19,11 @@ package org.apache.maven.model.jdom;
  * under the License.
  */
 
-import static org.apache.maven.model.jdom.util.JDomUtils.getChildElementTextTrim;
-import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
-
 import org.apache.maven.model.Parent;
 import org.jdom2.Element;
+
+import static org.apache.maven.model.jdom.util.JDomUtils.getChildElementTextTrim;
+import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
 
 /**
  * JDom implementation of poms PARENT element
@@ -31,69 +31,59 @@ import org.jdom2.Element;
  * @author Robert Scholte
  * @since 3.0
  */
-public class JDomParent extends Parent implements MavenCoordinate
-{
-    private Element parent;
+public class JDomParent extends Parent implements MavenCoordinate {
 
-    private final MavenCoordinate coordinate;
+  private Element parent;
 
-    public JDomParent( Element parent )
-    {
-        this.parent = parent;
-        this.coordinate = new JDomMavenCoordinate( parent );
-    }
+  private final MavenCoordinate coordinate;
 
-    @Override
-    public String getArtifactId()
-    {
-        return this.coordinate.getArtifactId();
-    }
+  public JDomParent(Element parent) {
+    this.parent = parent;
+    this.coordinate = new JDomMavenCoordinate(parent);
+  }
 
-    @Override
-    public void setArtifactId( String artifactId )
-    {
-        this.coordinate.setArtifactId( artifactId );
-    }
+  @Override
+  public String getArtifactId() {
+    return this.coordinate.getArtifactId();
+  }
 
-    @Override
-    public String getGroupId()
-    {
-        return this.coordinate.getGroupId();
-    }
+  @Override
+  public void setArtifactId(String artifactId) {
+    this.coordinate.setArtifactId(artifactId);
+  }
 
-    @Override
-    public void setGroupId( String groupId )
-    {
-        this.coordinate.setGroupId( groupId );
-    }
+  @Override
+  public String getGroupId() {
+    return this.coordinate.getGroupId();
+  }
 
-    @Override
-    public String getRelativePath()
-    {
-        return getChildElementTextTrim( "relativePath", parent );
-    }
+  @Override
+  public void setGroupId(String groupId) {
+    this.coordinate.setGroupId(groupId);
+  }
 
-    @Override
-    public void setRelativePath( String relativePath )
-    {
-        rewriteElement( "relativePath", relativePath, parent, parent.getNamespace() );
-    }
+  @Override
+  public String getRelativePath() {
+    return getChildElementTextTrim("relativePath", parent);
+  }
 
-    @Override
-    public String getVersion()
-    {
-        return this.coordinate.getVersion();
-    }
+  @Override
+  public void setRelativePath(String relativePath) {
+    rewriteElement("relativePath", relativePath, parent, parent.getNamespace());
+  }
 
-    @Override
-    public void setVersion( String version )
-    {
-        this.coordinate.setVersion( version );
-    }
+  @Override
+  public String getVersion() {
+    return this.coordinate.getVersion();
+  }
 
-    @Override
-    public String getName()
-    {
-        return "parent";
-    }
+  @Override
+  public void setVersion(String version) {
+    this.coordinate.setVersion(version);
+  }
+
+  @Override
+  public String getName() {
+    return "parent";
+  }
 }
