@@ -22,50 +22,45 @@ package org.apache.maven.model.jdom;
 import org.apache.maven.model.Extension;
 import org.jdom2.Element;
 
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_ARTIFACT_ID;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_GROUP_ID;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_VERSION;
+import static org.apache.maven.model.jdom.util.JDomUtils.getChildElementTextTrim;
+import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
+
 /**
  * JDom implementation of poms EXTENSION element
  *
  * @author Robert Scholte (for <a href="https://github.com/apache/maven-release/">Maven Release projct</a>, version 3.0)
  */
-public class JDomExtension extends Extension implements JDomBacked, MavenCoordinate {
+public class JDomExtension extends Extension implements JDomBacked {
 
   private final Element jdomElement;
 
-  private final MavenCoordinate coordinate;
-
   public JDomExtension(Element jdomElement) {
     this.jdomElement = jdomElement;
-    this.coordinate = new JDomMavenCoordinate(jdomElement);
-  }
 
-  @Override
-  public String getArtifactId() {
-    return coordinate.getArtifactId();
+    super.setArtifactId(getChildElementTextTrim(POM_ELEMENT_ARTIFACT_ID, this.jdomElement));
+    super.setGroupId(getChildElementTextTrim(POM_ELEMENT_GROUP_ID, this.jdomElement));
+    super.setVersion(getChildElementTextTrim(POM_ELEMENT_VERSION, this.jdomElement));
   }
 
   @Override
   public void setArtifactId(String artifactId) {
-    coordinate.setArtifactId(artifactId);
-  }
-
-  @Override
-  public String getGroupId() {
-    return coordinate.getGroupId();
+    rewriteElement(POM_ELEMENT_ARTIFACT_ID, artifactId, jdomElement);
+    super.setArtifactId(artifactId);
   }
 
   @Override
   public void setGroupId(String groupId) {
-    coordinate.setGroupId(groupId);
-  }
-
-  @Override
-  public String getVersion() {
-    return coordinate.getVersion();
+    rewriteElement(POM_ELEMENT_GROUP_ID, groupId, jdomElement);
+    super.setGroupId(groupId);
   }
 
   @Override
   public void setVersion(String version) {
-    coordinate.setVersion(version);
+    rewriteElement(POM_ELEMENT_VERSION, version, jdomElement);
+    super.setVersion(version);
   }
 
   /** {@inheritDoc} */

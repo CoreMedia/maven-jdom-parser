@@ -25,7 +25,10 @@ import org.jdom2.Element;
 
 import java.util.List;
 
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_ARTIFACT_ID;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_GROUP_ID;
 import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_INHERITED;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_VERSION;
 import static org.apache.maven.model.jdom.util.JDomUtils.getChildElementTextTrim;
 import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
 
@@ -34,25 +37,22 @@ import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
  *
  * @author Robert Scholte (for <a href="https://github.com/apache/maven-release/">Maven Release projct</a>, version 3.0)
  */
-public class JDomReportPlugin extends ReportPlugin implements JDomBacked, MavenCoordinate {
+public class JDomReportPlugin extends ReportPlugin implements JDomBacked {
 
   private final Element jdomElement;
 
-  private final MavenCoordinate coordinate;
-
   public JDomReportPlugin(Element jdomElement) {
     this.jdomElement = jdomElement;
-    this.coordinate = new JDomMavenCoordinate(jdomElement);
-  }
 
-  @Override
-  public String getArtifactId() {
-    return coordinate.getArtifactId();
+    super.setArtifactId(getChildElementTextTrim(POM_ELEMENT_ARTIFACT_ID, this.jdomElement));
+    super.setGroupId(getChildElementTextTrim(POM_ELEMENT_GROUP_ID, this.jdomElement));
+    super.setVersion(getChildElementTextTrim(POM_ELEMENT_VERSION, this.jdomElement));
   }
 
   @Override
   public void setArtifactId(String artifactId) {
-    coordinate.setArtifactId(artifactId);
+    rewriteElement(POM_ELEMENT_ARTIFACT_ID, artifactId, jdomElement);
+    super.setArtifactId(artifactId);
   }
 
   @Override
@@ -66,13 +66,9 @@ public class JDomReportPlugin extends ReportPlugin implements JDomBacked, MavenC
   }
 
   @Override
-  public String getGroupId() {
-    return coordinate.getGroupId();
-  }
-
-  @Override
   public void setGroupId(String groupId) {
-    coordinate.setGroupId(groupId);
+    rewriteElement(POM_ELEMENT_GROUP_ID, groupId, jdomElement);
+    super.setGroupId(groupId);
   }
 
   @Override
@@ -106,13 +102,9 @@ public class JDomReportPlugin extends ReportPlugin implements JDomBacked, MavenC
   }
 
   @Override
-  public String getVersion() {
-    return coordinate.getVersion();
-  }
-
-  @Override
   public void setVersion(String version) {
-    coordinate.setVersion(version);
+    rewriteElement(POM_ELEMENT_VERSION, version, jdomElement);
+    super.setVersion(version);
   }
 
   @Override
