@@ -29,7 +29,6 @@ import org.jdom2.Element;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_DEFAULT_GOAL;
 import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_DIRECTORY;
@@ -43,6 +42,7 @@ import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_SCRIPT_SOURCE
 import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_SOURCE_DIRECTORY;
 import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_TEST_OUTPUT_DIRECTORY;
 import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_TEST_SOURCE_DIRECTORY;
+import static org.apache.maven.model.jdom.util.JDomUtils.getChildElement;
 import static org.apache.maven.model.jdom.util.JDomUtils.getChildElementTextTrim;
 import static org.apache.maven.model.jdom.util.JDomUtils.insertNewElement;
 import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
@@ -58,6 +58,11 @@ public class JDomBuild extends Build implements JDomBacked {
 
   public JDomBuild(Element jdomElement) {
     this.jdomElement = jdomElement;
+
+    Element pluginsElement = getChildElement("plugins", jdomElement);
+    if (pluginsElement != null) {
+      super.setPlugins(new JDomPlugins(pluginsElement));
+    }
   }
 
   public JDomBuild(Element jdomElement, Build build) {
@@ -195,27 +200,15 @@ public class JDomBuild extends Build implements JDomBacked {
   }
 
   @Override
-  public List<Plugin> getPlugins() {
-    // TODO Move to new class JDomBuildBase
-    Element pluginsElm = jdomElement.getChild(POM_ELEMENT_PLUGINS, jdomElement.getNamespace());
-    if (pluginsElm == null) {
-      return Collections.emptyList();
-    } else {
-      return new JDomPlugins(pluginsElm);
-    }
-  }
-
-  @Override
   public void setPlugins(List<Plugin> plugins) {
     // TODO Move to new class JDomBuildBase
     if (plugins == null) {
       rewriteElement(POM_ELEMENT_PLUGINS, null, jdomElement);
+      super.setPlugins(plugins);
     } else {
-      List<Plugin> jdomPlugins = getPlugins();
-      if (!(jdomPlugins instanceof JDomPlugins)) {
-        jdomPlugins = new JDomPlugins(insertNewElement(POM_ELEMENT_PLUGINS, jdomElement));
-      }
+      JDomPlugins jdomPlugins = new JDomPlugins(insertNewElement(POM_ELEMENT_PLUGINS, jdomElement));
       jdomPlugins.addAll(plugins);
+      super.setPlugins(jdomPlugins);
     }
   }
 
@@ -281,16 +274,6 @@ public class JDomBuild extends Build implements JDomBacked {
   @Override
   public void setTestSourceDirectory(String testSourceDirectory) {
     rewriteElement(POM_ELEMENT_TEST_SOURCE_DIRECTORY, testSourceDirectory, jdomElement);
-  }
-
-  @Override
-  public void flushPluginMap() {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public Map<String, Plugin> getPluginsAsMap() {
-    throw new UnsupportedOperationException();
   }
 
   /** {@inheritDoc} */

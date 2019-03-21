@@ -22,9 +22,11 @@ package org.apache.maven.model.jdom;
 import org.apache.maven.model.Plugin;
 import org.jdom2.Document;
 import org.jdom2.Element;
+import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.io.StringReader;
 
 import static java.util.Arrays.asList;
@@ -91,11 +93,6 @@ public class JDomBuildTest {
 
   // All other methods throw UnsupportedOperationException
 
-  @Test(expected = UnsupportedOperationException.class)
-  public void testFlushPluginMap() {
-    new JDomBuild(null).flushPluginMap();
-  }
-
   @Test
   public void testGetOutputDirectory() throws Exception {
     String content = "<build></build>";
@@ -153,7 +150,7 @@ public class JDomBuildTest {
 
   @Test(expected = UnsupportedOperationException.class)
   public void testSetExtensions() {
-    new JDomBuild(null).setExtensions(null);
+    new JDomBuild(new Element("build")).setExtensions(null);
   }
 
   @Test
@@ -197,18 +194,24 @@ public class JDomBuildTest {
   }
 
   @Test(expected = UnsupportedOperationException.class)
-  public void testAddFilter() {
-    new JDomBuild(null).addFilter(null);
+  public void testAddFilter() throws Exception {
+    String content = "<build></build>";
+    Element buildElm = builder.build(new StringReader(content)).getRootElement();
+    new JDomBuild(buildElm).addFilter(null);
   }
 
   @Test(expected = UnsupportedOperationException.class)
-  public void testAddResource() {
-    new JDomBuild(null).addResource(null);
+  public void testAddResource() throws Exception {
+    String content = "<build></build>";
+    Element buildElm = builder.build(new StringReader(content)).getRootElement();
+    new JDomBuild(buildElm).addResource(null);
   }
 
   @Test(expected = UnsupportedOperationException.class)
-  public void testAddTestResource() {
-    new JDomBuild(null).addTestResource(null);
+  public void testAddTestResource() throws Exception {
+    String content = "<build></build>";
+    Element buildElm = builder.build(new StringReader(content)).getRootElement();
+    new JDomBuild(buildElm).addTestResource(null);
   }
 
   @Test
@@ -234,8 +237,10 @@ public class JDomBuildTest {
   }
 
   @Test(expected = UnsupportedOperationException.class)
-  public void testGetFilters() {
-    new JDomBuild(null).getFilters();
+  public void testGetFilters() throws JDOMException, IOException {
+    String content = "<build></build>";
+    Element buildElm = builder.build(new StringReader(content)).getRootElement();
+    new JDomBuild(buildElm).getFilters();
   }
 
   @Test
@@ -251,27 +256,27 @@ public class JDomBuildTest {
 
   @Test(expected = UnsupportedOperationException.class)
   public void testGetResources() {
-    new JDomBuild(null).getResources();
+    new JDomBuild(new Element("build")).getResources();
   }
 
   @Test(expected = UnsupportedOperationException.class)
   public void testGetTestResources() {
-    new JDomBuild(null).getTestResources();
+    new JDomBuild(new Element("build")).getTestResources();
   }
 
   @Test(expected = UnsupportedOperationException.class)
   public void testRemoveFilter() {
-    new JDomBuild(null).removeFilter(null);
+    new JDomBuild(new Element("build")).removeFilter(null);
   }
 
   @Test(expected = UnsupportedOperationException.class)
   public void testRemoveResource() {
-    new JDomBuild(null).removeResource(null);
+    new JDomBuild(new Element("build")).removeResource(null);
   }
 
   @Test(expected = UnsupportedOperationException.class)
   public void testRemoveTestResource() {
-    new JDomBuild(null).removeTestResource(null);
+    new JDomBuild(new Element("build")).removeTestResource(null);
   }
 
   @Test
@@ -292,7 +297,7 @@ public class JDomBuildTest {
 
   @Test(expected = UnsupportedOperationException.class)
   public void testSetFilters() {
-    new JDomBuild(null).setFilters(null);
+    new JDomBuild(new Element("build")).setFilters(null);
   }
 
   @Test
@@ -305,17 +310,17 @@ public class JDomBuildTest {
 
   @Test(expected = UnsupportedOperationException.class)
   public void testSetResources() {
-    new JDomBuild(null).setResources(null);
+    new JDomBuild(new Element("build")).setResources(null);
   }
 
   @Test(expected = UnsupportedOperationException.class)
   public void testSetTestResources() {
-    new JDomBuild(null).setTestResources(null);
+    new JDomBuild(new Element("build")).setTestResources(null);
   }
 
   @Test(expected = UnsupportedOperationException.class)
   public void testSetPluginManagement() {
-    new JDomBuild(null).setPluginManagement(null);
+    new JDomBuild(new Element("build")).setPluginManagement(null);
   }
 
   @Test
@@ -359,10 +364,5 @@ public class JDomBuildTest {
     assertEquals(0, build.getPlugins().size());
     build.setPlugins(asList(plugin1, plugin2));
     assertEquals(2, build.getPlugins().size());
-  }
-
-  @Test(expected = UnsupportedOperationException.class)
-  public void testGetPluginsAsMap() {
-    new JDomBuild(null).getPluginsAsMap();
   }
 }
