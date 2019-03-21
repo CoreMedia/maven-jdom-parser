@@ -18,16 +18,10 @@ package org.apache.maven.model.jdom.it;
 
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.DependencyManagement;
-import org.apache.maven.model.jdom.JDomDependency;
-import org.apache.maven.model.jdom.JDomDependencyManagement;
-import org.jdom2.Element;
-import org.jdom2.Text;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.util.List;
-
-import static org.apache.maven.model.jdom.etl.ModelETLRequest.UNIX_LS;
 
 /**
  * Tests transformations of {@code dependencies} in {@code dependencyManagement}.
@@ -38,22 +32,8 @@ public class DependencyManagementEtlIT extends DependenciesEtlIT {
 
   @Test
   public void addJDomDependency() throws IOException {
-    // NOTE: Adding elements with bad indentations to test if 'resetIndentations' works.
-    jDomModelETL.getModel().getDependencyManagement().addDependency(
-            new JDomDependency(
-                    new Element("dependency", "http://maven.apache.org/POM/4.0.0")
-                            .addContent(new Text(UNIX_LS + "  "))
-                            .addContent(new Element("groupId", "http://maven.apache.org/POM/4.0.0")
-                                    .addContent("org.apache.commons"))
-                            .addContent(new Text(UNIX_LS + "    "))
-                            .addContent(new Element("artifactId", "http://maven.apache.org/POM/4.0.0")
-                                    .addContent("commons-text"))
-                            .addContent(new Text(UNIX_LS + "      "))
-                            .addContent(new Element("version", "http://maven.apache.org/POM/4.0.0")
-                                    .addContent("1.6"))
-                            .addContent(new Text(UNIX_LS + "      "))
-            )
-    );
+    Dependency dependency = getSourceModel().getDependencies().get(0);
+    subjectModel.getDependencyManagement().addDependency(dependency);
     assertTransformation();
   }
 
@@ -63,35 +43,14 @@ public class DependencyManagementEtlIT extends DependenciesEtlIT {
     dependency.setGroupId("org.apache.commons");
     dependency.setArtifactId("commons-exec");
     dependency.setVersion("1.3");
-    jDomModelETL.getModel().getDependencyManagement().addDependency(dependency);
+    subjectModel.getDependencyManagement().addDependency(dependency);
     assertTransformation();
   }
 
   @Test
   public void newJDomDependencyManagement() throws IOException {
-    jDomModelETL.getModel().setDependencyManagement(
-            new JDomDependencyManagement(
-                    new Element("dependencyManagement", "http://maven.apache.org/POM/4.0.0")
-                            .addContent(new Text(UNIX_LS + "    "))
-                            .addContent(
-                                    new Element("dependencies", "http://maven.apache.org/POM/4.0.0")
-                                            .addContent(new Text(UNIX_LS + "      "))
-                                            .addContent(
-                                                    new Element("dependency", "http://maven.apache.org/POM/4.0.0")
-                                                            .addContent(new Text(UNIX_LS + "        "))
-                                                            .addContent(new Element("groupId", "http://maven.apache.org/POM/4.0.0")
-                                                                    .addContent("org.apache.commons"))
-                                                            .addContent(new Text(UNIX_LS + "        "))
-                                                            .addContent(new Element("artifactId", "http://maven.apache.org/POM/4.0.0")
-                                                                    .addContent("commons-text"))
-                                                            .addContent(new Text(UNIX_LS + "        "))
-                                                            .addContent(new Element("version", "http://maven.apache.org/POM/4.0.0")
-                                                                    .addContent("1.6"))
-                                                            .addContent(new Text(UNIX_LS + "      ")))
-                                            .addContent(new Text(UNIX_LS + "    ")))
-                            .addContent(new Text(UNIX_LS + "  "))
-            )
-    );
+    DependencyManagement dependencyManagement = getSourceModel().getDependencyManagement();
+    subjectModel.setDependencyManagement(dependencyManagement);
     assertTransformation();
   }
 
@@ -103,13 +62,13 @@ public class DependencyManagementEtlIT extends DependenciesEtlIT {
     dependency.setVersion("1.3");
     DependencyManagement dependencyManagement = new DependencyManagement();
     dependencyManagement.addDependency(dependency);
-    jDomModelETL.getModel().setDependencyManagement(dependencyManagement);
+    subjectModel.setDependencyManagement(dependencyManagement);
     assertTransformation();
   }
 
   @Test
   public void removeDependency() throws IOException {
-    DependencyManagement dependencyManagement = jDomModelETL.getModel().getDependencyManagement();
+    DependencyManagement dependencyManagement = subjectModel.getDependencyManagement();
     for (Dependency dependency : dependencyManagement.getDependencies().toArray(new Dependency[]{})) {
       if (dependency.getArtifactId().equals("commons-collections4")) {
         dependencyManagement.removeDependency(dependency);
@@ -120,6 +79,6 @@ public class DependencyManagementEtlIT extends DependenciesEtlIT {
 
   @Override
   protected List<Dependency> getDependenciesFromModel() {
-    return jDomModelETL.getModel().getDependencyManagement().getDependencies();
+    return subjectModel.getDependencyManagement().getDependencies();
   }
 }

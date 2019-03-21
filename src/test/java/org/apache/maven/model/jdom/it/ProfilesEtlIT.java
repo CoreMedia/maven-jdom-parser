@@ -19,9 +19,6 @@ package org.apache.maven.model.jdom.it;
 import org.apache.maven.model.Activation;
 import org.apache.maven.model.ActivationProperty;
 import org.apache.maven.model.Profile;
-import org.apache.maven.model.jdom.etl.JDomModelETL;
-import org.apache.maven.model.jdom.etl.JDomModelETLFactory;
-import org.apache.maven.model.jdom.etl.ModelETLRequest;
 import org.jdom2.JDOMException;
 import org.junit.Test;
 
@@ -39,17 +36,14 @@ public class ProfilesEtlIT extends AbstractJDomModelEtlIT {
   public void addFirstProfile() throws IOException {
     Profile profile = new Profile();
     profile.setId("first-profile");
-    jDomModelETL.getModel().addProfile(profile);
+    subjectModel.addProfile(profile);
     assertTransformation();
   }
 
   @Test
   public void addJDomProfileWithActivation() throws IOException, JDOMException, URISyntaxException {
-    JDomModelETL sourcePomModelETL = new JDomModelETLFactory().newInstance(new ModelETLRequest());
-    sourcePomModelETL.extract(getTestResource(getTestResourceNamePrefix() + "_source-pom.xml"));
-    Profile profile = sourcePomModelETL.getModel().getProfiles().get(0);
-
-    jDomModelETL.getModel().addProfile(profile);
+    Profile profile = getSourceModel().getProfiles().get(0);
+    subjectModel.addProfile(profile);
     assertTransformation();
   }
 
@@ -65,7 +59,7 @@ public class ProfilesEtlIT extends AbstractJDomModelEtlIT {
     profile.setId("deflake");
     profile.setActivation(activation);
 
-    jDomModelETL.getModel().addProfile(profile);
+    subjectModel.addProfile(profile);
     assertTransformation();
   }
 
@@ -73,7 +67,7 @@ public class ProfilesEtlIT extends AbstractJDomModelEtlIT {
   public void addProfile() throws IOException {
     Profile profile = new Profile();
     profile.setId("new-profile-1");
-    jDomModelETL.getModel().addProfile(profile);
+    subjectModel.addProfile(profile);
     assertTransformation();
   }
 
@@ -81,7 +75,7 @@ public class ProfilesEtlIT extends AbstractJDomModelEtlIT {
   public void getEmptyProfiles() throws IOException {
     // This test seems trivial, but it ensures that no empty <profiles></profiles>
     // node is added to the POMs just because getProfiles() is called.
-    jDomModelETL.getModel().getProfiles();
+    subjectModel.getProfiles();
     assertTransformation();
   }
 
@@ -89,7 +83,7 @@ public class ProfilesEtlIT extends AbstractJDomModelEtlIT {
   public void removeLastProfile() throws IOException {
     Profile profile = new Profile();
     profile.setId("last-profile");
-    jDomModelETL.getModel().removeProfile(profile);
+    subjectModel.removeProfile(profile);
     assertTransformation();
   }
 
@@ -97,7 +91,7 @@ public class ProfilesEtlIT extends AbstractJDomModelEtlIT {
   public void removeProfile() throws IOException {
     Profile profile = new Profile();
     profile.setId("profile-2");
-    jDomModelETL.getModel().removeProfile(profile);
+    subjectModel.removeProfile(profile);
     assertTransformation();
   }
 }

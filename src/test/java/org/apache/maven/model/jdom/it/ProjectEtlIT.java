@@ -30,31 +30,31 @@ public class ProjectEtlIT extends AbstractJDomModelEtlIT {
 
   @Test
   public void changeArtifactId() throws IOException {
-    jDomModelETL.getModel().setArtifactId("my-renamed-test-project");
+    subjectModel.setArtifactId("my-renamed-test-project");
     assertTransformation();
   }
 
   @Test
   public void changeParentVersion() throws IOException {
-    jDomModelETL.getModel().getParent().setVersion("20");
+    subjectModel.getParent().setVersion("20");
     assertTransformation();
   }
 
   @Test
   public void changeProjectVersionSimple() throws IOException {
-    jDomModelETL.getModel().setVersion("1.2.3.4.5.6.7.8.9-SNAPSHOT");
+    subjectModel.setVersion("1.2.3.4.5.6.7.8.9-SNAPSHOT");
     assertTransformation();
   }
 
   @Test
   public void changeProjectVersionParent() throws IOException {
-    jDomModelETL.getModel().setVersion("9.8.7.6.5.4.3.2.1-SNAPSHOT");
+    subjectModel.setVersion("9.8.7.6.5.4.3.2.1-SNAPSHOT");
     assertTransformation();
   }
 
   @Test
   public void removeParent() throws IOException {
-    jDomModelETL.getModel().setParent(null);
+    subjectModel.setParent(null);
     assertTransformation();
   }
 
@@ -64,7 +64,7 @@ public class ProjectEtlIT extends AbstractJDomModelEtlIT {
     parent.setGroupId("org.apache");
     parent.setArtifactId("apache");
     parent.setVersion("21");
-    jDomModelETL.getModel().setParent(parent);
+    subjectModel.setParent(parent);
     assertTransformation();
   }
 }

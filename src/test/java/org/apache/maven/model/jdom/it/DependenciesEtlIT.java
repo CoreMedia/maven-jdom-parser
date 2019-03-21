@@ -70,6 +70,6 @@ public class DependenciesEtlIT extends AbstractJDomModelEtlIT {
   }
 
   protected List<Dependency> getDependenciesFromModel() {
-    return jDomModelETL.getModel().getDependencies();
+    return subjectModel.getDependencies();
   }
 }

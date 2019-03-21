@@ -19,18 +19,11 @@ package org.apache.maven.model.jdom.it;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.model.PluginContainer;
-import org.apache.maven.model.jdom.JDomConfiguration;
-import org.apache.maven.model.jdom.JDomDependency;
-import org.apache.maven.model.jdom.JDomPlugin;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
-import org.jdom2.Element;
-import org.jdom2.Text;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.Collections;
-
-import static org.apache.maven.model.jdom.etl.ModelETLRequest.UNIX_LS;
+import java.util.List;
 
 /**
  * Tests transformations of {@code plugins}.
@@ -76,56 +69,26 @@ public class PluginsEtlIT extends AbstractJDomModelEtlIT {
 
   @Test
   public void resetJDomConfiguration() throws IOException {
-    JDomConfiguration jDomConfiguration = new JDomConfiguration(
-            new Element("configuration", "http://maven.apache.org/POM/4.0.0")
-                    .addContent(new Text(UNIX_LS + "            "))
-                    .addContent(new Element("skipDeploy", "http://maven.apache.org/POM/4.0.0")
-                            .addContent("true"))
-                    .addContent(new Text(UNIX_LS + "          ")));
-    new JDomPlugin(new Element("plugin", "http://maven.apache.org/POM/4.0.0")
-            .addContent(jDomConfiguration.getJDomElement()));
-    getPluginPluginContainer().getPlugins().get(0).setConfiguration(jDomConfiguration);
+    Object configuration = getSourceModel().getBuild().getPlugins().get(0).getConfiguration();
+    getPluginPluginContainer().getPlugins().get(0).setConfiguration(configuration);
     assertTransformation();
   }
 
   @Test
   public void setJDomConfiguration() throws IOException {
-    getPluginPluginContainer().getPlugins().get(0).setConfiguration(
-            new JDomConfiguration(
-                    new Element("configuration", "http://maven.apache.org/POM/4.0.0")
-                            .addContent(new Text(UNIX_LS + "            "))
-                            .addContent(new Element("skipDeploy", "http://maven.apache.org/POM/4.0.0")
-                                    .addContent("true"))
-                            .addContent(new Text(UNIX_LS + "          "))
-            )
-    );
+    Object configuration = getSourceModel().getBuild().getPlugins().get(0).getConfiguration();
+    getPluginPluginContainer().getPlugins().get(0).setConfiguration(configuration);
     assertTransformation();
   }
 
   @Test
   public void setJDomDependencies() throws IOException {
-    // TODO We should add a class JDomDependencies
-    getPluginPluginContainer().getPlugins().get(0).setDependencies(
-            Collections.singletonList((Dependency)
-                    new JDomDependency(
-                            new Element("dependency", "http://maven.apache.org/POM/4.0.0")
-                                    .addContent(new Text(UNIX_LS + "        "))
-                                    .addContent(new Element("groupId", "http://maven.apache.org/POM/4.0.0")
-                                            .addContent("org.apache.commons"))
-                                    .addContent(new Text(UNIX_LS + "        "))
-                                    .addContent(new Element("artifactId", "http://maven.apache.org/POM/4.0.0")
-                                            .addContent("commons-text"))
-                                    .addContent(new Text(UNIX_LS + "        "))
-                                    .addContent(new Element("version", "http://maven.apache.org/POM/4.0.0")
-                                            .addContent("1.6"))
-                                    .addContent(new Text(UNIX_LS + "      "))
-                    )
-            )
-    );
+    List<Dependency> dependencies = getSourceModel().getBuild().getPlugins().get(0).getDependencies();
+    getPluginPluginContainer().getPlugins().get(0).setDependencies(dependencies);
     assertTransformation();
   }
 
   protected PluginContainer getPluginPluginContainer() {
-    return jDomModelETL.getModel().getBuild();
+    return subjectModel.getBuild();
   }
 }

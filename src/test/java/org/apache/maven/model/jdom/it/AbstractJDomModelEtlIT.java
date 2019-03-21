@@ -16,6 +16,7 @@ package org.apache.maven.model.jdom.it;
  * limitations under the License.
  */
 
+import org.apache.maven.model.Model;
 import org.apache.maven.model.jdom.etl.JDomModelETL;
 import org.apache.maven.model.jdom.etl.JDomModelETLFactory;
 import org.apache.maven.model.jdom.etl.ModelETLRequest;
@@ -34,12 +35,18 @@ import java.net.URL;
 
 import static org.apache.maven.model.jdom.etl.ModelETLRequest.UNIX_LS;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 /**
- * This abstract class offers the base implementation that allows to add tests consisting of the transformation code, an
- * <u>*_input-pom.xml</u> containing the input XML file and a <u>*_expected-pom.xml</u> file containing the expected XML
- * after transformation. The file names must follow the pattern {@code [TEST_CLASS]_[TEST_METHOD]_[input|expected]-pom.xml}.
- * The transformation output is written to a file {@code [TEST_CLASS]_[TEST_METHOD]_output-pom.xml}. It is placed into a
+ * This abstract class offers the base implementation that allows to add tests consisting of the transformation code and
+ * some test resources:
+ * <ul>
+ * <li><u>*_input-pom.xml</u> file containing the input XML file (mandatory</li>
+ * <li><u>*_expected-pom.xml</u> file containing the expected XML after transformation (mandatory)</li>
+ * <li><u>*_source-pom.xml</u> file containing model definitions that can be copied by the test (optional)</li>
+ * </ul>
+ * The file names must follow the pattern {@code [TEST_CLASS]_[TEST_METHOD]_[input|expected]-pom.xml}. The
+ * transformation output is written to a file {@code [TEST_CLASS]_[TEST_METHOD]_output-pom.xml}. It is placed into a
  * folder that can be configured using the system property the {@code test.output.directory}. If that property is not
  * set the output will be written to a temporary file that is deleted after the test.
  *
@@ -53,8 +60,11 @@ public abstract class AbstractJDomModelEtlIT {
   @Rule
   public TemporaryFolder folder = new TemporaryFolder();
 
-  @SuppressWarnings("WeakerAccess")
-  protected JDomModelETL jDomModelETL;
+  protected Model subjectModel;
+
+  private Model sourceModel;
+
+  private JDomModelETL subjectModelETL;
 
   private File expectedPomFile;
   private File outputPomFile;
@@ -62,19 +72,30 @@ public abstract class AbstractJDomModelEtlIT {
   @Before
   public void setUp() throws IOException, JDOMException, URISyntaxException {
     String testResourceNamePrefix = getTestResourceNamePrefix();
-    File inputPomFile = getTestResource(testResourceNamePrefix + "_input-pom.xml");
     expectedPomFile = getTestResource(testResourceNamePrefix + "_expected-pom.xml");
     outputPomFile = getOutputFile(testResourceNamePrefix + "_output-pom.xml");
 
-    final ModelETLRequest modelETLRequest = new ModelETLRequest();
+    ModelETLRequest modelETLRequest = new ModelETLRequest();
     modelETLRequest.setLineSeparator(UNIX_LS);
-    jDomModelETL = new JDomModelETLFactory().newInstance(modelETLRequest);
-    jDomModelETL.extract(inputPomFile);
+
+    File inputPomFile = getTestResource(testResourceNamePrefix + "_input-pom.xml");
+    subjectModelETL = new JDomModelETLFactory().newInstance(modelETLRequest);
+    subjectModelETL.extract(inputPomFile);
+    subjectModel = subjectModelETL.getModel();
+
+    try {
+      File sourcePomFile = getTestResource(testResourceNamePrefix + "_source-pom.xml");
+      JDomModelETL sourceModelETL = new JDomModelETLFactory().newInstance(modelETLRequest);
+      sourceModelETL.extract(sourcePomFile);
+      sourceModel = sourceModelETL.getModel();
+    } catch (FileNotFoundException ignored) {
+      // Can be ignored, because the sourceModel must only exist when the test actually uses it.
+    }
   }
 
   @SuppressWarnings("WeakerAccess")
   protected void assertTransformation() throws IOException {
-    jDomModelETL.load(outputPomFile);
+    subjectModelETL.load(outputPomFile);
 
     String actualXml = FileUtils.fileRead(outputPomFile);
     String expectedXml = FileUtils.fileRead(expectedPomFile);
@@ -82,8 +103,16 @@ public abstract class AbstractJDomModelEtlIT {
     assertEquals(message, expectedXml, actualXml);
   }
 
+  @SuppressWarnings("WeakerAccess")
+  protected Model getSourceModel() {
+    if (sourceModel == null) {
+      fail("Test resource not found: " + getTestResourceNamePrefix() + "_source-pom.xml");
+    }
+    return sourceModel;
+  }
+
   private File getOutputFile(String filename) throws IOException {
-    String outputDirectory = (System.getProperty("test.output.directory"));
+    String outputDirectory = System.getProperty("test.output.directory");
     if (outputDirectory == null) {
       // Write the output to a tmp file - applies when tests are executed in the IDE.
       return folder.newFile(filename);
@@ -95,8 +124,7 @@ public abstract class AbstractJDomModelEtlIT {
     }
   }
 
-  @SuppressWarnings("WeakerAccess")
-  protected File getTestResource(String filename) throws FileNotFoundException, URISyntaxException {
+  private File getTestResource(String filename) throws FileNotFoundException, URISyntaxException {
     URL resource = this.getClass().getResource(filename);
     if (resource == null) {
       throw new FileNotFoundException("Test resource not found: " + filename);
@@ -105,8 +133,7 @@ public abstract class AbstractJDomModelEtlIT {
     }
   }
 
-  @SuppressWarnings("WeakerAccess")
-  protected String getTestResourceNamePrefix() {
+  private String getTestResourceNamePrefix() {
     return this.getClass().getSimpleName() + "_" + testName.getMethodName();
   }
 }

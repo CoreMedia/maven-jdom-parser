@@ -27,6 +27,6 @@ public class PluginManagementEtlIT extends PluginsEtlIT {
 
   @Override
   protected PluginContainer getPluginPluginContainer() {
-    return jDomModelETL.getModel().getBuild().getPluginManagement();
+    return subjectModel.getBuild().getPluginManagement();
   }
 }

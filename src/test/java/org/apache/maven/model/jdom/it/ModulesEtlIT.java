@@ -33,19 +33,19 @@ public class ModulesEtlIT extends AbstractJDomModelEtlIT {
 
   @Test
   public void addModule() throws IOException {
-    jDomModelETL.getModel().addModule("new-module");
+    subjectModel.addModule("new-module");
     assertTransformation();
   }
 
   @Test
   public void resetModules() throws IOException {
-    jDomModelETL.getModel().setModules(Arrays.asList("new-module-1", "new-module-2"));
+    subjectModel.setModules(Arrays.asList("new-module-1", "new-module-2"));
     assertTransformation();
   }
 
   @Test
   public void resetProfileModules() throws IOException {
-    List<Profile> profiles = jDomModelETL.getModel().getProfiles();
+    List<Profile> profiles = subjectModel.getProfiles();
     for (Profile profile : profiles) {
       switch (profile.getId()) {
         case "profile-1":

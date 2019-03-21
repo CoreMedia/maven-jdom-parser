@@ -35,13 +35,13 @@ public class ScmEtlIT extends AbstractJDomModelEtlIT {
     scm.setDeveloperConnection("scm:git:https://github.com/CoreMedia/maven-jdom-parser.git");
     scm.setTag("HEAD");
     scm.setUrl("https://github.com/CoreMedia/maven-jdom-parser/tree/${project.scm.tag}");
-    jDomModelETL.getModel().setScm(scm);
+    subjectModel.setScm(scm);
     assertTransformation();
   }
 
   @Test
   public void removeScm() throws IOException {
-    jDomModelETL.getModel().setScm(null);
+    subjectModel.setScm(null);
     assertTransformation();
   }
 }
