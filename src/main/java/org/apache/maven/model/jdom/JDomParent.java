@@ -28,8 +28,7 @@ import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
 /**
  * JDom implementation of poms PARENT element
  *
- * @author Robert Scholte
- * @since 3.0
+ * @author Robert Scholte (for <a href="https://github.com/apache/maven-release/">Maven Release projct</a>, version 3.0)
  */
 public class JDomParent extends Parent implements MavenCoordinate {
 

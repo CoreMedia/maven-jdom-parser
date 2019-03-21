@@ -22,8 +22,7 @@ package org.apache.maven.model.jdom.etl;
 import org.codehaus.plexus.component.annotations.Component;
 
 /**
- * @author Robert Scholte
- * @since 3.0
+ * @author Robert Scholte (for <a href="https://github.com/apache/maven-release/">Maven Release projct</a>, version 3.0)
  */
 @Component(role = ModelETLFactory.class, hint = JDomModelETLFactory.ROLE_HINT)
 public class JDomModelETLFactory implements ModelETLFactory {
