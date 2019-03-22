@@ -32,45 +32,45 @@ import static org.apache.maven.model.jdom.util.JDomUtils.rewriteValue;
 /**
  * @author Robert Scholte (for <a href="https://github.com/apache/maven-release/">Maven Release projct</a>, version 3.0)
  */
-public class JDomMavenCoordinate implements MavenCoordinate {
+public class JDomMavenCoordinate implements JDomBacked, MavenCoordinate {
 
-  private final Element element;
+  private final Element jdomElement;
 
-  JDomMavenCoordinate(Element elm) {
-    this.element = elm;
+  JDomMavenCoordinate(Element jdomElement) {
+    this.jdomElement = jdomElement;
   }
 
   @Override
   public String getArtifactId() {
-    return getChildElementTextTrim("artifactId", element);
+    return getChildElementTextTrim("artifactId", jdomElement);
   }
 
   @Override
   public void setArtifactId(String artifactId) {
-    rewriteElement("artifactId", artifactId, element, element.getNamespace());
+    rewriteElement("artifactId", artifactId, jdomElement, jdomElement.getNamespace());
   }
 
   @Override
   public String getGroupId() {
-    return getChildElementTextTrim("groupId", element);
+    return getChildElementTextTrim("groupId", jdomElement);
   }
 
   @Override
   public void setGroupId(String groupId) {
-    rewriteElement("groupId", groupId, element, element.getNamespace());
+    rewriteElement("groupId", groupId, jdomElement, jdomElement.getNamespace());
   }
 
   @Override
   public String getVersion() {
-    return getChildElementTextTrim("version", element);
+    return getChildElementTextTrim("version", jdomElement);
   }
 
   @Override
   public void setVersion(String version) {
-    Element versionElement = getChildElement("version", element);
+    Element versionElement = getChildElement("version", jdomElement);
     if (versionElement != null) {
       if (version == null) {
-        removeChildElement(element, versionElement);
+        removeChildElement(jdomElement, versionElement);
       } else {
         rewriteValue(versionElement, version);
       }
@@ -79,19 +79,25 @@ public class JDomMavenCoordinate implements MavenCoordinate {
       // is changed without having changed the parent version. In this case, the version cannot be inherited
       // anymore and thus the project version element must be added.
 
-      versionElement = new Element("version", element.getNamespace());
+      versionElement = new Element("version", jdomElement.getNamespace());
       versionElement.setText(version);
 
       // Add the new version element after the artifactId.
-      int indexArtifactId = element.indexOf(element.getChild("artifactId", element.getNamespace()));
+      int indexArtifactId = jdomElement.indexOf(jdomElement.getChild("artifactId", jdomElement.getNamespace()));
 
       // Linebreak and indentation are (tried to be copied) from the existing XML structure.
-      String indent = detectIndentation(element);
+      String indent = detectIndentation(jdomElement);
       if (indent != null) {
-        element.addContent(++indexArtifactId, new Text("\n" + indent));
+        jdomElement.addContent(++indexArtifactId, new Text("\n" + indent));
       }
 
-      element.addContent(++indexArtifactId, versionElement);
+      jdomElement.addContent(++indexArtifactId, versionElement);
     }
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public Element getJDomElement() {
+    return jdomElement;
   }
 }

@@ -39,16 +39,16 @@ import static org.apache.maven.model.jdom.util.JDomUtils.insertNewElement;
 /**
  * @author Robert Scholte (for <a href="https://github.com/apache/maven-release/">Maven Release projct</a>, version 3.0)
  */
-public class JDomModelBase {
+public class JDomModelBase implements JDomBacked {
 
-  private final Element modelBase;
+  private final Element jdomElement;
 
-  public JDomModelBase(Element modelBase) {
-    this.modelBase = modelBase;
+  public JDomModelBase(Element jdomElement) {
+    this.jdomElement = jdomElement;
   }
 
   public Build getBuild() {
-    Element elm = modelBase.getChild("build", modelBase.getNamespace());
+    Element elm = jdomElement.getChild("build", jdomElement.getNamespace());
     if (elm == null) {
       return null;
     } else {
@@ -70,7 +70,7 @@ public class JDomModelBase {
   }
 
   public List<Dependency> getDependencies() {
-    Element dependenciesElm = modelBase.getChild("dependencies", modelBase.getNamespace());
+    Element dependenciesElm = jdomElement.getChild("dependencies", jdomElement.getNamespace());
     if (dependenciesElm == null) {
       return Collections.emptyList();
     } else {
@@ -83,7 +83,7 @@ public class JDomModelBase {
   }
 
   public DependencyManagement getDependencyManagement() {
-    Element elm = modelBase.getChild("dependencyManagement", modelBase.getNamespace());
+    Element elm = jdomElement.getChild("dependencyManagement", jdomElement.getNamespace());
     if (elm == null) {
       return null;
     } else {
@@ -94,11 +94,11 @@ public class JDomModelBase {
 
   public void setDependencyManagement(DependencyManagement dependencyManagement) {
     if (dependencyManagement == null) {
-      JDomUtils.rewriteElement("dependencyManagement", null, modelBase, modelBase.getNamespace());
+      JDomUtils.rewriteElement("dependencyManagement", null, jdomElement, jdomElement.getNamespace());
     } else {
       DependencyManagement jdomDependencyManagement = getDependencyManagement();
       if (jdomDependencyManagement == null) {
-        Element dependencyManagementRoot = insertNewElement("dependencyManagement", modelBase);
+        Element dependencyManagementRoot = insertNewElement("dependencyManagement", jdomElement);
         jdomDependencyManagement = new JDomDependencyManagement(dependencyManagementRoot);
       }
 
@@ -107,7 +107,7 @@ public class JDomModelBase {
   }
 
   public List<String> getModules() {
-    Element modulesElement = getChildElement("modules", modelBase);
+    Element modulesElement = getChildElement("modules", jdomElement);
     if (modulesElement == null) {
       return Collections.emptyList();
     } else {
@@ -117,13 +117,13 @@ public class JDomModelBase {
 
   public void setModules(List<String> modules) {
     if (modules == null) {
-      JDomUtils.rewriteElement("modules", null, modelBase, modelBase.getNamespace());
+      JDomUtils.rewriteElement("modules", null, jdomElement, jdomElement.getNamespace());
     } else {
       List<String> jDomModules = getModules();
       if (jDomModules instanceof JDomModules) {
         jDomModules.clear();
       } else {
-        jDomModules = new JDomModules(insertNewElement("modules", modelBase));
+        jDomModules = new JDomModules(insertNewElement("modules", jdomElement));
       }
       jDomModules.addAll(modules);
     }
@@ -138,7 +138,7 @@ public class JDomModelBase {
   }
 
   public Properties getProperties() {
-    Element properties = modelBase.getChild("properties", modelBase.getNamespace());
+    Element properties = jdomElement.getChild("properties", jdomElement.getNamespace());
 
     if (properties == null) {
       return null;
@@ -152,7 +152,7 @@ public class JDomModelBase {
   }
 
   public Reporting getReporting() {
-    Element reporting = modelBase.getChild("reporting", modelBase.getNamespace());
+    Element reporting = jdomElement.getChild("reporting", jdomElement.getNamespace());
 
     if (reporting == null) {
       return null;
@@ -171,5 +171,11 @@ public class JDomModelBase {
 
   public void setRepositories(List<Repository> repositories) {
     throw new UnsupportedOperationException();
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public Element getJDomElement() {
+    return jdomElement;
   }
 }

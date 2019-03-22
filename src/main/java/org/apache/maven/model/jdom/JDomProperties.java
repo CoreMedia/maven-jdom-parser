@@ -32,7 +32,6 @@ import java.io.Writer;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashSet;
-import java.util.InvalidPropertiesFormatException;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -45,19 +44,19 @@ import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
  *
  * @author Robert Scholte (for <a href="https://github.com/apache/maven-release/">Maven Release projct</a>, version 3.0)
  */
-public class JDomProperties extends Properties {
+public class JDomProperties extends Properties implements JDomBacked {
 
-  private final Element properties;
+  private final Element jdomElement;
 
-  public JDomProperties(Element properties) {
-    this.properties = properties;
+  public JDomProperties(Element jdomElement) {
+    this.jdomElement = jdomElement;
   }
 
   @Override
   public Set<Map.Entry<Object, Object>> entrySet() {
     JDomPropertiesSet entrySet = new JDomPropertiesSet();
 
-    for (Element property : properties.getContent(new ElementFilter(properties.getNamespace()))) {
+    for (Element property : jdomElement.getContent(new ElementFilter(jdomElement.getNamespace()))) {
       entrySet.addProperty(new JDomProperty(property));
     }
 
@@ -66,15 +65,15 @@ public class JDomProperties extends Properties {
 
   @Override
   public synchronized Object put(Object key, Object value) {
-    String previousValue = getChildElementTextTrim((String) key, properties);
-    rewriteElement((String) key, (String) value, properties, properties.getNamespace());
+    String previousValue = getChildElementTextTrim((String) key, jdomElement);
+    rewriteElement((String) key, (String) value, jdomElement, jdomElement.getNamespace());
     return previousValue;
   }
 
   @Override
   public synchronized Object remove(Object key) {
-    String previousValue = getChildElementTextTrim((String) key, properties);
-    rewriteElement((String) key, null, properties, properties.getNamespace());
+    String previousValue = getChildElementTextTrim((String) key, jdomElement);
+    rewriteElement((String) key, null, jdomElement, jdomElement.getNamespace());
     return previousValue;
   }
 
@@ -127,7 +126,7 @@ public class JDomProperties extends Properties {
 
   @Override
   public String getProperty(String key) {
-    Element property = properties.getChild(key, properties.getNamespace());
+    Element property = jdomElement.getChild(key, jdomElement.getNamespace());
 
     if (property == null) {
       return null;
@@ -159,6 +158,12 @@ public class JDomProperties extends Properties {
   @Override
   public void list(PrintWriter out) {
     throw new UnsupportedOperationException();
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public Element getJDomElement() {
+    return jdomElement;
   }
 
   private class JDomPropertiesSet extends HashSet<Map.Entry<Object, Object>> {
@@ -200,28 +205,34 @@ public class JDomProperties extends Properties {
     }
   }
 
-  private class JDomProperty implements Map.Entry<Object, Object> {
-    private Element property;
+  private static class JDomProperty implements JDomBacked, Map.Entry<Object, Object> {
 
-    private JDomProperty(Element property) {
-      this.property = property;
+    private final Element jdElement;
+
+    private JDomProperty(Element jdElement) {
+      this.jdElement = jdElement;
     }
 
     @Override
     public Object getKey() {
-      return property.getName();
+      return jdElement.getName();
     }
 
     @Override
     public Object getValue() {
-      return property.getTextTrim();
+      return jdElement.getTextTrim();
     }
 
     @Override
     public Object setValue(Object value) {
-      String previousValue = property.getTextTrim();
-      property.setText((String) value);
+      String previousValue = jdElement.getTextTrim();
+      jdElement.setText((String) value);
       return previousValue;
+    }
+
+    @Override
+    public Element getJDomElement() {
+      return jdElement;
     }
   }
 }

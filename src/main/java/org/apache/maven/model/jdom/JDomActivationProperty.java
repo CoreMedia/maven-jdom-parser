@@ -27,18 +27,18 @@ import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
  *
  * @author Marc Rohlfs, CoreMedia AG
  */
-public class JDomActivationProperty extends ActivationProperty {
+public class JDomActivationProperty extends ActivationProperty implements JDomBacked {
 
   private static final String ELEMENT_NAME = "name";
   private static final String ELEMENT_VALUE = "value";
 
   private final Element jdomElement;
 
-  public JDomActivationProperty(Element element) {
-    jdomElement = element;
+  public JDomActivationProperty(Element jdomElement) {
+    this.jdomElement = jdomElement;
 
-    super.setName(getChildElementTextTrim(ELEMENT_NAME, jdomElement));
-    super.setValue(getChildElementTextTrim(ELEMENT_VALUE, jdomElement));
+    super.setName(getChildElementTextTrim(ELEMENT_NAME, this.jdomElement));
+    super.setValue(getChildElementTextTrim(ELEMENT_VALUE, this.jdomElement));
   }
 
   @Override
@@ -51,5 +51,11 @@ public class JDomActivationProperty extends ActivationProperty {
   public void setValue(String value) {
     rewriteElement(ELEMENT_VALUE, value, jdomElement);
     super.setValue(value);
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public Element getJDomElement() {
+    return jdomElement;
   }
 }

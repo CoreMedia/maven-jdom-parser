@@ -27,12 +27,15 @@ import org.jdom2.Element;
  *
  * @author Robert Scholte (for <a href="https://github.com/apache/maven-release/">Maven Release projct</a>, version 3.0)
  */
-public class JDomExtension extends Extension implements MavenCoordinate {
+public class JDomExtension extends Extension implements JDomBacked, MavenCoordinate {
+
+  private final Element jdomElement;
 
   private final MavenCoordinate coordinate;
 
-  public JDomExtension(Element extension) {
-    this.coordinate = new JDomMavenCoordinate(extension);
+  public JDomExtension(Element jdomElement) {
+    this.jdomElement = jdomElement;
+    this.coordinate = new JDomMavenCoordinate(jdomElement);
   }
 
   @Override
@@ -63,5 +66,11 @@ public class JDomExtension extends Extension implements MavenCoordinate {
   @Override
   public void setVersion(String version) {
     coordinate.setVersion(version);
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public Element getJDomElement() {
+    return jdomElement;
   }
 }

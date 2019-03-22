@@ -41,41 +41,41 @@ import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
  *
  * @author Robert Scholte (for <a href="https://github.com/apache/maven-release/">Maven Release projct</a>, version 3.0)
  */
-public class JDomBuild extends Build {
+public class JDomBuild extends Build implements JDomBacked {
 
-  private final Element build;
+  private final Element jdomElement;
 
-  public JDomBuild(Element build) {
-    this.build = build;
+  public JDomBuild(Element jdomElement) {
+    this.jdomElement = jdomElement;
   }
 
   @Override
   public String getDefaultGoal() {
-    return getChildElementTextTrim("defaultGoal", build);
+    return getChildElementTextTrim("defaultGoal", jdomElement);
   }
 
   @Override
   public void setDefaultGoal(String defaultGoal) {
-    rewriteElement("defaultGoal", defaultGoal, build, build.getNamespace());
+    rewriteElement("defaultGoal", defaultGoal, jdomElement, jdomElement.getNamespace());
   }
 
   @Override
   public String getDirectory() {
-    return getChildElementTextTrim("directory", build);
+    return getChildElementTextTrim("directory", jdomElement);
   }
 
   @Override
   public void setDirectory(String directory) {
-    rewriteElement("directory", directory, build, build.getNamespace());
+    rewriteElement("directory", directory, jdomElement, jdomElement.getNamespace());
   }
 
   @Override
   public List<Extension> getExtensions() {
-    Element extensionsElm = build.getChild("extensions", build.getNamespace());
+    Element extensionsElm = jdomElement.getChild("extensions", jdomElement.getNamespace());
     if (extensionsElm == null) {
       return Collections.emptyList();
     } else {
-      List<Element> extensionElms = extensionsElm.getChildren("extension", build.getNamespace());
+      List<Element> extensionElms = extensionsElm.getChildren("extension", jdomElement.getNamespace());
       List<Extension> extensions = new ArrayList<>(extensionElms.size());
       for (Element extensionElm : extensionElms) {
         extensions.add(new JDomExtension(extensionElm));
@@ -101,27 +101,27 @@ public class JDomBuild extends Build {
 
   @Override
   public String getFinalName() {
-    return getChildElementTextTrim("finalName", build);
+    return getChildElementTextTrim("finalName", jdomElement);
   }
 
   @Override
   public void setFinalName(String finalName) {
-    rewriteElement("finalName", finalName, build, build.getNamespace());
+    rewriteElement("finalName", finalName, jdomElement, jdomElement.getNamespace());
   }
 
   @Override
   public String getOutputDirectory() {
-    return getChildElementTextTrim("outputDirectory", build);
+    return getChildElementTextTrim("outputDirectory", jdomElement);
   }
 
   @Override
   public void setOutputDirectory(String outputDirectory) {
-    rewriteElement("outputDirectory", outputDirectory, build, build.getNamespace());
+    rewriteElement("outputDirectory", outputDirectory, jdomElement, jdomElement.getNamespace());
   }
 
   @Override
   public PluginManagement getPluginManagement() {
-    Element pluginManagementElm = build.getChild("pluginManagement", build.getNamespace());
+    Element pluginManagementElm = jdomElement.getChild("pluginManagement", jdomElement.getNamespace());
     if (pluginManagementElm == null) {
       return null;
     } else {
@@ -136,7 +136,7 @@ public class JDomBuild extends Build {
 
   @Override
   public List<Plugin> getPlugins() {
-    Element pluginsElm = build.getChild("plugins", build.getNamespace());
+    Element pluginsElm = jdomElement.getChild("plugins", jdomElement.getNamespace());
     if (pluginsElm == null) {
       return Collections.emptyList();
     } else {
@@ -147,9 +147,9 @@ public class JDomBuild extends Build {
   @Override
   public void setPlugins(List<Plugin> plugins) {
     if (plugins == null) {
-      JDomUtils.rewriteElement("plugins", null, build, build.getNamespace());
+      JDomUtils.rewriteElement("plugins", null, jdomElement, jdomElement.getNamespace());
     } else {
-      new JDomPlugins(insertNewElement("plugins", build)).addAll(plugins);
+      new JDomPlugins(insertNewElement("plugins", jdomElement)).addAll(plugins);
     }
 
   }
@@ -166,32 +166,32 @@ public class JDomBuild extends Build {
 
   @Override
   public String getScriptSourceDirectory() {
-    return getChildElementTextTrim("scriptSourceDirectory", build);
+    return getChildElementTextTrim("scriptSourceDirectory", jdomElement);
   }
 
   @Override
   public void setScriptSourceDirectory(String scriptSourceDirectory) {
-    rewriteElement("scriptSourceDirectory", scriptSourceDirectory, build, build.getNamespace());
+    rewriteElement("scriptSourceDirectory", scriptSourceDirectory, jdomElement, jdomElement.getNamespace());
   }
 
   @Override
   public String getSourceDirectory() {
-    return getChildElementTextTrim("sourceDirectory", build);
+    return getChildElementTextTrim("sourceDirectory", jdomElement);
   }
 
   @Override
   public void setSourceDirectory(String sourceDirectory) {
-    rewriteElement("sourceDirectory", sourceDirectory, build, build.getNamespace());
+    rewriteElement("sourceDirectory", sourceDirectory, jdomElement, jdomElement.getNamespace());
   }
 
   @Override
   public String getTestOutputDirectory() {
-    return getChildElementTextTrim("testOutputDirectory", build);
+    return getChildElementTextTrim("testOutputDirectory", jdomElement);
   }
 
   @Override
   public void setTestOutputDirectory(String testOutputDirectory) {
-    rewriteElement("testOutputDirectory", testOutputDirectory, build, build.getNamespace());
+    rewriteElement("testOutputDirectory", testOutputDirectory, jdomElement, jdomElement.getNamespace());
   }
 
   @Override
@@ -206,12 +206,12 @@ public class JDomBuild extends Build {
 
   @Override
   public String getTestSourceDirectory() {
-    return getChildElementTextTrim("testSourceDirectory", build);
+    return getChildElementTextTrim("testSourceDirectory", jdomElement);
   }
 
   @Override
   public void setTestSourceDirectory(String testSourceDirectory) {
-    rewriteElement("testSourceDirectory", testSourceDirectory, build, build.getNamespace());
+    rewriteElement("testSourceDirectory", testSourceDirectory, jdomElement, jdomElement.getNamespace());
   }
 
   @Override
@@ -222,5 +222,11 @@ public class JDomBuild extends Build {
   @Override
   public Map<String, Plugin> getPluginsAsMap() {
     throw new UnsupportedOperationException();
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public Element getJDomElement() {
+    return jdomElement;
   }
 }

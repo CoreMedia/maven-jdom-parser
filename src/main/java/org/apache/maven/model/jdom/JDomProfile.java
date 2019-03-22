@@ -45,20 +45,20 @@ import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
  *
  * @author Robert Scholte (for <a href="https://github.com/apache/maven-release/">Maven Release projct</a>, version 3.0)
  */
-public class JDomProfile extends Profile {
+public class JDomProfile extends Profile implements JDomBacked {
 
-  private Element profile;
+  private final Element jdomElement;
 
   private final JDomModelBase modelBase;
 
-  public JDomProfile(Element profile) {
-    this.profile = profile;
-    this.modelBase = new JDomModelBase(profile);
+  public JDomProfile(Element jdomElement) {
+    this.jdomElement = jdomElement;
+    this.modelBase = new JDomModelBase(jdomElement);
   }
 
   @Override
   public Activation getActivation() {
-    Element elm = profile.getChild("activation", profile.getNamespace());
+    Element elm = jdomElement.getChild("activation", jdomElement.getNamespace());
     if (elm == null) {
       return null;
     } else {
@@ -69,11 +69,11 @@ public class JDomProfile extends Profile {
   @Override
   public void setActivation(Activation activation) {
     if (activation == null) {
-      JDomUtils.rewriteElement("activation", null, profile, profile.getNamespace());
+      JDomUtils.rewriteElement("activation", null, jdomElement, jdomElement.getNamespace());
     } else {
       Activation jdomActivation = getActivation();
       if (jdomActivation == null) {
-        Element activationRoot = insertNewElement("activation", profile);
+        Element activationRoot = insertNewElement("activation", jdomElement);
         jdomActivation = new JDomActivation(activationRoot);
       }
 
@@ -145,12 +145,12 @@ public class JDomProfile extends Profile {
 
   @Override
   public String getId() {
-    return getChildElementTextTrim("id", profile);
+    return getChildElementTextTrim("id", jdomElement);
   }
 
   @Override
   public void setId(String id) {
-    rewriteElement("id", id, profile, profile.getNamespace());
+    rewriteElement("id", id, jdomElement, jdomElement.getNamespace());
   }
 
   @Override
@@ -203,7 +203,9 @@ public class JDomProfile extends Profile {
     modelBase.setRepositories(repositories);
   }
 
+  /** {@inheritDoc} */
+  @Override
   public Element getJDomElement() {
-    return profile;
+    return jdomElement;
   }
 }

@@ -30,15 +30,15 @@ import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
  *
  * @author Robert Scholte (for <a href="https://github.com/apache/maven-release/">Maven Release projct</a>, version 3.0)
  */
-public class JDomParent extends Parent implements MavenCoordinate {
+public class JDomParent extends Parent implements JDomBacked, MavenCoordinate {
 
-  private Element parent;
+  private final Element jdomElement;
 
   private final MavenCoordinate coordinate;
 
-  public JDomParent(Element parent) {
-    this.parent = parent;
-    this.coordinate = new JDomMavenCoordinate(parent);
+  public JDomParent(Element jdomElement) {
+    this.jdomElement = jdomElement;
+    this.coordinate = new JDomMavenCoordinate(jdomElement);
   }
 
   @Override
@@ -63,12 +63,12 @@ public class JDomParent extends Parent implements MavenCoordinate {
 
   @Override
   public String getRelativePath() {
-    return getChildElementTextTrim("relativePath", parent);
+    return getChildElementTextTrim("relativePath", jdomElement);
   }
 
   @Override
   public void setRelativePath(String relativePath) {
-    rewriteElement("relativePath", relativePath, parent, parent.getNamespace());
+    rewriteElement("relativePath", relativePath, jdomElement, jdomElement.getNamespace());
   }
 
   @Override
@@ -79,5 +79,11 @@ public class JDomParent extends Parent implements MavenCoordinate {
   @Override
   public void setVersion(String version) {
     this.coordinate.setVersion(version);
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public Element getJDomElement() {
+    return jdomElement;
   }
 }

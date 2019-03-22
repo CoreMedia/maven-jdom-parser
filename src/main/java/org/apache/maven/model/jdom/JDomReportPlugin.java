@@ -33,14 +33,15 @@ import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
  *
  * @author Robert Scholte (for <a href="https://github.com/apache/maven-release/">Maven Release projct</a>, version 3.0)
  */
-public class JDomReportPlugin extends ReportPlugin implements MavenCoordinate {
+public class JDomReportPlugin extends ReportPlugin implements JDomBacked, MavenCoordinate {
 
-  private final Element reportPlugin;
+  private final Element jdomElement;
+
   private final MavenCoordinate coordinate;
 
-  public JDomReportPlugin(Element reportPlugin) {
-    this.reportPlugin = reportPlugin;
-    this.coordinate = new JDomMavenCoordinate(reportPlugin);
+  public JDomReportPlugin(Element jdomElement) {
+    this.jdomElement = jdomElement;
+    this.coordinate = new JDomMavenCoordinate(jdomElement);
   }
 
   @Override
@@ -75,12 +76,12 @@ public class JDomReportPlugin extends ReportPlugin implements MavenCoordinate {
 
   @Override
   public String getInherited() {
-    return getChildElementTextTrim("inherited", reportPlugin);
+    return getChildElementTextTrim("inherited", jdomElement);
   }
 
   @Override
   public void setInherited(String inherited) {
-    rewriteElement("inherited", inherited, reportPlugin, reportPlugin.getNamespace());
+    rewriteElement("inherited", inherited, jdomElement, jdomElement.getNamespace());
   }
 
   @Override
@@ -116,5 +117,11 @@ public class JDomReportPlugin extends ReportPlugin implements MavenCoordinate {
   @Override
   public String getKey() {
     return constructKey(getGroupId(), getArtifactId());
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public Element getJDomElement() {
+    return jdomElement;
   }
 }

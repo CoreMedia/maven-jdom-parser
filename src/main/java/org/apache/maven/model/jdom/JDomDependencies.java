@@ -39,13 +39,13 @@ import static org.codehaus.plexus.util.StringUtils.defaultString;
  *
  * @author Marc Rohlfs, CoreMedia AG
  */
-public class JDomDependencies extends ArrayList<Dependency> {
+public class JDomDependencies extends ArrayList<Dependency> implements JDomBacked {
 
-  private Element dependencies;
+  private final Element jdomElement;
 
-  public JDomDependencies(Element dependencies) {
-    super(transformToJDomDependencyList(getDependencyElements(dependencies)));
-    this.dependencies = dependencies;
+  public JDomDependencies(Element jdomElement) {
+    super(transformToJDomDependencyList(getDependencyElements(jdomElement)));
+    this.jdomElement = jdomElement;
   }
 
   private static List<Element> getDependencyElements(Element dependencies) {
@@ -65,15 +65,15 @@ public class JDomDependencies extends ArrayList<Dependency> {
     Element newElement;
     if (dependency instanceof JDomDependency) {
       newElement = ((JDomDependency) dependency).getJDomElement().clone();
-      dependencies.addContent(
-              dependencies.getContentSize() - 1,
+      jdomElement.addContent(
+              jdomElement.getContentSize() - 1,
               asList(
-                      new Text("\n" + detectIndentation(dependencies)),
+                      new Text("\n" + detectIndentation(jdomElement)),
                       newElement));
-      resetIndentations(dependencies, detectIndentation(dependencies));
-      resetIndentations(newElement, detectIndentation(dependencies) + "  ");
+      resetIndentations(jdomElement, detectIndentation(jdomElement));
+      resetIndentations(newElement, detectIndentation(jdomElement) + "  ");
     } else {
-      newElement = insertNewElement("dependency", dependencies);
+      newElement = insertNewElement("dependency", jdomElement);
       JDomDependency jDomDependency = new JDomDependency(newElement);
 
       jDomDependency.setGroupId(dependency.getGroupId());
@@ -121,7 +121,7 @@ public class JDomDependencies extends ArrayList<Dependency> {
       if (candidate.getGroupId().equals(removeDependency.getGroupId())
               && candidate.getArtifactId().equals(removeDependency.getArtifactId())
               && defaultString(candidate.getType(), "jar").equals(defaultString(removeDependency.getType(), "jar"))) {
-        removeChildElement(dependencies, ((JDomDependency) candidate).getJDomElement());
+        removeChildElement(jdomElement, ((JDomDependency) candidate).getJDomElement());
         return super.remove(removeDependency);
       }
     }
@@ -194,5 +194,11 @@ public class JDomDependencies extends ArrayList<Dependency> {
   @Override
   public List<Dependency> subList(int fromIndex, int toIndex) {
     throw new UnsupportedOperationException();
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public Element getJDomElement() {
+    return jdomElement;
   }
 }

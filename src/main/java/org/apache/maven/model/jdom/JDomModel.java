@@ -54,9 +54,9 @@ import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
  *
  * @author Robert Scholte (for <a href="https://github.com/apache/maven-release/">Maven Release projct</a>, version 3.0)
  */
-public class JDomModel extends Model implements MavenCoordinate {
+public class JDomModel extends Model implements JDomBacked, MavenCoordinate {
 
-  private final Element project;
+  private final Element jdomElement;
 
   private final JDomModelBase modelBase;
   private final JDomMavenCoordinate coordinate;
@@ -65,10 +65,10 @@ public class JDomModel extends Model implements MavenCoordinate {
     this(document.getRootElement());
   }
 
-  public JDomModel(Element project) {
-    this.project = project;
-    this.modelBase = new JDomModelBase(project);
-    this.coordinate = new JDomMavenCoordinate(project);
+  public JDomModel(Element jdomElement) {
+    this.jdomElement = jdomElement;
+    this.modelBase = new JDomModelBase(jdomElement);
+    this.coordinate = new JDomMavenCoordinate(jdomElement);
   }
 
   @Override
@@ -133,12 +133,12 @@ public class JDomModel extends Model implements MavenCoordinate {
 
   @Override
   public String getDescription() {
-    return getChildElementTextTrim("description", project);
+    return getChildElementTextTrim("description", jdomElement);
   }
 
   @Override
   public void setDescription(String description) {
-    rewriteElement("description", description, project, project.getNamespace());
+    rewriteElement("description", description, jdomElement, jdomElement.getNamespace());
   }
 
   @Override
@@ -181,12 +181,12 @@ public class JDomModel extends Model implements MavenCoordinate {
 
   @Override
   public String getInceptionYear() {
-    return getChildElementTextTrim("inceptionYear", project);
+    return getChildElementTextTrim("inceptionYear", jdomElement);
   }
 
   @Override
   public void setInceptionYear(String inceptionYear) {
-    rewriteElement("inceptionYear", inceptionYear, project, project.getNamespace());
+    rewriteElement("inceptionYear", inceptionYear, jdomElement, jdomElement.getNamespace());
   }
 
   @Override
@@ -221,12 +221,12 @@ public class JDomModel extends Model implements MavenCoordinate {
 
   @Override
   public String getModelVersion() {
-    return getChildElementTextTrim("modelVersion", project);
+    return getChildElementTextTrim("modelVersion", jdomElement);
   }
 
   @Override
   public void setModelVersion(String modelVersion) {
-    rewriteElement("modelVersion", modelVersion, project, project.getNamespace());
+    rewriteElement("modelVersion", modelVersion, jdomElement, jdomElement.getNamespace());
   }
 
   @Override
@@ -241,12 +241,12 @@ public class JDomModel extends Model implements MavenCoordinate {
 
   @Override
   public String getName() {
-    return getChildElementTextTrim("name", project);
+    return getChildElementTextTrim("name", jdomElement);
   }
 
   @Override
   public void setName(String name) {
-    rewriteElement("name", name, project, project.getNamespace());
+    rewriteElement("name", name, jdomElement, jdomElement.getNamespace());
   }
 
   @Override
@@ -261,17 +261,17 @@ public class JDomModel extends Model implements MavenCoordinate {
 
   @Override
   public String getPackaging() {
-    return getChildElementTextTrim("packaging", project);
+    return getChildElementTextTrim("packaging", jdomElement);
   }
 
   @Override
   public void setPackaging(String packaging) {
-    rewriteElement("packaging", packaging, project, project.getNamespace());
+    rewriteElement("packaging", packaging, jdomElement, jdomElement.getNamespace());
   }
 
   @Override
   public Parent getParent() {
-    Element elm = getChildElement("parent", project);
+    Element elm = getChildElement("parent", jdomElement);
     if (elm == null) {
       return null;
     } else {
@@ -285,7 +285,7 @@ public class JDomModel extends Model implements MavenCoordinate {
     if (parent == null) {
       Parent removedParent = getParent();
 
-      rewriteElement("parent", null, project, project.getNamespace());
+      rewriteElement("parent", null, jdomElement, jdomElement.getNamespace());
 
       if (getGroupId() == null) {
         setGroupId(removedParent.getGroupId());
@@ -298,7 +298,7 @@ public class JDomModel extends Model implements MavenCoordinate {
 
       Parent jdomParent = getParent();
       if (jdomParent == null) {
-        Element parentRoot = insertNewElement("parent", project);
+        Element parentRoot = insertNewElement("parent", jdomElement);
         jdomParent = new JDomParent(parentRoot);
       } else {
         containsRelativePath = jdomParent.getRelativePath() != null;
@@ -339,15 +339,15 @@ public class JDomModel extends Model implements MavenCoordinate {
 
   @Override
   public List<Profile> getProfiles() {
-    return new JDomProfiles(project.getChild("profiles", project.getNamespace()), this);
+    return new JDomProfiles(jdomElement.getChild("profiles", jdomElement.getNamespace()), this);
   }
 
   @Override
   public void setProfiles(List<Profile> profiles) {
     if (profiles == null) {
-      JDomUtils.rewriteElement("profiles", null, project, project.getNamespace());
+      JDomUtils.rewriteElement("profiles", null, jdomElement, jdomElement.getNamespace());
     } else {
-      new JDomProfiles(insertNewElement("profiles", project), this).addAll(profiles);
+      new JDomProfiles(insertNewElement("profiles", jdomElement), this).addAll(profiles);
     }
   }
 
@@ -383,7 +383,7 @@ public class JDomModel extends Model implements MavenCoordinate {
 
   @Override
   public Scm getScm() {
-    Element elm = project.getChild("scm", project.getNamespace());
+    Element elm = jdomElement.getChild("scm", jdomElement.getNamespace());
     if (elm == null) {
       return null;
     } else {
@@ -395,11 +395,11 @@ public class JDomModel extends Model implements MavenCoordinate {
   @Override
   public void setScm(Scm scm) {
     if (scm == null) {
-      JDomUtils.rewriteElement("scm", null, project, project.getNamespace());
+      JDomUtils.rewriteElement("scm", null, jdomElement, jdomElement.getNamespace());
     } else {
       Scm jdomScm = getScm();
       if (jdomScm == null) {
-        Element scmRoot = insertNewElement("scm", project);
+        Element scmRoot = insertNewElement("scm", jdomElement);
         jdomScm = new JDomScm(scmRoot);
       }
 
@@ -413,12 +413,12 @@ public class JDomModel extends Model implements MavenCoordinate {
 
   @Override
   public String getUrl() {
-    return getChildElementTextTrim("url", project);
+    return getChildElementTextTrim("url", jdomElement);
   }
 
   @Override
   public void setUrl(String url) {
-    rewriteElement("url", url, project, project.getNamespace());
+    rewriteElement("url", url, jdomElement, jdomElement.getNamespace());
   }
 
   @Override
@@ -439,7 +439,9 @@ public class JDomModel extends Model implements MavenCoordinate {
     }
   }
 
+  /** {@inheritDoc} */
+  @Override
   public Element getJDomElement() {
-    return project;
+    return jdomElement;
   }
 }

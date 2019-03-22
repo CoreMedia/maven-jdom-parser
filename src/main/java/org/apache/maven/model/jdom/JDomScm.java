@@ -30,51 +30,57 @@ import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
  *
  * @author Robert Scholte (for <a href="https://github.com/apache/maven-release/">Maven Release projct</a>, version 3.0)
  */
-public class JDomScm extends Scm {
+public class JDomScm extends Scm implements JDomBacked {
 
-  private Element scm;
+  private Element jdomElement;
 
-  public JDomScm(Element scm) {
-    this.scm = scm;
+  public JDomScm(Element jdomElement) {
+    this.jdomElement = jdomElement;
   }
 
   @Override
   public String getConnection() {
-    return getChildElementTextTrim("connection", scm);
+    return getChildElementTextTrim("connection", jdomElement);
   }
 
   @Override
   public void setConnection(String connection) {
-    rewriteElement("connection", connection, scm, scm.getNamespace());
+    rewriteElement("connection", connection, jdomElement, jdomElement.getNamespace());
   }
 
   @Override
   public String getDeveloperConnection() {
-    return getChildElementTextTrim("developerConnection", scm);
+    return getChildElementTextTrim("developerConnection", jdomElement);
   }
 
   @Override
   public void setDeveloperConnection(String developerConnection) {
-    rewriteElement("developerConnection", developerConnection, scm, scm.getNamespace());
+    rewriteElement("developerConnection", developerConnection, jdomElement, jdomElement.getNamespace());
   }
 
   @Override
   public String getTag() {
-    return getChildElementTextTrim("tag", scm);
+    return getChildElementTextTrim("tag", jdomElement);
   }
 
   @Override
   public void setTag(String tag) {
-    rewriteElement("tag", tag, scm, scm.getNamespace());
+    rewriteElement("tag", tag, jdomElement, jdomElement.getNamespace());
   }
 
   @Override
   public String getUrl() {
-    return getChildElementTextTrim("url", scm);
+    return getChildElementTextTrim("url", jdomElement);
   }
 
   @Override
   public void setUrl(String url) {
-    rewriteElement("url", url, scm, scm.getNamespace());
+    rewriteElement("url", url, jdomElement, jdomElement.getNamespace());
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public Element getJDomElement() {
+    return jdomElement;
   }
 }

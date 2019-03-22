@@ -32,20 +32,20 @@ import static org.apache.maven.model.jdom.util.JDomUtils.rewriteValue;
  *
  * @author Marc Rohlfs, CoreMedia AG
  */
-public class JDomConfiguration extends Xpp3Dom {
+public class JDomConfiguration extends Xpp3Dom implements JDomBacked {
 
-  private Element configuration;
+  private final Element jdomElement;
 
   private List<JDomConfiguration> children;
 
-  public JDomConfiguration(Element configuration) {
-    super(configuration.getName());
-    this.configuration = configuration;
-    this.children = getChildren(configuration);
+  public JDomConfiguration(Element jdomElement) {
+    super(jdomElement.getName());
+    this.jdomElement = jdomElement;
+    this.children = getChildren(jdomElement);
   }
 
-  private static List<JDomConfiguration> getChildren(Element configuration) {
-    List<Element> childElements = configuration.getContent(new ElementFilter());
+  private static List<JDomConfiguration> getChildren(Element jdomElement) {
+    List<Element> childElements = jdomElement.getContent(new ElementFilter());
     List<JDomConfiguration> children = new ArrayList<>(childElements.size());
     for (Element childElement : childElements) {
       children.add(new JDomConfiguration(childElement));
@@ -60,7 +60,7 @@ public class JDomConfiguration extends Xpp3Dom {
 
   @Override
   public void setValue(String value) {
-    rewriteValue(configuration, value);
+    rewriteValue(jdomElement, value);
   }
 
   @Override
@@ -138,7 +138,9 @@ public class JDomConfiguration extends Xpp3Dom {
     throw new UnsupportedOperationException();
   }
 
+  /** {@inheritDoc} */
+  @Override
   public Element getJDomElement() {
-    return configuration;
+    return jdomElement;
   }
 }

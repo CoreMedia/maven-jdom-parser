@@ -34,13 +34,13 @@ import static org.apache.maven.model.jdom.util.JDomUtils.removeChildElement;
  *
  * @author Marc Rohlfs, CoreMedia AG
  */
-public class JDomModules extends ArrayList<String> {
+public class JDomModules extends ArrayList<String> implements JDomBacked {
 
-  private Element modules;
+  private final Element jdomElement;
 
-  public JDomModules(Element modules) {
-    super(transformToElementTextList(getModuleElements(modules)));
-    this.modules = modules;
+  public JDomModules(Element jdomElement) {
+    super(transformToElementTextList(getModuleElements(jdomElement)));
+    this.jdomElement = jdomElement;
   }
 
   private static List<Element> getModuleElements(Element modules) {
@@ -57,20 +57,20 @@ public class JDomModules extends ArrayList<String> {
 
   @Override
   public boolean add(String module) {
-    Element newModule = new Element("module", modules.getNamespace());
+    Element newModule = new Element("module", jdomElement.getNamespace());
     newModule.setText(module);
 
-    modules.addContent(
-            modules.getContentSize() - 1,
+    jdomElement.addContent(
+            jdomElement.getContentSize() - 1,
             asList(
-                    new Text("\n" + detectIndentation(modules)),
+                    new Text("\n" + detectIndentation(jdomElement)),
                     newModule));
     return super.add(module);
   }
 
   @Override
   public boolean remove(final Object module) {
-    List<Element> removeElements = modules.getContent(new ElementFilter() {
+    List<Element> removeElements = jdomElement.getContent(new ElementFilter() {
       @Override
       public Element filter(Object content) {
         Element element = super.filter(content);
@@ -79,7 +79,7 @@ public class JDomModules extends ArrayList<String> {
     });
 
     for (Element removeElement : removeElements) {
-      removeChildElement(modules, removeElement);
+      removeChildElement(jdomElement, removeElement);
     }
 
     return super.remove(module);
@@ -151,5 +151,11 @@ public class JDomModules extends ArrayList<String> {
   @Override
   public List<String> subList(int fromIndex, int toIndex) {
     throw new UnsupportedOperationException();
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public Element getJDomElement() {
+    return jdomElement;
   }
 }

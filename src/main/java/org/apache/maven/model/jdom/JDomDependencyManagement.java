@@ -34,17 +34,17 @@ import static org.apache.maven.model.jdom.util.JDomUtils.insertNewElement;
  *
  * @author Robert Scholte (for <a href="https://github.com/apache/maven-release/">Maven Release projct</a>, version 3.0)
  */
-public class JDomDependencyManagement extends DependencyManagement {
+public class JDomDependencyManagement extends DependencyManagement implements JDomBacked {
 
-  private final Element dependencyManagement;
+  private final Element jdomElement;
 
-  public JDomDependencyManagement(Element dependencyManagement) {
-    this.dependencyManagement = dependencyManagement;
+  public JDomDependencyManagement(Element jdomElement) {
+    this.jdomElement = jdomElement;
   }
 
   @Override
   public List<Dependency> getDependencies() {
-    Element dependenciesElm = dependencyManagement.getChild("dependencies", dependencyManagement.getNamespace());
+    Element dependenciesElm = jdomElement.getChild("dependencies", jdomElement.getNamespace());
     if (dependenciesElm == null) {
       return Collections.emptyList();
     } else {
@@ -55,9 +55,15 @@ public class JDomDependencyManagement extends DependencyManagement {
   @Override
   public void setDependencies(List<Dependency> dependencies) {
     if (dependencies == null) {
-      JDomUtils.rewriteElement("dependencies", null, dependencyManagement, dependencyManagement.getNamespace());
+      JDomUtils.rewriteElement("dependencies", null, jdomElement, jdomElement.getNamespace());
     } else {
-      new JDomDependencies(insertNewElement("dependencies", dependencyManagement)).addAll(dependencies);
+      new JDomDependencies(insertNewElement("dependencies", jdomElement)).addAll(dependencies);
     }
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public Element getJDomElement() {
+    return jdomElement;
   }
 }

@@ -33,15 +33,15 @@ import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
  *
  * @author Robert Scholte (for <a href="https://github.com/apache/maven-release/">Maven Release projct</a>, version 3.0)
  */
-public class JDomDependency extends Dependency implements MavenCoordinate {
+public class JDomDependency extends Dependency implements JDomBacked, MavenCoordinate {
 
-  private Element dependency;
+  private final Element jdomElement;
 
   private final MavenCoordinate coordinate;
 
-  public JDomDependency(Element dependency) {
-    this.dependency = dependency;
-    this.coordinate = new JDomMavenCoordinate(dependency);
+  public JDomDependency(Element jdomElement) {
+    this.jdomElement = jdomElement;
+    this.coordinate = new JDomMavenCoordinate(jdomElement);
   }
 
   @Override
@@ -56,12 +56,12 @@ public class JDomDependency extends Dependency implements MavenCoordinate {
 
   @Override
   public String getClassifier() {
-    return getChildElementTextTrim("classifier", dependency);
+    return getChildElementTextTrim("classifier", jdomElement);
   }
 
   @Override
   public void setClassifier(String classifier) {
-    rewriteElement("classifier", classifier, dependency, dependency.getNamespace());
+    rewriteElement("classifier", classifier, jdomElement, jdomElement.getNamespace());
   }
 
   @Override
@@ -86,12 +86,12 @@ public class JDomDependency extends Dependency implements MavenCoordinate {
 
   @Override
   public String getOptional() {
-    return getChildElementTextTrim("optional", dependency);
+    return getChildElementTextTrim("optional", jdomElement);
   }
 
   @Override
   public void setOptional(String optional) {
-    rewriteElement("optional", optional, dependency, dependency.getNamespace());
+    rewriteElement("optional", optional, jdomElement, jdomElement.getNamespace());
   }
 
   @Override
@@ -106,32 +106,32 @@ public class JDomDependency extends Dependency implements MavenCoordinate {
 
   @Override
   public String getScope() {
-    return getChildElementTextTrim("scope", dependency);
+    return getChildElementTextTrim("scope", jdomElement);
   }
 
   @Override
   public void setScope(String scope) {
-    rewriteElement("scope", scope, dependency, dependency.getNamespace());
+    rewriteElement("scope", scope, jdomElement, jdomElement.getNamespace());
   }
 
   @Override
   public String getSystemPath() {
-    return getChildElementTextTrim("systemPath", dependency);
+    return getChildElementTextTrim("systemPath", jdomElement);
   }
 
   @Override
   public void setSystemPath(String systemPath) {
-    rewriteElement("systemPath", systemPath, dependency, dependency.getNamespace());
+    rewriteElement("systemPath", systemPath, jdomElement, jdomElement.getNamespace());
   }
 
   @Override
   public String getType() {
-    return getChildElementTextTrim("type", dependency);
+    return getChildElementTextTrim("type", jdomElement);
   }
 
   @Override
   public void setType(String type) {
-    rewriteElement("type", type, dependency, dependency.getNamespace());
+    rewriteElement("type", type, jdomElement, jdomElement.getNamespace());
   }
 
   @Override
@@ -149,7 +149,9 @@ public class JDomDependency extends Dependency implements MavenCoordinate {
     throw new UnsupportedOperationException();
   }
 
+  /** {@inheritDoc} */
+  @Override
   public Element getJDomElement() {
-    return dependency;
+    return jdomElement;
   }
 }

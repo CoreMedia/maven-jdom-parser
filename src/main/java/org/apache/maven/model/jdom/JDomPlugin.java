@@ -43,14 +43,15 @@ import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
  *
  * @author Robert Scholte (for <a href="https://github.com/apache/maven-release/">Maven Release projct</a>, version 3.0)
  */
-public class JDomPlugin extends Plugin implements MavenCoordinate {
+public class JDomPlugin extends Plugin implements JDomBacked, MavenCoordinate {
 
-  private Element plugin;
+  private final Element jdomElement;
+
   private final MavenCoordinate coordinate;
 
-  public JDomPlugin(Element plugin) {
-    this.plugin = plugin;
-    this.coordinate = new JDomMavenCoordinate(plugin);
+  public JDomPlugin(Element jdomElement) {
+    this.jdomElement = jdomElement;
+    this.coordinate = new JDomMavenCoordinate(jdomElement);
   }
 
   @Override
@@ -65,7 +66,7 @@ public class JDomPlugin extends Plugin implements MavenCoordinate {
 
   @Override
   public Object getConfiguration() {
-    Element elm = getChildElement("configuration", plugin);
+    Element elm = getChildElement("configuration", jdomElement);
     if (elm == null) {
       return null;
     } else {
@@ -76,35 +77,35 @@ public class JDomPlugin extends Plugin implements MavenCoordinate {
   @Override
   public void setConfiguration(Object configuration) {
     if (configuration == null) {
-      rewriteElement("configuration", null, plugin, plugin.getNamespace());
+      rewriteElement("configuration", null, jdomElement, jdomElement.getNamespace());
     } else if (configuration instanceof JDomConfiguration) {
       Element newJDomConfigurationElement = ((JDomConfiguration) configuration).getJDomElement().clone();
 
       JDomConfiguration oldJDomConfiguration = (JDomConfiguration) getConfiguration();
       if (oldJDomConfiguration == null) {
-        plugin.addContent(
-                plugin.getContentSize() - 1,
+        jdomElement.addContent(
+                jdomElement.getContentSize() - 1,
                 asList(
-                        new Text("\n" + detectIndentation(plugin)),
+                        new Text("\n" + detectIndentation(jdomElement)),
                         newJDomConfigurationElement));
       } else {
-        int replaceIndex = plugin.indexOf(oldJDomConfiguration.getJDomElement());
-        plugin.removeContent(replaceIndex);
-        plugin.addContent(replaceIndex, newJDomConfigurationElement);
+        int replaceIndex = jdomElement.indexOf(oldJDomConfiguration.getJDomElement());
+        jdomElement.removeContent(replaceIndex);
+        jdomElement.addContent(replaceIndex, newJDomConfigurationElement);
       }
 
-      resetIndentations(plugin, detectIndentation(plugin));
-      resetIndentations(newJDomConfigurationElement, detectIndentation(plugin) + "  ");
+      resetIndentations(jdomElement, detectIndentation(jdomElement));
+      resetIndentations(newJDomConfigurationElement, detectIndentation(jdomElement) + "  ");
     }
   }
 
   @Override
   public List<Dependency> getDependencies() {
-    Element dependenciesElm = plugin.getChild("dependencies", plugin.getNamespace());
+    Element dependenciesElm = jdomElement.getChild("dependencies", jdomElement.getNamespace());
     if (dependenciesElm == null) {
       return Collections.emptyList();
     } else {
-      List<Element> dependencyElms = dependenciesElm.getChildren("dependency", plugin.getNamespace());
+      List<Element> dependencyElms = dependenciesElm.getChildren("dependency", jdomElement.getNamespace());
       List<Dependency> dependencies = new ArrayList<>(dependencyElms.size());
       for (Element dependencyElm : dependencyElms) {
         dependencies.add(new JDomDependency(dependencyElm));
@@ -116,9 +117,9 @@ public class JDomPlugin extends Plugin implements MavenCoordinate {
   @Override
   public void setDependencies(List<Dependency> dependencies) {
     if (dependencies == null) {
-      rewriteElement("dependencies", null, plugin, plugin.getNamespace());
+      rewriteElement("dependencies", null, jdomElement, jdomElement.getNamespace());
     } else {
-      new JDomDependencies(insertNewElement("dependencies", plugin)).addAll(dependencies);
+      new JDomDependencies(insertNewElement("dependencies", jdomElement)).addAll(dependencies);
     }
   }
 
@@ -134,12 +135,12 @@ public class JDomPlugin extends Plugin implements MavenCoordinate {
 
   @Override
   public String getExtensions() {
-    return getChildElementTextTrim("extensions", plugin);
+    return getChildElementTextTrim("extensions", jdomElement);
   }
 
   @Override
   public void setExtensions(String extensions) {
-    rewriteElement("extensions", extensions, plugin, plugin.getNamespace());
+    rewriteElement("extensions", extensions, jdomElement, jdomElement.getNamespace());
   }
 
   @Override
@@ -174,12 +175,12 @@ public class JDomPlugin extends Plugin implements MavenCoordinate {
 
   @Override
   public String getInherited() {
-    return getChildElementTextTrim("inherited", plugin);
+    return getChildElementTextTrim("inherited", jdomElement);
   }
 
   @Override
   public void setInherited(String inherited) {
-    rewriteElement("inherited", inherited, plugin, plugin.getNamespace());
+    rewriteElement("inherited", inherited, jdomElement, jdomElement.getNamespace());
   }
 
   @Override
@@ -217,7 +218,9 @@ public class JDomPlugin extends Plugin implements MavenCoordinate {
     return constructKey(getGroupId(), getArtifactId());
   }
 
+  /** {@inheritDoc} */
+  @Override
   public Element getJDomElement() {
-    return plugin;
+    return jdomElement;
   }
 }

@@ -35,17 +35,17 @@ import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
  *
  * @author Robert Scholte (for <a href="https://github.com/apache/maven-release/">Maven Release projct</a>, version 3.0)
  */
-public class JDomPluginManagement extends PluginManagement {
+public class JDomPluginManagement extends PluginManagement implements JDomBacked {
 
-  private final Element pluginManagement;
+  private final Element jdomElement;
 
-  public JDomPluginManagement(Element pluginManagement) {
-    this.pluginManagement = pluginManagement;
+  public JDomPluginManagement(Element jdomElement) {
+    this.jdomElement = jdomElement;
   }
 
   @Override
   public List<Plugin> getPlugins() {
-    Element pluginsElm = pluginManagement.getChild("plugins", pluginManagement.getNamespace());
+    Element pluginsElm = jdomElement.getChild("plugins", jdomElement.getNamespace());
     if (pluginsElm == null) {
       return Collections.emptyList();
     } else {
@@ -56,9 +56,9 @@ public class JDomPluginManagement extends PluginManagement {
   @Override
   public void setPlugins(List<Plugin> plugins) {
     if (plugins == null) {
-      rewriteElement("plugins", null, pluginManagement, pluginManagement.getNamespace());
+      rewriteElement("plugins", null, jdomElement, jdomElement.getNamespace());
     } else {
-      new JDomPlugins(insertNewElement("plugins", pluginManagement)).addAll(plugins);
+      new JDomPlugins(insertNewElement("plugins", jdomElement)).addAll(plugins);
     }
   }
 
@@ -70,5 +70,11 @@ public class JDomPluginManagement extends PluginManagement {
   @Override
   public Map<String, Plugin> getPluginsAsMap() {
     throw new UnsupportedOperationException();
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public Element getJDomElement() {
+    return jdomElement;
   }
 }

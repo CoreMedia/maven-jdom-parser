@@ -34,13 +34,13 @@ import static org.apache.maven.model.jdom.util.JDomUtils.insertNewElement;
 import static org.apache.maven.model.jdom.util.JDomUtils.removeChildElement;
 import static org.apache.maven.model.jdom.util.JDomUtils.resetIndentations;
 
-public class JDomPlugins extends ArrayList<Plugin> {
+public class JDomPlugins extends ArrayList<Plugin> implements JDomBacked {
 
-  private Element plugins;
+  private final Element jdomElement;
 
-  public JDomPlugins(Element plugins) {
-    super(transformToJDomPluginList(getPluginElements(plugins)));
-    this.plugins = plugins;
+  public JDomPlugins(Element jdomElement) {
+    super(transformToJDomPluginList(getPluginElements(jdomElement)));
+    this.jdomElement = jdomElement;
   }
 
   private static List<Element> getPluginElements(Element plugins) {
@@ -60,15 +60,15 @@ public class JDomPlugins extends ArrayList<Plugin> {
     Element newElement;
     if (plugin instanceof JDomPlugin) {
       newElement = ((JDomPlugin) plugin).getJDomElement().clone();
-      plugins.addContent(
-              plugins.getContentSize() - 1,
+      jdomElement.addContent(
+              jdomElement.getContentSize() - 1,
               asList(
-                      new Text("\n" + detectIndentation(plugins)),
+                      new Text("\n" + detectIndentation(jdomElement)),
                       newElement));
-      resetIndentations(plugins, detectIndentation(plugins));
-      resetIndentations(newElement, detectIndentation(plugins) + "  ");
+      resetIndentations(jdomElement, detectIndentation(jdomElement));
+      resetIndentations(newElement, detectIndentation(jdomElement) + "  ");
     } else {
-      newElement = insertNewElement("plugin", plugins);
+      newElement = insertNewElement("plugin", jdomElement);
       JDomPlugin jDomPlugin = new JDomPlugin(newElement);
 
       jDomPlugin.setGroupId(plugin.getGroupId());
@@ -103,7 +103,7 @@ public class JDomPlugins extends ArrayList<Plugin> {
     for (Plugin candidate : this) {
       if (candidate.getGroupId().equals(removePlugin.getGroupId())
               && candidate.getArtifactId().equals(removePlugin.getArtifactId())) {
-        removeChildElement(plugins, ((JDomPlugin) candidate).getJDomElement());
+        removeChildElement(jdomElement, ((JDomPlugin) candidate).getJDomElement());
         return super.remove(removePlugin);
       }
     }
@@ -176,5 +176,11 @@ public class JDomPlugins extends ArrayList<Plugin> {
   @Override
   public List<Plugin> subList(int fromIndex, int toIndex) {
     throw new UnsupportedOperationException();
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public Element getJDomElement() {
+    return jdomElement;
   }
 }

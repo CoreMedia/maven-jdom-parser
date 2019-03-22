@@ -41,14 +41,15 @@ import static org.apache.maven.model.jdom.util.JDomUtils.insertNewElement;
 import static org.apache.maven.model.jdom.util.JDomUtils.removeChildElement;
 import static org.apache.maven.model.jdom.util.JDomUtils.resetIndentations;
 
-public class JDomProfiles extends ArrayList<Profile> {
+public class JDomProfiles extends ArrayList<Profile> implements JDomBacked {
 
-  private Element profiles;
+  private Element jdomElement;
+
   private JDomModel parent;
 
-  public JDomProfiles(Element profiles, JDomModel parent) {
-    super(transformToJDomProfileList(getProfileElements(profiles)));
-    this.profiles = profiles;
+  public JDomProfiles(Element jdomElement, JDomModel parent) {
+    super(transformToJDomProfileList(getProfileElements(jdomElement)));
+    this.jdomElement = jdomElement;
     this.parent = parent;
   }
 
@@ -70,22 +71,22 @@ public class JDomProfiles extends ArrayList<Profile> {
 
   @Override
   public boolean add(Profile profile) {
-    if (profiles == null) {
-      profiles = insertNewElement("profiles", parent.getJDomElement());
+    if (jdomElement == null) {
+      jdomElement = insertNewElement("profiles", parent.getJDomElement());
     }
 
     Element newElement;
     if (profile instanceof JDomProfile) {
       newElement = ((JDomProfile) profile).getJDomElement().clone();
-      profiles.addContent(
-              profiles.getContentSize() - 1,
+      jdomElement.addContent(
+              jdomElement.getContentSize() - 1,
               asList(
-                      new Text("\n" + detectIndentation(profiles)),
+                      new Text("\n" + detectIndentation(jdomElement)),
                       newElement));
-      resetIndentations(profiles, detectIndentation(profiles));
-      resetIndentations(newElement, detectIndentation(profiles) + "  ");
+      resetIndentations(jdomElement, detectIndentation(jdomElement));
+      resetIndentations(newElement, detectIndentation(jdomElement) + "  ");
     } else {
-      newElement = insertNewElement("profile", profiles);
+      newElement = insertNewElement("profile", jdomElement);
       JDomProfile jDomProfile = new JDomProfile(newElement);
       jDomProfile.setId(profile.getId());
 
@@ -148,10 +149,10 @@ public class JDomProfiles extends ArrayList<Profile> {
     Profile removeProfile = (Profile) profile;
     for (Profile candidate : this) {
       if (candidate.getId().equals(removeProfile.getId())) {
-        removeChildElement(profiles, ((JDomProfile) candidate).getJDomElement());
+        removeChildElement(jdomElement, ((JDomProfile) candidate).getJDomElement());
         boolean remove = super.remove(candidate);
         if (super.isEmpty()) {
-          removeChildElement(parent.getJDomElement(), profiles);
+          removeChildElement(parent.getJDomElement(), jdomElement);
         }
         return remove;
       }
@@ -225,5 +226,11 @@ public class JDomProfiles extends ArrayList<Profile> {
   @Override
   public List<Profile> subList(int fromIndex, int toIndex) {
     throw new UnsupportedOperationException();
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public Element getJDomElement() {
+    return jdomElement;
   }
 }

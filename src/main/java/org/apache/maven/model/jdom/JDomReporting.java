@@ -33,12 +33,12 @@ import java.util.Map;
  *
  * @author Robert Scholte (for <a href="https://github.com/apache/maven-release/">Maven Release projct</a>, version 3.0)
  */
-public class JDomReporting extends Reporting {
+public class JDomReporting extends Reporting implements JDomBacked {
 
-  private final Element reporting;
+  private final Element jdomElement;
 
-  public JDomReporting(Element reporting) {
-    this.reporting = reporting;
+  public JDomReporting(Element jdomElement) {
+    this.jdomElement = jdomElement;
   }
 
   @Override
@@ -48,11 +48,11 @@ public class JDomReporting extends Reporting {
 
   @Override
   public List<ReportPlugin> getPlugins() {
-    Element pluginsElm = reporting.getChild("plugins", reporting.getNamespace());
+    Element pluginsElm = jdomElement.getChild("plugins", jdomElement.getNamespace());
     if (pluginsElm == null) {
       return Collections.emptyList();
     } else {
-      List<Element> pluginElms = pluginsElm.getChildren("plugin", reporting.getNamespace());
+      List<Element> pluginElms = pluginsElm.getChildren("plugin", jdomElement.getNamespace());
 
       List<ReportPlugin> plugins = new ArrayList<>(pluginElms.size());
 
@@ -97,5 +97,11 @@ public class JDomReporting extends Reporting {
   @Override
   public void setExcludeDefaults(boolean excludeDefaults) {
     throw new UnsupportedOperationException();
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public Element getJDomElement() {
+    return jdomElement;
   }
 }
