@@ -64,9 +64,4 @@ public class JDomExtension extends Extension implements MavenCoordinate {
   public void setVersion(String version) {
     coordinate.setVersion(version);
   }
-
-  @Override
-  public String getName() {
-    return "extension";
-  }
 }

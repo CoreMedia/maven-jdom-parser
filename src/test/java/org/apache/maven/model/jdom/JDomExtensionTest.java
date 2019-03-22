@@ -89,9 +89,4 @@ public class JDomExtensionTest {
     new JDomExtension(extensionElm).setVersion("NEW_VERSION");
     assertEquals("NEW_VERSION", getChildElementTextTrim("version", extensionElm));
   }
-
-  @Test
-  public void testGetName() {
-    assertEquals("extension", new JDomExtension(null).getName());
-  }
 }

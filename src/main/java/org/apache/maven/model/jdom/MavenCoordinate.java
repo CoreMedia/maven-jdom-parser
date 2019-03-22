@@ -35,7 +35,4 @@ public interface MavenCoordinate {
   String getVersion();
 
   void setVersion(String version);
-
-  // @todo helper method during refactoring, will be removed
-  String getName();
 }

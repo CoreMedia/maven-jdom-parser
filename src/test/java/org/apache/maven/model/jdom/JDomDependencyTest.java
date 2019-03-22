@@ -211,9 +211,4 @@ public class JDomDependencyTest {
     new JDomDependency(dependencyElm).setVersion("NEW_VERSION");
     assertEquals("NEW_VERSION", getChildElementTextTrim("version", dependencyElm));
   }
-
-  @Test
-  public void testGetName() {
-    assertEquals("dependency", new JDomDependency(null).getName());
-  }
 }

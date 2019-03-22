@@ -80,9 +80,4 @@ public class JDomParent extends Parent implements MavenCoordinate {
   public void setVersion(String version) {
     this.coordinate.setVersion(version);
   }
-
-  @Override
-  public String getName() {
-    return "parent";
-  }
 }

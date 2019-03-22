@@ -94,9 +94,4 @@ public class JDomMavenCoordinate implements MavenCoordinate {
       element.addContent(++indexArtifactId, versionElement);
     }
   }
-
-  @Override
-  public String getName() {
-    return element.getName();
-  }
 }

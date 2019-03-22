@@ -217,11 +217,6 @@ public class JDomPlugin extends Plugin implements MavenCoordinate {
     return constructKey(getGroupId(), getArtifactId());
   }
 
-  @Override
-  public String getName() {
-    return "plugin";
-  }
-
   public Element getJDomElement() {
     return plugin;
   }

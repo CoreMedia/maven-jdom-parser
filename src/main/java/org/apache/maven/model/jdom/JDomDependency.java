@@ -149,11 +149,6 @@ public class JDomDependency extends Dependency implements MavenCoordinate {
     throw new UnsupportedOperationException();
   }
 
-  @Override
-  public String getName() {
-    return "dependency";
-  }
-
   public Element getJDomElement() {
     return dependency;
   }

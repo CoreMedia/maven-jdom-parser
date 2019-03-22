@@ -117,9 +117,4 @@ public class JDomReportPlugin extends ReportPlugin implements MavenCoordinate {
   public String getKey() {
     return constructKey(getGroupId(), getArtifactId());
   }
-
-  @Override
-  public String getName() {
-    return "plugin";
-  }
 }
