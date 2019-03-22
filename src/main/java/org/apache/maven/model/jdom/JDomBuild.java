@@ -67,7 +67,7 @@ public class JDomBuild extends Build implements JDomBacked {
 
   @Override
   public void setDefaultGoal(String defaultGoal) {
-    rewriteElement(POM_ELEMENT_DEFAULT_GOAL, defaultGoal, jdomElement, jdomElement.getNamespace());
+    rewriteElement(POM_ELEMENT_DEFAULT_GOAL, defaultGoal, jdomElement);
   }
 
   @Override
@@ -77,7 +77,7 @@ public class JDomBuild extends Build implements JDomBacked {
 
   @Override
   public void setDirectory(String directory) {
-    rewriteElement(POM_ELEMENT_DIRECTORY, directory, jdomElement, jdomElement.getNamespace());
+    rewriteElement(POM_ELEMENT_DIRECTORY, directory, jdomElement);
   }
 
   @Override
@@ -117,7 +117,7 @@ public class JDomBuild extends Build implements JDomBacked {
 
   @Override
   public void setFinalName(String finalName) {
-    rewriteElement(POM_ELEMENT_FINAL_NAME, finalName, jdomElement, jdomElement.getNamespace());
+    rewriteElement(POM_ELEMENT_FINAL_NAME, finalName, jdomElement);
   }
 
   @Override
@@ -127,7 +127,7 @@ public class JDomBuild extends Build implements JDomBacked {
 
   @Override
   public void setOutputDirectory(String outputDirectory) {
-    rewriteElement(POM_ELEMENT_OUTPUT_DIRECTORY, outputDirectory, jdomElement, jdomElement.getNamespace());
+    rewriteElement(POM_ELEMENT_OUTPUT_DIRECTORY, outputDirectory, jdomElement);
   }
 
   @Override
@@ -158,7 +158,7 @@ public class JDomBuild extends Build implements JDomBacked {
   @Override
   public void setPlugins(List<Plugin> plugins) {
     if (plugins == null) {
-      rewriteElement(POM_ELEMENT_PLUGINS, null, jdomElement, jdomElement.getNamespace());
+      rewriteElement(POM_ELEMENT_PLUGINS, null, jdomElement);
     } else {
       new JDomPlugins(insertNewElement(POM_ELEMENT_PLUGINS, jdomElement)).addAll(plugins);
     }
@@ -182,7 +182,7 @@ public class JDomBuild extends Build implements JDomBacked {
 
   @Override
   public void setScriptSourceDirectory(String scriptSourceDirectory) {
-    rewriteElement(POM_ELEMENT_SCRIPT_SOURCE_DIRECTORY, scriptSourceDirectory, jdomElement, jdomElement.getNamespace());
+    rewriteElement(POM_ELEMENT_SCRIPT_SOURCE_DIRECTORY, scriptSourceDirectory, jdomElement);
   }
 
   @Override
@@ -192,7 +192,7 @@ public class JDomBuild extends Build implements JDomBacked {
 
   @Override
   public void setSourceDirectory(String sourceDirectory) {
-    rewriteElement(POM_ELEMENT_SOURCE_DIRECTORY, sourceDirectory, jdomElement, jdomElement.getNamespace());
+    rewriteElement(POM_ELEMENT_SOURCE_DIRECTORY, sourceDirectory, jdomElement);
   }
 
   @Override
@@ -202,7 +202,7 @@ public class JDomBuild extends Build implements JDomBacked {
 
   @Override
   public void setTestOutputDirectory(String testOutputDirectory) {
-    rewriteElement(POM_ELEMENT_TEST_OUTPUT_DIRECTORY, testOutputDirectory, jdomElement, jdomElement.getNamespace());
+    rewriteElement(POM_ELEMENT_TEST_OUTPUT_DIRECTORY, testOutputDirectory, jdomElement);
   }
 
   @Override
@@ -222,7 +222,7 @@ public class JDomBuild extends Build implements JDomBacked {
 
   @Override
   public void setTestSourceDirectory(String testSourceDirectory) {
-    rewriteElement(POM_ELEMENT_TEST_SOURCE_DIRECTORY, testSourceDirectory, jdomElement, jdomElement.getNamespace());
+    rewriteElement(POM_ELEMENT_TEST_SOURCE_DIRECTORY, testSourceDirectory, jdomElement);
   }
 
   @Override

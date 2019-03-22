@@ -57,7 +57,7 @@ public class JDomPluginManagement extends PluginManagement implements JDomBacked
   @Override
   public void setPlugins(List<Plugin> plugins) {
     if (plugins == null) {
-      rewriteElement(POM_ELEMENT_PLUGINS, null, jdomElement, jdomElement.getNamespace());
+      rewriteElement(POM_ELEMENT_PLUGINS, null, jdomElement);
     } else {
       new JDomPlugins(insertNewElement(POM_ELEMENT_PLUGINS, jdomElement)).addAll(plugins);
     }

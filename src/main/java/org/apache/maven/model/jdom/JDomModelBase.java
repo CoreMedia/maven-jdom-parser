@@ -100,7 +100,7 @@ public class JDomModelBase implements JDomBacked {
 
   public void setDependencyManagement(DependencyManagement dependencyManagement) {
     if (dependencyManagement == null) {
-      rewriteElement(POM_ELEMENT_DEPENDENCY_MANAGEMENT, null, jdomElement, jdomElement.getNamespace());
+      rewriteElement(POM_ELEMENT_DEPENDENCY_MANAGEMENT, null, jdomElement);
     } else {
       DependencyManagement jdomDependencyManagement = getDependencyManagement();
       if (jdomDependencyManagement == null) {
@@ -123,7 +123,7 @@ public class JDomModelBase implements JDomBacked {
 
   public void setModules(List<String> modules) {
     if (modules == null) {
-      rewriteElement(POM_ELEMENT_MODULES, null, jdomElement, jdomElement.getNamespace());
+      rewriteElement(POM_ELEMENT_MODULES, null, jdomElement);
     } else {
       List<String> jDomModules = getModules();
       if (jDomModules instanceof JDomModules) {

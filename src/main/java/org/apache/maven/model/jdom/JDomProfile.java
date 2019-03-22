@@ -30,7 +30,6 @@ import org.apache.maven.model.DistributionManagement;
 import org.apache.maven.model.Profile;
 import org.apache.maven.model.Reporting;
 import org.apache.maven.model.Repository;
-import org.apache.maven.model.jdom.util.JDomUtils;
 import org.jdom2.Element;
 
 import java.util.List;
@@ -71,7 +70,7 @@ public class JDomProfile extends Profile implements JDomBacked {
   @Override
   public void setActivation(Activation activation) {
     if (activation == null) {
-      JDomUtils.rewriteElement(POM_ELEMENT_ACTIVATION, null, jdomElement, jdomElement.getNamespace());
+      rewriteElement(POM_ELEMENT_ACTIVATION, null, jdomElement);
     } else {
       Activation jdomActivation = getActivation();
       if (jdomActivation == null) {
@@ -152,7 +151,7 @@ public class JDomProfile extends Profile implements JDomBacked {
 
   @Override
   public void setId(String id) {
-    rewriteElement(POM_ELEMENT_ID, id, jdomElement, jdomElement.getNamespace());
+    rewriteElement(POM_ELEMENT_ID, id, jdomElement);
   }
 
   @Override

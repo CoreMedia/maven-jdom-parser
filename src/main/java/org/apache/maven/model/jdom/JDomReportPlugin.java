@@ -82,7 +82,7 @@ public class JDomReportPlugin extends ReportPlugin implements JDomBacked, MavenC
 
   @Override
   public void setInherited(String inherited) {
-    rewriteElement(POM_ELEMENT_INHERITED, inherited, jdomElement, jdomElement.getNamespace());
+    rewriteElement(POM_ELEMENT_INHERITED, inherited, jdomElement);
   }
 
   @Override

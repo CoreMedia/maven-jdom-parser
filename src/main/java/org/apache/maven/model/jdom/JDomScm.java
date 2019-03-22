@@ -49,7 +49,7 @@ public class JDomScm extends Scm implements JDomBacked {
 
   @Override
   public void setConnection(String connection) {
-    rewriteElement(POM_ELEMENT_CONNECTION, connection, jdomElement, jdomElement.getNamespace());
+    rewriteElement(POM_ELEMENT_CONNECTION, connection, jdomElement);
   }
 
   @Override
@@ -59,7 +59,7 @@ public class JDomScm extends Scm implements JDomBacked {
 
   @Override
   public void setDeveloperConnection(String developerConnection) {
-    rewriteElement(POM_ELEMENT_DEVELOPER_CONNECTION, developerConnection, jdomElement, jdomElement.getNamespace());
+    rewriteElement(POM_ELEMENT_DEVELOPER_CONNECTION, developerConnection, jdomElement);
   }
 
   @Override
@@ -69,7 +69,7 @@ public class JDomScm extends Scm implements JDomBacked {
 
   @Override
   public void setTag(String tag) {
-    rewriteElement(POM_ELEMENT_TAG, tag, jdomElement, jdomElement.getNamespace());
+    rewriteElement(POM_ELEMENT_TAG, tag, jdomElement);
   }
 
   @Override
@@ -79,7 +79,7 @@ public class JDomScm extends Scm implements JDomBacked {
 
   @Override
   public void setUrl(String url) {
-    rewriteElement(POM_ELEMENT_URL, url, jdomElement, jdomElement.getNamespace());
+    rewriteElement(POM_ELEMENT_URL, url, jdomElement);
   }
 
   /** {@inheritDoc} */

@@ -82,7 +82,7 @@ public class JDomPlugin extends Plugin implements JDomBacked, MavenCoordinate {
   @Override
   public void setConfiguration(Object configuration) {
     if (configuration == null) {
-      rewriteElement(POM_ELEMENT_CONFIGURATION, null, jdomElement, jdomElement.getNamespace());
+      rewriteElement(POM_ELEMENT_CONFIGURATION, null, jdomElement);
     } else if (configuration instanceof JDomConfiguration) {
       Element newJDomConfigurationElement = ((JDomConfiguration) configuration).getJDomElement().clone();
 
@@ -122,7 +122,7 @@ public class JDomPlugin extends Plugin implements JDomBacked, MavenCoordinate {
   @Override
   public void setDependencies(List<Dependency> dependencies) {
     if (dependencies == null) {
-      rewriteElement(POM_ELEMENT_DEPENDENCIES, null, jdomElement, jdomElement.getNamespace());
+      rewriteElement(POM_ELEMENT_DEPENDENCIES, null, jdomElement);
     } else {
       new JDomDependencies(insertNewElement(POM_ELEMENT_DEPENDENCIES, jdomElement)).addAll(dependencies);
     }
@@ -145,7 +145,7 @@ public class JDomPlugin extends Plugin implements JDomBacked, MavenCoordinate {
 
   @Override
   public void setExtensions(String extensions) {
-    rewriteElement(POM_ELEMENT_EXTENSIONS, extensions, jdomElement, jdomElement.getNamespace());
+    rewriteElement(POM_ELEMENT_EXTENSIONS, extensions, jdomElement);
   }
 
   @Override
@@ -185,7 +185,7 @@ public class JDomPlugin extends Plugin implements JDomBacked, MavenCoordinate {
 
   @Override
   public void setInherited(String inherited) {
-    rewriteElement(POM_ELEMENT_INHERITED, inherited, jdomElement, jdomElement.getNamespace());
+    rewriteElement(POM_ELEMENT_INHERITED, inherited, jdomElement);
   }
 
   @Override

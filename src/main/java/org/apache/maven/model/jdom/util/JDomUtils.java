@@ -22,7 +22,6 @@ package org.apache.maven.model.jdom.util;
 import org.codehaus.plexus.util.StringUtils;
 import org.jdom2.Content;
 import org.jdom2.Element;
-import org.jdom2.Namespace;
 import org.jdom2.Parent;
 import org.jdom2.Text;
 
@@ -262,11 +261,7 @@ public final class JDomUtils {
   }
 
   public static Element rewriteElement(String name, String value, Element root) {
-    return rewriteElement(name, value, root, root.getNamespace());
-  }
-
-  public static Element rewriteElement(String name, String value, Element root, Namespace namespace) {
-    Element tagElement = root.getChild(name, namespace);
+    Element tagElement = root.getChild(name, root.getNamespace());
     if (tagElement != null) {
       if (value != null) {
         rewriteValue(tagElement, value);

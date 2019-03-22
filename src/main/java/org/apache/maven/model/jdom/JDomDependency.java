@@ -66,7 +66,7 @@ public class JDomDependency extends Dependency implements JDomBacked, MavenCoord
 
   @Override
   public void setClassifier(String classifier) {
-    rewriteElement(POM_ELEMENT_CLASSIFIER, classifier, jdomElement, jdomElement.getNamespace());
+    rewriteElement(POM_ELEMENT_CLASSIFIER, classifier, jdomElement);
   }
 
   @Override
@@ -96,7 +96,7 @@ public class JDomDependency extends Dependency implements JDomBacked, MavenCoord
 
   @Override
   public void setOptional(String optional) {
-    rewriteElement(POM_ELEMENT_OPTIONAL, optional, jdomElement, jdomElement.getNamespace());
+    rewriteElement(POM_ELEMENT_OPTIONAL, optional, jdomElement);
   }
 
   @Override
@@ -116,7 +116,7 @@ public class JDomDependency extends Dependency implements JDomBacked, MavenCoord
 
   @Override
   public void setScope(String scope) {
-    rewriteElement(POM_ELEMENT_SCOPE, scope, jdomElement, jdomElement.getNamespace());
+    rewriteElement(POM_ELEMENT_SCOPE, scope, jdomElement);
   }
 
   @Override
@@ -126,7 +126,7 @@ public class JDomDependency extends Dependency implements JDomBacked, MavenCoord
 
   @Override
   public void setSystemPath(String systemPath) {
-    rewriteElement(POM_ELEMENT_SYSTEM_PATH, systemPath, jdomElement, jdomElement.getNamespace());
+    rewriteElement(POM_ELEMENT_SYSTEM_PATH, systemPath, jdomElement);
   }
 
   @Override
@@ -136,7 +136,7 @@ public class JDomDependency extends Dependency implements JDomBacked, MavenCoord
 
   @Override
   public void setType(String type) {
-    rewriteElement(POM_ELEMENT_TYPE, type, jdomElement, jdomElement.getNamespace());
+    rewriteElement(POM_ELEMENT_TYPE, type, jdomElement);
   }
 
   @Override

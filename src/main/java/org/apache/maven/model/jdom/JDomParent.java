@@ -69,7 +69,7 @@ public class JDomParent extends Parent implements JDomBacked, MavenCoordinate {
 
   @Override
   public void setRelativePath(String relativePath) {
-    rewriteElement(POM_ELEMENT_RELATIVE_PATH, relativePath, jdomElement, jdomElement.getNamespace());
+    rewriteElement(POM_ELEMENT_RELATIVE_PATH, relativePath, jdomElement);
   }
 
   @Override

@@ -66,14 +66,14 @@ public class JDomProperties extends Properties implements JDomBacked {
   @Override
   public synchronized Object put(Object key, Object value) {
     String previousValue = getChildElementTextTrim((String) key, jdomElement);
-    rewriteElement((String) key, (String) value, jdomElement, jdomElement.getNamespace());
+    rewriteElement((String) key, (String) value, jdomElement);
     return previousValue;
   }
 
   @Override
   public synchronized Object remove(Object key) {
     String previousValue = getChildElementTextTrim((String) key, jdomElement);
-    rewriteElement((String) key, null, jdomElement, jdomElement.getNamespace());
+    rewriteElement((String) key, null, jdomElement);
     return previousValue;
   }
 

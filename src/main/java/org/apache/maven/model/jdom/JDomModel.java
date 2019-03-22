@@ -146,7 +146,7 @@ public class JDomModel extends Model implements JDomBacked, MavenCoordinate {
 
   @Override
   public void setDescription(String description) {
-    rewriteElement(POM_ELEMENT_DESCRIPTION, description, jdomElement, jdomElement.getNamespace());
+    rewriteElement(POM_ELEMENT_DESCRIPTION, description, jdomElement);
   }
 
   @Override
@@ -194,7 +194,7 @@ public class JDomModel extends Model implements JDomBacked, MavenCoordinate {
 
   @Override
   public void setInceptionYear(String inceptionYear) {
-    rewriteElement(POM_ELEMENT_INCEPTION_YEAR, inceptionYear, jdomElement, jdomElement.getNamespace());
+    rewriteElement(POM_ELEMENT_INCEPTION_YEAR, inceptionYear, jdomElement);
   }
 
   @Override
@@ -234,7 +234,7 @@ public class JDomModel extends Model implements JDomBacked, MavenCoordinate {
 
   @Override
   public void setModelVersion(String modelVersion) {
-    rewriteElement(POM_ELEMENT_MODEL_VERSION, modelVersion, jdomElement, jdomElement.getNamespace());
+    rewriteElement(POM_ELEMENT_MODEL_VERSION, modelVersion, jdomElement);
   }
 
   @Override
@@ -254,7 +254,7 @@ public class JDomModel extends Model implements JDomBacked, MavenCoordinate {
 
   @Override
   public void setName(String name) {
-    rewriteElement(POM_ELEMENT_NAME, name, jdomElement, jdomElement.getNamespace());
+    rewriteElement(POM_ELEMENT_NAME, name, jdomElement);
   }
 
   @Override
@@ -274,7 +274,7 @@ public class JDomModel extends Model implements JDomBacked, MavenCoordinate {
 
   @Override
   public void setPackaging(String packaging) {
-    rewriteElement(POM_ELEMENT_PACKAGING, packaging, jdomElement, jdomElement.getNamespace());
+    rewriteElement(POM_ELEMENT_PACKAGING, packaging, jdomElement);
   }
 
   @Override
@@ -293,7 +293,7 @@ public class JDomModel extends Model implements JDomBacked, MavenCoordinate {
     if (parent == null) {
       Parent removedParent = getParent();
 
-      rewriteElement(POM_ELEMENT_PARENT, null, jdomElement, jdomElement.getNamespace());
+      rewriteElement(POM_ELEMENT_PARENT, null, jdomElement);
 
       if (getGroupId() == null) {
         setGroupId(removedParent.getGroupId());
@@ -353,7 +353,7 @@ public class JDomModel extends Model implements JDomBacked, MavenCoordinate {
   @Override
   public void setProfiles(List<Profile> profiles) {
     if (profiles == null) {
-      rewriteElement(POM_ELEMENT_PROFILES, null, jdomElement, jdomElement.getNamespace());
+      rewriteElement(POM_ELEMENT_PROFILES, null, jdomElement);
     } else {
       new JDomProfiles(insertNewElement(POM_ELEMENT_PROFILES, jdomElement), this).addAll(profiles);
     }
@@ -403,7 +403,7 @@ public class JDomModel extends Model implements JDomBacked, MavenCoordinate {
   @Override
   public void setScm(Scm scm) {
     if (scm == null) {
-      rewriteElement(POM_ELEMENT_SCM, null, jdomElement, jdomElement.getNamespace());
+      rewriteElement(POM_ELEMENT_SCM, null, jdomElement);
     } else {
       Scm jdomScm = getScm();
       if (jdomScm == null) {
@@ -426,7 +426,7 @@ public class JDomModel extends Model implements JDomBacked, MavenCoordinate {
 
   @Override
   public void setUrl(String url) {
-    rewriteElement(POM_ELEMENT_URL, url, jdomElement, jdomElement.getNamespace());
+    rewriteElement(POM_ELEMENT_URL, url, jdomElement);
   }
 
   @Override

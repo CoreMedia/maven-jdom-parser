@@ -50,7 +50,7 @@ public class JDomMavenCoordinate implements JDomBacked, MavenCoordinate {
 
   @Override
   public void setArtifactId(String artifactId) {
-    rewriteElement(POM_ELEMENT_ARTIFACT_ID, artifactId, jdomElement, jdomElement.getNamespace());
+    rewriteElement(POM_ELEMENT_ARTIFACT_ID, artifactId, jdomElement);
   }
 
   @Override
@@ -60,7 +60,7 @@ public class JDomMavenCoordinate implements JDomBacked, MavenCoordinate {
 
   @Override
   public void setGroupId(String groupId) {
-    rewriteElement(POM_ELEMENT_GROUP_ID, groupId, jdomElement, jdomElement.getNamespace());
+    rewriteElement(POM_ELEMENT_GROUP_ID, groupId, jdomElement);
   }
 
   @Override

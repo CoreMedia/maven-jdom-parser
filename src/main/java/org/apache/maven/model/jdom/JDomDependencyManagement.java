@@ -21,7 +21,6 @@ package org.apache.maven.model.jdom;
 
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.DependencyManagement;
-import org.apache.maven.model.jdom.util.JDomUtils;
 import org.jdom2.Element;
 
 import java.util.Collections;
@@ -29,6 +28,7 @@ import java.util.List;
 
 import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_DEPENDENCIES;
 import static org.apache.maven.model.jdom.util.JDomUtils.insertNewElement;
+import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
 
 /**
  * JDom implementation of poms DEPENDENCYMANAGEMENT element
@@ -56,7 +56,7 @@ public class JDomDependencyManagement extends DependencyManagement implements JD
   @Override
   public void setDependencies(List<Dependency> dependencies) {
     if (dependencies == null) {
-      JDomUtils.rewriteElement(POM_ELEMENT_DEPENDENCIES, null, jdomElement, jdomElement.getNamespace());
+      rewriteElement(POM_ELEMENT_DEPENDENCIES, null, jdomElement);
     } else {
       new JDomDependencies(insertNewElement(POM_ELEMENT_DEPENDENCIES, jdomElement)).addAll(dependencies);
     }
