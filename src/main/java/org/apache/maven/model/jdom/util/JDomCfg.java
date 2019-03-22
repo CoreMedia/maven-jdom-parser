@@ -140,8 +140,13 @@ public class JDomCfg {
             POM_ELEMENT_REPORTING,
             "",
             POM_ELEMENT_PROFILES
-            )
-    );
+    ));
+    elementOrder.put(POM_ELEMENT_PARENT, asList(
+            POM_ELEMENT_GROUP_ID,
+            POM_ELEMENT_ARTIFACT_ID,
+            POM_ELEMENT_VERSION,
+            POM_ELEMENT_RELATIVE_PATH
+    ));
     elementOrder.put(POM_ELEMENT_PROFILE, asList(
             POM_ELEMENT_ID,
             POM_ELEMENT_ACTIVATION,
@@ -154,8 +159,7 @@ public class JDomCfg {
             POM_ELEMENT_PLUGIN_REPOSITORIES,
             POM_ELEMENT_BUILD,
             POM_ELEMENT_REPORTING
-            )
-    );
+    ));
     elementOrder.put(POM_ELEMENT_DEPENDENCY, asList(
             POM_ELEMENT_GROUP_ID,
             POM_ELEMENT_ARTIFACT_ID,

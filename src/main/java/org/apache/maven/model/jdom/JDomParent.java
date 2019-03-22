@@ -22,61 +22,57 @@ package org.apache.maven.model.jdom;
 import org.apache.maven.model.Parent;
 import org.jdom2.Element;
 
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_ARTIFACT_ID;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_GROUP_ID;
 import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_RELATIVE_PATH;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_VERSION;
 import static org.apache.maven.model.jdom.util.JDomUtils.getChildElementTextTrim;
 import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
 
 /**
- * JDom implementation of poms PARENT element
+ * JDOM implementation of the {@link Parent} class. It holds the child elements of the Maven POMs {@code parent} element.
  *
  * @author Robert Scholte (for <a href="https://github.com/apache/maven-release/">Maven Release projct</a>, version 3.0)
+ * @author Marc Rohlfs, CoreMedia AG
  */
-public class JDomParent extends Parent implements JDomBacked, MavenCoordinate {
+public class JDomParent extends Parent implements JDomBacked {
+
+  private static final long serialVersionUID = 2981841470366853811L;
 
   private static final String DEFAULT_RELATIVE_PATH = "../pom.xml";
 
   private final Element jdomElement;
 
-  private final MavenCoordinate coordinate;
-
+  @SuppressWarnings("WeakerAccess")
   public JDomParent(Element jdomElement) {
     this.jdomElement = jdomElement;
-    this.coordinate = new JDomMavenCoordinate(jdomElement);
+
+    super.setArtifactId(getChildElementTextTrim(POM_ELEMENT_ARTIFACT_ID, this.jdomElement));
+    super.setGroupId(getChildElementTextTrim(POM_ELEMENT_GROUP_ID, this.jdomElement));
+    super.setRelativePath(getChildElementTextTrim(POM_ELEMENT_RELATIVE_PATH, this.jdomElement));
+    super.setVersion(getChildElementTextTrim(POM_ELEMENT_VERSION, this.jdomElement));
   }
 
+  @SuppressWarnings("WeakerAccess")
   public JDomParent(Element jdomElement, Parent parent) {
     this.jdomElement = jdomElement;
-    this.coordinate = new JDomMavenCoordinate(jdomElement);
 
-    setGroupId(parent.getGroupId());
     setArtifactId(parent.getArtifactId());
-    setVersion(parent.getVersion());
+    setGroupId(parent.getGroupId());
     setRelativePath(parent.getRelativePath());
-  }
-
-  @Override
-  public String getArtifactId() {
-    return this.coordinate.getArtifactId();
+    setVersion(parent.getVersion());
   }
 
   @Override
   public void setArtifactId(String artifactId) {
-    this.coordinate.setArtifactId(artifactId);
-  }
-
-  @Override
-  public String getGroupId() {
-    return this.coordinate.getGroupId();
+    rewriteElement(POM_ELEMENT_ARTIFACT_ID, artifactId, jdomElement);
+    super.setArtifactId(artifactId);
   }
 
   @Override
   public void setGroupId(String groupId) {
-    this.coordinate.setGroupId(groupId);
-  }
-
-  @Override
-  public String getRelativePath() {
-    return getChildElementTextTrim(POM_ELEMENT_RELATIVE_PATH, jdomElement);
+    rewriteElement(POM_ELEMENT_GROUP_ID, groupId, jdomElement);
+    super.setGroupId(groupId);
   }
 
   @Override
@@ -86,19 +82,17 @@ public class JDomParent extends Parent implements JDomBacked, MavenCoordinate {
                     && DEFAULT_RELATIVE_PATH.equals(relativePath)
                     && DEFAULT_RELATIVE_PATH.equals(super.getRelativePath())) {
       rewriteElement(POM_ELEMENT_RELATIVE_PATH, null, jdomElement);
+      super.setRelativePath(null);
     } else {
       rewriteElement(POM_ELEMENT_RELATIVE_PATH, relativePath, jdomElement);
+      super.setRelativePath(relativePath);
     }
   }
 
   @Override
-  public String getVersion() {
-    return this.coordinate.getVersion();
-  }
-
-  @Override
   public void setVersion(String version) {
-    this.coordinate.setVersion(version);
+    rewriteElement(POM_ELEMENT_VERSION, version, jdomElement);
+    super.setVersion(version);
   }
 
   /** {@inheritDoc} */
