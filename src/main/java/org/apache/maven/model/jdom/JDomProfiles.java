@@ -52,6 +52,14 @@ public class JDomProfiles extends ArrayList<Profile> implements JDomBacked {
     this.parent = parent;
   }
 
+  public JDomProfiles(Element jdomElement, JDomModel parent, List<Profile> profiles) {
+    super(transformToJDomProfileList(getProfileElements(jdomElement)));
+    this.jdomElement = jdomElement;
+    this.parent = parent;
+
+    addAll(profiles);
+  }
+
   private static List<Element> getProfileElements(Element profiles) {
     if (profiles == null) {
       return emptyList();

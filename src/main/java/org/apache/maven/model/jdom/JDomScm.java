@@ -47,6 +47,15 @@ public class JDomScm extends Scm implements JDomBacked {
     return getChildElementTextTrim(POM_ELEMENT_CONNECTION, jdomElement);
   }
 
+  public JDomScm(Element jdomElement, Scm scm) {
+    this.jdomElement = jdomElement;
+
+    setConnection(scm.getConnection());
+    setDeveloperConnection(scm.getDeveloperConnection());
+    setTag(scm.getTag());
+    setUrl(scm.getUrl());
+  }
+
   @Override
   public void setConnection(String connection) {
     rewriteElement(POM_ELEMENT_CONNECTION, connection, jdomElement);

@@ -356,4 +356,21 @@ public final class JDomUtils {
     }
     return tagElement;
   }
+
+  public static void rewriteElement(Element replacement, Element root) {
+
+    String elementName = replacement.getName();
+    Element original = root.getChild(elementName, root.getNamespace());
+    if (original == null) {
+      original = insertNewElement(elementName, root);
+    }
+
+    int index = root.indexOf(original);
+    root.removeContent(index);
+    if (replacement.getParent() == null) {
+      root.addContent(index, replacement);
+    } else {
+      root.addContent(index, replacement.clone());
+    }
+  }
 }

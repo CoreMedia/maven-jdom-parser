@@ -60,6 +60,45 @@ public class JDomBuild extends Build implements JDomBacked {
     this.jdomElement = jdomElement;
   }
 
+  public JDomBuild(Element jdomElement, Build build) {
+    this.jdomElement = jdomElement;
+
+    setDefaultGoal(build.getDefaultGoal());
+    setDirectory(build.getDirectory());
+    setFinalName(build.getFinalName());
+    setOutputDirectory(build.getOutputDirectory());
+    setPlugins(build.getPlugins());
+    setScriptSourceDirectory(build.getScriptSourceDirectory());
+    setSourceDirectory(build.getSourceDirectory());
+    setTestOutputDirectory(build.getTestOutputDirectory());
+    setTestSourceDirectory(build.getTestSourceDirectory());
+
+    List<Extension> extensions = build.getExtensions();
+    if (extensions != null) {
+      setExtensions(extensions);
+    }
+
+    List<String> filters = build.getFilters();
+    if (filters != null) {
+      setFilters(filters);
+    }
+
+    PluginManagement pluginManagement = build.getPluginManagement();
+    if (pluginManagement != null) {
+      setPluginManagement(pluginManagement);
+    }
+
+    List<Resource> resources = build.getResources();
+    if (resources != null) {
+      setResources(resources);
+    }
+
+    List<Resource> testResources = build.getTestResources();
+    if (testResources != null) {
+      setTestResources(testResources);
+    }
+  }
+
   @Override
   public String getDefaultGoal() {
     return getChildElementTextTrim(POM_ELEMENT_DEFAULT_GOAL, jdomElement);

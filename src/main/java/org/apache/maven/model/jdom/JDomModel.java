@@ -43,7 +43,10 @@ import org.jdom2.Element;
 import java.util.List;
 import java.util.Properties;
 
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_ARTIFACT_ID;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_BUILD;
 import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_DESCRIPTION;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_GROUP_ID;
 import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_INCEPTION_YEAR;
 import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_MODEL_VERSION;
 import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_NAME;
@@ -52,55 +55,86 @@ import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_PARENT;
 import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_PROFILES;
 import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_SCM;
 import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_URL;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_VERSION;
 import static org.apache.maven.model.jdom.util.JDomUtils.getChildElement;
 import static org.apache.maven.model.jdom.util.JDomUtils.getChildElementTextTrim;
 import static org.apache.maven.model.jdom.util.JDomUtils.insertNewElement;
 import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
 
 /**
- * JDom implementation of poms PROJECT element
+ * JDOM implementation of the {@link Model} class. It holds the child elements of the Maven POMs root ({@code project})
+ * element that are not also definable in a {@code profile}.
  *
  * @author Robert Scholte (for <a href="https://github.com/apache/maven-release/">Maven Release projct</a>, version 3.0)
+ * @author Marc Rohlfs, CoreMedia AG
  */
-public class JDomModel extends Model implements JDomBacked, MavenCoordinate {
+public class JDomModel extends Model implements JDomBacked {
+
+  private static final long serialVersionUID = -1392976348805070330L;
 
   private final Element jdomElement;
 
   private final JDomModelBase modelBase;
-  private final JDomMavenCoordinate coordinate;
 
   public JDomModel(Document document) {
     this(document.getRootElement());
   }
 
+  @SuppressWarnings("WeakerAccess")
   public JDomModel(Element jdomElement) {
     this.jdomElement = jdomElement;
     this.modelBase = new JDomModelBase(jdomElement);
-    this.coordinate = new JDomMavenCoordinate(jdomElement);
-  }
 
-  @Override
-  public String getArtifactId() {
-    return coordinate.getArtifactId();
+    super.setArtifactId(getChildElementTextTrim(POM_ELEMENT_ARTIFACT_ID, this.jdomElement));
+    super.setDescription(getChildElementTextTrim(POM_ELEMENT_DESCRIPTION, this.jdomElement));
+    super.setGroupId(getChildElementTextTrim(POM_ELEMENT_GROUP_ID, this.jdomElement));
+    super.setModelVersion(getChildElementTextTrim(POM_ELEMENT_MODEL_VERSION, this.jdomElement));
+    super.setName(getChildElementTextTrim(POM_ELEMENT_NAME, this.jdomElement));
+    super.setPackaging(getChildElementTextTrim(POM_ELEMENT_PACKAGING, this.jdomElement));
+    super.setVersion(getChildElementTextTrim(POM_ELEMENT_VERSION, this.jdomElement));
+
+    super.setProfiles(new JDomProfiles(getChildElement(POM_ELEMENT_PROFILES, this.jdomElement), this));
+
+    Element buildElement = getChildElement(POM_ELEMENT_BUILD, this.jdomElement);
+    if (buildElement != null) {
+      super.setBuild(new JDomBuild(buildElement));
+    }
+
+    Element parentElement = getChildElement(POM_ELEMENT_PARENT, this.jdomElement);
+    if (parentElement != null) {
+      super.setParent(new JDomParent(parentElement));
+    }
+
+    Element scmElement = getChildElement(POM_ELEMENT_SCM, this.jdomElement);
+    if (scmElement != null) {
+      super.setScm(new JDomScm(scmElement));
+    }
   }
 
   @Override
   public void setArtifactId(String artifactId) {
-    coordinate.setArtifactId(artifactId);
-  }
-
-  @Override
-  public Build getBuild() {
-    return modelBase.getBuild();
+    rewriteElement(POM_ELEMENT_ARTIFACT_ID, artifactId, jdomElement);
+    super.setArtifactId(artifactId);
   }
 
   @Override
   public void setBuild(Build build) {
-    modelBase.setBuild(build);
+    //noinspection IfStatementWithTooManyBranches
+    if (build == null) {
+      rewriteElement(POM_ELEMENT_BUILD, null, jdomElement);
+      super.setBuild(null);
+    } else if (build instanceof JDomBuild) {
+      rewriteElement(((JDomBuild) build).getJDomElement(), jdomElement);
+      super.setBuild(build);
+    } else {
+      JDomBuild jdomBuild = new JDomBuild(insertNewElement(POM_ELEMENT_BUILD, jdomElement), build);
+      super.setBuild(jdomBuild);
+    }
   }
 
   @Override
   public CiManagement getCiManagement() {
+    // TODO Implement support for setting Model#ciManagement (in #JDomModel and #setCiManagement) and remove this method override
     throw new UnsupportedOperationException();
   }
 
@@ -111,6 +145,7 @@ public class JDomModel extends Model implements JDomBacked, MavenCoordinate {
 
   @Override
   public List<Contributor> getContributors() {
+    // TODO Implement support for setting Model#contributors (in #JDomModel and #setContributors) and remove this method override
     throw new UnsupportedOperationException();
   }
 
@@ -121,6 +156,7 @@ public class JDomModel extends Model implements JDomBacked, MavenCoordinate {
 
   @Override
   public List<Dependency> getDependencies() {
+    // TODO Implement support for setting ModelBase#dependencies (in JDomModelBase#JDomModelBase and JDomModelBase#setDependencies) and remove this method override
     return modelBase.getDependencies();
   }
 
@@ -131,6 +167,7 @@ public class JDomModel extends Model implements JDomBacked, MavenCoordinate {
 
   @Override
   public DependencyManagement getDependencyManagement() {
+    // TODO Implement support for setting ModelBase#dependenyManagement (in JDomModelBase#JDomModelBase and JDomModelBase#setDependenyManagement) and remove this method override
     return modelBase.getDependencyManagement();
   }
 
@@ -140,17 +177,14 @@ public class JDomModel extends Model implements JDomBacked, MavenCoordinate {
   }
 
   @Override
-  public String getDescription() {
-    return getChildElementTextTrim(POM_ELEMENT_DESCRIPTION, jdomElement);
-  }
-
-  @Override
   public void setDescription(String description) {
     rewriteElement(POM_ELEMENT_DESCRIPTION, description, jdomElement);
+    super.setDescription(description);
   }
 
   @Override
   public List<Developer> getDevelopers() {
+    // TODO Implement support for setting Model#developers (in #JDomModel and #setDevelopers) and remove this method override
     throw new UnsupportedOperationException();
   }
 
@@ -161,6 +195,7 @@ public class JDomModel extends Model implements JDomBacked, MavenCoordinate {
 
   @Override
   public DistributionManagement getDistributionManagement() {
+    // TODO Implement support for setting ModelBase#distributionManagement (in JDomModelBase#JDomModelBase and JDomModelBase#setDistributionManagement) and remove this method override
     return modelBase.getDistributionManagement();
   }
 
@@ -170,35 +205,29 @@ public class JDomModel extends Model implements JDomBacked, MavenCoordinate {
   }
 
   @Override
-  public String getGroupId() {
-    return coordinate.getGroupId();
-  }
-
-  @Override
   public void setGroupId(String groupId) {
-    String projectGroupId = coordinate.getGroupId();
+    String projectGroupId = super.getGroupId();
     if (projectGroupId != null) {
-      coordinate.setGroupId(groupId);
+      rewriteElement(POM_ELEMENT_GROUP_ID, groupId, jdomElement);
+      super.setGroupId(groupId);
     } else {
       Parent parent = getParent();
       if (parent == null || !groupId.equals(parent.getGroupId())) {
-        coordinate.setGroupId(groupId);
+        rewriteElement(POM_ELEMENT_GROUP_ID, groupId, jdomElement);
+        super.setGroupId(groupId);
       }
     }
   }
 
   @Override
-  public String getInceptionYear() {
-    return getChildElementTextTrim(POM_ELEMENT_INCEPTION_YEAR, jdomElement);
-  }
-
-  @Override
   public void setInceptionYear(String inceptionYear) {
     rewriteElement(POM_ELEMENT_INCEPTION_YEAR, inceptionYear, jdomElement);
+    super.setInceptionYear(inceptionYear);
   }
 
   @Override
   public IssueManagement getIssueManagement() {
+    // TODO Implement support for setting Model#issueManagement (in #JDomModel and #setIssueManagement) and remove this method override
     throw new UnsupportedOperationException();
   }
 
@@ -209,6 +238,7 @@ public class JDomModel extends Model implements JDomBacked, MavenCoordinate {
 
   @Override
   public List<License> getLicenses() {
+    // TODO Implement support for setting Model#licenses (in #JDomModel and #setLicenses) and remove this method override
     throw new UnsupportedOperationException();
   }
 
@@ -219,6 +249,7 @@ public class JDomModel extends Model implements JDomBacked, MavenCoordinate {
 
   @Override
   public List<MailingList> getMailingLists() {
+    // TODO Implement support for setting Model#mailingLists (in #JDomModel and #setMailingLists) and remove this method override
     throw new UnsupportedOperationException();
   }
 
@@ -228,17 +259,14 @@ public class JDomModel extends Model implements JDomBacked, MavenCoordinate {
   }
 
   @Override
-  public String getModelVersion() {
-    return getChildElementTextTrim(POM_ELEMENT_MODEL_VERSION, jdomElement);
-  }
-
-  @Override
   public void setModelVersion(String modelVersion) {
     rewriteElement(POM_ELEMENT_MODEL_VERSION, modelVersion, jdomElement);
+    super.setModelVersion(modelVersion);
   }
 
   @Override
   public List<String> getModules() {
+    // TODO Implement support for setting ModelBase#modules (in JDomModelBase#JDomModelBase and JDomModelBase#setModules) and remove this method override
     return modelBase.getModules();
   }
 
@@ -248,17 +276,14 @@ public class JDomModel extends Model implements JDomBacked, MavenCoordinate {
   }
 
   @Override
-  public String getName() {
-    return getChildElementTextTrim(POM_ELEMENT_NAME, jdomElement);
-  }
-
-  @Override
   public void setName(String name) {
     rewriteElement(POM_ELEMENT_NAME, name, jdomElement);
+    super.setName(name);
   }
 
   @Override
   public Organization getOrganization() {
+    // TODO Implement support for setting Model#organization (in #JDomModel and #setOrganization) and remove this method override
     throw new UnsupportedOperationException();
   }
 
@@ -268,65 +293,39 @@ public class JDomModel extends Model implements JDomBacked, MavenCoordinate {
   }
 
   @Override
-  public String getPackaging() {
-    return getChildElementTextTrim(POM_ELEMENT_PACKAGING, jdomElement);
-  }
-
-  @Override
   public void setPackaging(String packaging) {
     rewriteElement(POM_ELEMENT_PACKAGING, packaging, jdomElement);
+    super.setPackaging(packaging);
   }
 
   @Override
-  public Parent getParent() {
-    Element elm = getChildElement(POM_ELEMENT_PARENT, jdomElement);
-    if (elm == null) {
-      return null;
-    } else {
-      // this way parent setters change DOM tree immediately
-      return new JDomParent(elm);
-    }
-  }
-
-  @Override
+  @SuppressWarnings("OverlyComplexMethod")
   public void setParent(Parent parent) {
+    Parent oldParent = getParent();
+
+    //noinspection IfStatementWithTooManyBranches
     if (parent == null) {
-      Parent removedParent = getParent();
-
       rewriteElement(POM_ELEMENT_PARENT, null, jdomElement);
-
-      if (getGroupId() == null) {
-        setGroupId(removedParent.getGroupId());
-      }
-      if (getVersion() == null) {
-        setVersion(removedParent.getVersion());
-      }
+      super.setParent(null);
+    } else if (parent instanceof JDomParent) {
+      rewriteElement(((JDomParent) parent).getJDomElement(), jdomElement);
+      super.setParent(parent);
     } else {
-      boolean containsRelativePath = false;
+      JDomParent jdomParent = new JDomParent(insertNewElement(POM_ELEMENT_PARENT, jdomElement), parent);
+      super.setParent(jdomParent);
+    }
 
-      Parent jdomParent = getParent();
-      if (jdomParent == null) {
-        Element parentRoot = insertNewElement(POM_ELEMENT_PARENT, jdomElement);
-        jdomParent = new JDomParent(parentRoot);
-      } else {
-        containsRelativePath = jdomParent.getRelativePath() != null;
-      }
-
-      // Write current values to JDom tree
-      jdomParent.setGroupId(parent.getGroupId());
-      jdomParent.setArtifactId(parent.getArtifactId());
-      jdomParent.setVersion(parent.getVersion());
-
-      String relativePath = parent.getRelativePath();
-      if (relativePath != null && !parent.getRelativePath().equals("../pom.xml") || containsRelativePath) {
-        jdomParent.setRelativePath(relativePath);
-      }
-
+    if (getGroupId() == null && (parent == null || !parent.getGroupId().equals(oldParent.getGroupId()))) {
+      setGroupId(oldParent.getGroupId());
+    }
+    if (getVersion() == null && (parent == null || !parent.getVersion().equals(oldParent.getVersion()))) {
+      setVersion(oldParent.getVersion());
     }
   }
 
   @Override
   public List<Repository> getPluginRepositories() {
+    // TODO Implement support for setting ModelBase#pluginRepositories (in JDomModelBase#JDomModelBase and JDomModelBase#setPluginRepositories) and remove this method override
     return modelBase.getPluginRepositories();
   }
 
@@ -337,6 +336,7 @@ public class JDomModel extends Model implements JDomBacked, MavenCoordinate {
 
   @Override
   public Prerequisites getPrerequisites() {
+    // TODO Implement support for setting Model#prerequisites (in #JDomModel and #setPrerequisites) and remove this method override
     throw new UnsupportedOperationException();
   }
 
@@ -346,21 +346,24 @@ public class JDomModel extends Model implements JDomBacked, MavenCoordinate {
   }
 
   @Override
-  public List<Profile> getProfiles() {
-    return new JDomProfiles(jdomElement.getChild(POM_ELEMENT_PROFILES, jdomElement.getNamespace()), this);
-  }
-
-  @Override
   public void setProfiles(List<Profile> profiles) {
+    //noinspection IfStatementWithTooManyBranches
     if (profiles == null) {
       rewriteElement(POM_ELEMENT_PROFILES, null, jdomElement);
+      super.setProfiles(null);
+    } else if (profiles instanceof JDomProfiles) {
+      rewriteElement(((JDomProfiles) profiles).getJDomElement(), jdomElement);
+      super.setProfiles(profiles);
     } else {
-      new JDomProfiles(insertNewElement(POM_ELEMENT_PROFILES, jdomElement), this).addAll(profiles);
+      @SuppressWarnings("TypeMayBeWeakened")
+      JDomProfiles jdomProfiles = new JDomProfiles(insertNewElement(POM_ELEMENT_PROFILES, jdomElement), this, profiles);
+      super.setProfiles(jdomProfiles);
     }
   }
 
   @Override
   public Properties getProperties() {
+    // TODO Implement support for setting ModelBase#properties (in JDomModelBase#JDomModelBase and JDomModelBase#setProperties) and remove this method overrid
     return modelBase.getProperties();
   }
 
@@ -371,6 +374,7 @@ public class JDomModel extends Model implements JDomBacked, MavenCoordinate {
 
   @Override
   public Reporting getReporting() {
+    // TODO Implement support for setting ModelBase#reporting (in JDomModelBase#JDomModelBase and JDomModelBase#setReporting) and remove this method override
     return modelBase.getReporting();
   }
 
@@ -381,6 +385,7 @@ public class JDomModel extends Model implements JDomBacked, MavenCoordinate {
 
   @Override
   public List<Repository> getRepositories() {
+    // TODO Implement support for setting ModelBase#repositories (in JDomModelBase#JDomModelBase and JDomModelBase#setRepositories) and remove this method override
     return modelBase.getRepositories();
   }
 
@@ -390,59 +395,37 @@ public class JDomModel extends Model implements JDomBacked, MavenCoordinate {
   }
 
   @Override
-  public Scm getScm() {
-    Element elm = jdomElement.getChild(POM_ELEMENT_SCM, jdomElement.getNamespace());
-    if (elm == null) {
-      return null;
-    } else {
-      // this way scm setters change DOM tree immediately
-      return new JDomScm(elm);
-    }
-  }
-
-  @Override
   public void setScm(Scm scm) {
+    //noinspection IfStatementWithTooManyBranches
     if (scm == null) {
       rewriteElement(POM_ELEMENT_SCM, null, jdomElement);
+      super.setScm(null);
+    } else if (scm instanceof JDomScm) {
+      rewriteElement(((JDomScm) scm).getJDomElement(), jdomElement);
+      super.setScm(scm);
     } else {
-      Scm jdomScm = getScm();
-      if (jdomScm == null) {
-        Element scmRoot = insertNewElement(POM_ELEMENT_SCM, jdomElement);
-        jdomScm = new JDomScm(scmRoot);
-      }
-
-      // Write current values to JDom tree
-      jdomScm.setConnection(scm.getConnection());
-      jdomScm.setDeveloperConnection(scm.getDeveloperConnection());
-      jdomScm.setTag(scm.getTag());
-      jdomScm.setUrl(scm.getUrl());
+      JDomScm jdomScm = new JDomScm(insertNewElement(POM_ELEMENT_SCM, jdomElement), scm);
+      super.setScm(jdomScm);
     }
-  }
-
-  @Override
-  public String getUrl() {
-    return getChildElementTextTrim(POM_ELEMENT_URL, jdomElement);
   }
 
   @Override
   public void setUrl(String url) {
     rewriteElement(POM_ELEMENT_URL, url, jdomElement);
-  }
-
-  @Override
-  public String getVersion() {
-    return coordinate.getVersion();
+    super.setUrl(url);
   }
 
   @Override
   public void setVersion(String version) {
-    String projectVersion = coordinate.getVersion();
+    String projectVersion = super.getVersion();
     if (projectVersion != null) {
-      coordinate.setVersion(version);
+      rewriteElement(POM_ELEMENT_VERSION, version, jdomElement);
+      super.setVersion(version);
     } else {
       Parent parent = getParent();
       if (parent == null || !version.equals(parent.getVersion())) {
-        coordinate.setVersion(version);
+        rewriteElement(POM_ELEMENT_VERSION, version, jdomElement);
+        super.setVersion(version);
       }
     }
   }

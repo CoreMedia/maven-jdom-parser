@@ -33,6 +33,8 @@ import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
  */
 public class JDomParent extends Parent implements JDomBacked, MavenCoordinate {
 
+  private static final String DEFAULT_RELATIVE_PATH = "../pom.xml";
+
   private final Element jdomElement;
 
   private final MavenCoordinate coordinate;
@@ -40,6 +42,16 @@ public class JDomParent extends Parent implements JDomBacked, MavenCoordinate {
   public JDomParent(Element jdomElement) {
     this.jdomElement = jdomElement;
     this.coordinate = new JDomMavenCoordinate(jdomElement);
+  }
+
+  public JDomParent(Element jdomElement, Parent parent) {
+    this.jdomElement = jdomElement;
+    this.coordinate = new JDomMavenCoordinate(jdomElement);
+
+    setGroupId(parent.getGroupId());
+    setArtifactId(parent.getArtifactId());
+    setVersion(parent.getVersion());
+    setRelativePath(parent.getRelativePath());
   }
 
   @Override
@@ -69,7 +81,14 @@ public class JDomParent extends Parent implements JDomBacked, MavenCoordinate {
 
   @Override
   public void setRelativePath(String relativePath) {
-    rewriteElement(POM_ELEMENT_RELATIVE_PATH, relativePath, jdomElement);
+    if (relativePath == null ||
+            getChildElementTextTrim(POM_ELEMENT_RELATIVE_PATH, this.jdomElement) == null
+                    && DEFAULT_RELATIVE_PATH.equals(relativePath)
+                    && DEFAULT_RELATIVE_PATH.equals(super.getRelativePath())) {
+      rewriteElement(POM_ELEMENT_RELATIVE_PATH, null, jdomElement);
+    } else {
+      rewriteElement(POM_ELEMENT_RELATIVE_PATH, relativePath, jdomElement);
+    }
   }
 
   @Override
