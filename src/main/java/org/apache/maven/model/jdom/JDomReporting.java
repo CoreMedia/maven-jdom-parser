@@ -28,6 +28,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_PLUGIN;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_PLUGINS;
+
 /**
  * JDom implementation of poms REPORTING element
  *
@@ -48,11 +51,11 @@ public class JDomReporting extends Reporting implements JDomBacked {
 
   @Override
   public List<ReportPlugin> getPlugins() {
-    Element pluginsElm = jdomElement.getChild("plugins", jdomElement.getNamespace());
+    Element pluginsElm = jdomElement.getChild(POM_ELEMENT_PLUGINS, jdomElement.getNamespace());
     if (pluginsElm == null) {
       return Collections.emptyList();
     } else {
-      List<Element> pluginElms = pluginsElm.getChildren("plugin", jdomElement.getNamespace());
+      List<Element> pluginElms = pluginsElm.getChildren(POM_ELEMENT_PLUGIN, jdomElement.getNamespace());
 
       List<ReportPlugin> plugins = new ArrayList<>(pluginElms.size());
 

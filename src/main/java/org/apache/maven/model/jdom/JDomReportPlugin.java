@@ -25,6 +25,7 @@ import org.jdom2.Element;
 
 import java.util.List;
 
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_INHERITED;
 import static org.apache.maven.model.jdom.util.JDomUtils.getChildElementTextTrim;
 import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
 
@@ -76,12 +77,12 @@ public class JDomReportPlugin extends ReportPlugin implements JDomBacked, MavenC
 
   @Override
   public String getInherited() {
-    return getChildElementTextTrim("inherited", jdomElement);
+    return getChildElementTextTrim(POM_ELEMENT_INHERITED, jdomElement);
   }
 
   @Override
   public void setInherited(String inherited) {
-    rewriteElement("inherited", inherited, jdomElement, jdomElement.getNamespace());
+    rewriteElement(POM_ELEMENT_INHERITED, inherited, jdomElement, jdomElement.getNamespace());
   }
 
   @Override

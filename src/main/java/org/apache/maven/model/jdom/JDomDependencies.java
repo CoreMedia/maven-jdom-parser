@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.ListIterator;
 
 import static java.util.Arrays.asList;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_DEPENDENCY;
 import static org.apache.maven.model.jdom.util.JDomUtils.detectIndentation;
 import static org.apache.maven.model.jdom.util.JDomUtils.insertNewElement;
 import static org.apache.maven.model.jdom.util.JDomUtils.removeChildElement;
@@ -49,7 +50,7 @@ public class JDomDependencies extends ArrayList<Dependency> implements JDomBacke
   }
 
   private static List<Element> getDependencyElements(Element dependencies) {
-    return dependencies.getContent(new ElementFilter("dependency", dependencies.getNamespace()));
+    return dependencies.getContent(new ElementFilter(POM_ELEMENT_DEPENDENCY, dependencies.getNamespace()));
   }
 
   private static List<JDomDependency> transformToJDomDependencyList(List<Element> dependencyElements) {
@@ -73,7 +74,7 @@ public class JDomDependencies extends ArrayList<Dependency> implements JDomBacke
       resetIndentations(jdomElement, detectIndentation(jdomElement));
       resetIndentations(newElement, detectIndentation(jdomElement) + "  ");
     } else {
-      newElement = insertNewElement("dependency", jdomElement);
+      newElement = insertNewElement(POM_ELEMENT_DEPENDENCY, jdomElement);
       JDomDependency jDomDependency = new JDomDependency(newElement);
 
       jDomDependency.setGroupId(dependency.getGroupId());

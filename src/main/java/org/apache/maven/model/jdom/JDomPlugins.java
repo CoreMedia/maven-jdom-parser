@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.ListIterator;
 
 import static java.util.Arrays.asList;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_PLUGIN;
 import static org.apache.maven.model.jdom.util.JDomUtils.detectIndentation;
 import static org.apache.maven.model.jdom.util.JDomUtils.insertNewElement;
 import static org.apache.maven.model.jdom.util.JDomUtils.removeChildElement;
@@ -44,7 +45,7 @@ public class JDomPlugins extends ArrayList<Plugin> implements JDomBacked {
   }
 
   private static List<Element> getPluginElements(Element plugins) {
-    return plugins.getContent(new ElementFilter("plugin", plugins.getNamespace()));
+    return plugins.getContent(new ElementFilter(POM_ELEMENT_PLUGIN, plugins.getNamespace()));
   }
 
   private static List<JDomPlugin> transformToJDomPluginList(List<Element> pluginElements) {
@@ -68,7 +69,7 @@ public class JDomPlugins extends ArrayList<Plugin> implements JDomBacked {
       resetIndentations(jdomElement, detectIndentation(jdomElement));
       resetIndentations(newElement, detectIndentation(jdomElement) + "  ");
     } else {
-      newElement = insertNewElement("plugin", jdomElement);
+      newElement = insertNewElement(POM_ELEMENT_PLUGIN, jdomElement);
       JDomPlugin jDomPlugin = new JDomPlugin(newElement);
 
       jDomPlugin.setGroupId(plugin.getGroupId());

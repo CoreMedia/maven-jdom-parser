@@ -22,6 +22,7 @@ package org.apache.maven.model.jdom;
 import org.apache.maven.model.Parent;
 import org.jdom2.Element;
 
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_RELATIVE_PATH;
 import static org.apache.maven.model.jdom.util.JDomUtils.getChildElementTextTrim;
 import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
 
@@ -63,12 +64,12 @@ public class JDomParent extends Parent implements JDomBacked, MavenCoordinate {
 
   @Override
   public String getRelativePath() {
-    return getChildElementTextTrim("relativePath", jdomElement);
+    return getChildElementTextTrim(POM_ELEMENT_RELATIVE_PATH, jdomElement);
   }
 
   @Override
   public void setRelativePath(String relativePath) {
-    rewriteElement("relativePath", relativePath, jdomElement, jdomElement.getNamespace());
+    rewriteElement(POM_ELEMENT_RELATIVE_PATH, relativePath, jdomElement, jdomElement.getNamespace());
   }
 
   @Override

@@ -26,15 +26,21 @@ import org.apache.maven.model.DependencyManagement;
 import org.apache.maven.model.DistributionManagement;
 import org.apache.maven.model.Reporting;
 import org.apache.maven.model.Repository;
-import org.apache.maven.model.jdom.util.JDomUtils;
 import org.jdom2.Element;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_BUILD;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_DEPENDENCIES;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_DEPENDENCY_MANAGEMENT;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_MODULES;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_PROPERTIES;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_REPORTING;
 import static org.apache.maven.model.jdom.util.JDomUtils.getChildElement;
 import static org.apache.maven.model.jdom.util.JDomUtils.insertNewElement;
+import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
 
 /**
  * @author Robert Scholte (for <a href="https://github.com/apache/maven-release/">Maven Release projct</a>, version 3.0)
@@ -48,7 +54,7 @@ public class JDomModelBase implements JDomBacked {
   }
 
   public Build getBuild() {
-    Element elm = jdomElement.getChild("build", jdomElement.getNamespace());
+    Element elm = jdomElement.getChild(POM_ELEMENT_BUILD, jdomElement.getNamespace());
     if (elm == null) {
       return null;
     } else {
@@ -70,7 +76,7 @@ public class JDomModelBase implements JDomBacked {
   }
 
   public List<Dependency> getDependencies() {
-    Element dependenciesElm = jdomElement.getChild("dependencies", jdomElement.getNamespace());
+    Element dependenciesElm = jdomElement.getChild(POM_ELEMENT_DEPENDENCIES, jdomElement.getNamespace());
     if (dependenciesElm == null) {
       return Collections.emptyList();
     } else {
@@ -83,7 +89,7 @@ public class JDomModelBase implements JDomBacked {
   }
 
   public DependencyManagement getDependencyManagement() {
-    Element elm = jdomElement.getChild("dependencyManagement", jdomElement.getNamespace());
+    Element elm = jdomElement.getChild(POM_ELEMENT_DEPENDENCY_MANAGEMENT, jdomElement.getNamespace());
     if (elm == null) {
       return null;
     } else {
@@ -94,11 +100,11 @@ public class JDomModelBase implements JDomBacked {
 
   public void setDependencyManagement(DependencyManagement dependencyManagement) {
     if (dependencyManagement == null) {
-      JDomUtils.rewriteElement("dependencyManagement", null, jdomElement, jdomElement.getNamespace());
+      rewriteElement(POM_ELEMENT_DEPENDENCY_MANAGEMENT, null, jdomElement, jdomElement.getNamespace());
     } else {
       DependencyManagement jdomDependencyManagement = getDependencyManagement();
       if (jdomDependencyManagement == null) {
-        Element dependencyManagementRoot = insertNewElement("dependencyManagement", jdomElement);
+        Element dependencyManagementRoot = insertNewElement(POM_ELEMENT_DEPENDENCY_MANAGEMENT, jdomElement);
         jdomDependencyManagement = new JDomDependencyManagement(dependencyManagementRoot);
       }
 
@@ -107,7 +113,7 @@ public class JDomModelBase implements JDomBacked {
   }
 
   public List<String> getModules() {
-    Element modulesElement = getChildElement("modules", jdomElement);
+    Element modulesElement = getChildElement(POM_ELEMENT_MODULES, jdomElement);
     if (modulesElement == null) {
       return Collections.emptyList();
     } else {
@@ -117,13 +123,13 @@ public class JDomModelBase implements JDomBacked {
 
   public void setModules(List<String> modules) {
     if (modules == null) {
-      JDomUtils.rewriteElement("modules", null, jdomElement, jdomElement.getNamespace());
+      rewriteElement(POM_ELEMENT_MODULES, null, jdomElement, jdomElement.getNamespace());
     } else {
       List<String> jDomModules = getModules();
       if (jDomModules instanceof JDomModules) {
         jDomModules.clear();
       } else {
-        jDomModules = new JDomModules(insertNewElement("modules", jdomElement));
+        jDomModules = new JDomModules(insertNewElement(POM_ELEMENT_MODULES, jdomElement));
       }
       jDomModules.addAll(modules);
     }
@@ -138,7 +144,7 @@ public class JDomModelBase implements JDomBacked {
   }
 
   public Properties getProperties() {
-    Element properties = jdomElement.getChild("properties", jdomElement.getNamespace());
+    Element properties = jdomElement.getChild(POM_ELEMENT_PROPERTIES, jdomElement.getNamespace());
 
     if (properties == null) {
       return null;
@@ -152,7 +158,7 @@ public class JDomModelBase implements JDomBacked {
   }
 
   public Reporting getReporting() {
-    Element reporting = jdomElement.getChild("reporting", jdomElement.getNamespace());
+    Element reporting = jdomElement.getChild(POM_ELEMENT_REPORTING, jdomElement.getNamespace());
 
     if (reporting == null) {
       return null;

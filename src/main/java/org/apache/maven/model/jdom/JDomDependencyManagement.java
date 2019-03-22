@@ -27,6 +27,7 @@ import org.jdom2.Element;
 import java.util.Collections;
 import java.util.List;
 
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_DEPENDENCIES;
 import static org.apache.maven.model.jdom.util.JDomUtils.insertNewElement;
 
 /**
@@ -44,7 +45,7 @@ public class JDomDependencyManagement extends DependencyManagement implements JD
 
   @Override
   public List<Dependency> getDependencies() {
-    Element dependenciesElm = jdomElement.getChild("dependencies", jdomElement.getNamespace());
+    Element dependenciesElm = jdomElement.getChild(POM_ELEMENT_DEPENDENCIES, jdomElement.getNamespace());
     if (dependenciesElm == null) {
       return Collections.emptyList();
     } else {
@@ -55,9 +56,9 @@ public class JDomDependencyManagement extends DependencyManagement implements JD
   @Override
   public void setDependencies(List<Dependency> dependencies) {
     if (dependencies == null) {
-      JDomUtils.rewriteElement("dependencies", null, jdomElement, jdomElement.getNamespace());
+      JDomUtils.rewriteElement(POM_ELEMENT_DEPENDENCIES, null, jdomElement, jdomElement.getNamespace());
     } else {
-      new JDomDependencies(insertNewElement("dependencies", jdomElement)).addAll(dependencies);
+      new JDomDependencies(insertNewElement(POM_ELEMENT_DEPENDENCIES, jdomElement)).addAll(dependencies);
     }
   }
 

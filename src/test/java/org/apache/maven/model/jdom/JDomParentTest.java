@@ -25,6 +25,10 @@ import org.junit.Test;
 
 import java.io.StringReader;
 
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_ARTIFACT_ID;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_GROUP_ID;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_RELATIVE_PATH;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_VERSION;
 import static org.apache.maven.model.jdom.util.JDomUtils.getChildElementTextTrim;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -37,7 +41,7 @@ public class JDomParentTest {
   public void testGetArtifactId() throws Exception {
     String content = "<parent></parent>";
     Element parentElm = builder.build(new StringReader(content)).getRootElement();
-    assertNull(getChildElementTextTrim("artifactId", parentElm));
+    assertNull(getChildElementTextTrim(POM_ELEMENT_ARTIFACT_ID, parentElm));
 
     content = "<parent><artifactId>ARTIFACTID</artifactId></parent>";
     parentElm = builder.build(new StringReader(content)).getRootElement();
@@ -48,7 +52,7 @@ public class JDomParentTest {
   public void testGetGroupId() throws Exception {
     String content = "<parent></parent>";
     Element parentElm = builder.build(new StringReader(content)).getRootElement();
-    assertNull(getChildElementTextTrim("groupId", parentElm));
+    assertNull(getChildElementTextTrim(POM_ELEMENT_GROUP_ID, parentElm));
 
     content = "<parent><groupId>GROUPID</groupId></parent>";
     parentElm = builder.build(new StringReader(content)).getRootElement();
@@ -59,7 +63,7 @@ public class JDomParentTest {
   public void testGetRelativePath() throws Exception {
     String content = "<parent></parent>";
     Element parentElm = builder.build(new StringReader(content)).getRootElement();
-    assertNull(getChildElementTextTrim("relativePath", parentElm));
+    assertNull(getChildElementTextTrim(POM_ELEMENT_RELATIVE_PATH, parentElm));
 
     content = "<parent><relativePath>RELATIVEPATH</relativePath></parent>";
     parentElm = builder.build(new StringReader(content)).getRootElement();
@@ -70,7 +74,7 @@ public class JDomParentTest {
   public void testGetVersion() throws Exception {
     String content = "<parent></parent>";
     Element parentElm = builder.build(new StringReader(content)).getRootElement();
-    assertNull(getChildElementTextTrim("version", parentElm));
+    assertNull(getChildElementTextTrim(POM_ELEMENT_VERSION, parentElm));
 
     content = "<parent><version>VERSION</version></parent>";
     parentElm = builder.build(new StringReader(content)).getRootElement();
@@ -82,7 +86,7 @@ public class JDomParentTest {
     String content = "<parent><artifactId>OLD_ARTIFACTID</artifactId></parent>";
     Element parentElm = builder.build(new StringReader(content)).getRootElement();
     new JDomParent(parentElm).setArtifactId("NEW_ARTIFACTID");
-    assertEquals("NEW_ARTIFACTID", getChildElementTextTrim("artifactId", parentElm));
+    assertEquals("NEW_ARTIFACTID", getChildElementTextTrim(POM_ELEMENT_ARTIFACT_ID, parentElm));
   }
 
   @Test
@@ -90,7 +94,7 @@ public class JDomParentTest {
     String content = "<parent><groupId>OLD_GROUPID</groupId></parent>";
     Element parentElm = builder.build(new StringReader(content)).getRootElement();
     new JDomParent(parentElm).setGroupId("NEW_GROUPID");
-    assertEquals("NEW_GROUPID", getChildElementTextTrim("groupId", parentElm));
+    assertEquals("NEW_GROUPID", getChildElementTextTrim(POM_ELEMENT_GROUP_ID, parentElm));
   }
 
   @Test
@@ -98,14 +102,14 @@ public class JDomParentTest {
     String content = "<parent><relativePath>OLD_RELATIVEPATH</relativePath></parent>";
     Element parentElm = builder.build(new StringReader(content)).getRootElement();
     new JDomParent(parentElm).setRelativePath("NEW_RELATIVEPATH");
-    assertEquals("NEW_RELATIVEPATH", getChildElementTextTrim("relativePath", parentElm));
+    assertEquals("NEW_RELATIVEPATH", getChildElementTextTrim(POM_ELEMENT_RELATIVE_PATH, parentElm));
   }
 
   @Test
   public void testSetVersionString() throws Exception {
     String content = "<parent></parent>";
     Element parentElm = builder.build(new StringReader(content)).getRootElement();
-    assertNull(getChildElementTextTrim("version", parentElm));
+    assertNull(getChildElementTextTrim(POM_ELEMENT_VERSION, parentElm));
 
     content = "<parent><version>VERSION</version></parent>";
     parentElm = builder.build(new StringReader(content)).getRootElement();

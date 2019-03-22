@@ -24,7 +24,6 @@ import org.apache.maven.model.Extension;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.model.PluginManagement;
 import org.apache.maven.model.Resource;
-import org.apache.maven.model.jdom.util.JDomUtils;
 import org.jdom2.Element;
 
 import java.util.ArrayList;
@@ -32,6 +31,18 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_DEFAULT_GOAL;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_DIRECTORY;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_EXTENSION;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_EXTENSIONS;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_FINAL_NAME;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_OUTPUT_DIRECTORY;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_PLUGINS;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_PLUGIN_MANAGEMENT;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_SCRIPT_SOURCE_DIRECTORY;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_SOURCE_DIRECTORY;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_TEST_OUTPUT_DIRECTORY;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_TEST_SOURCE_DIRECTORY;
 import static org.apache.maven.model.jdom.util.JDomUtils.getChildElementTextTrim;
 import static org.apache.maven.model.jdom.util.JDomUtils.insertNewElement;
 import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
@@ -51,31 +62,31 @@ public class JDomBuild extends Build implements JDomBacked {
 
   @Override
   public String getDefaultGoal() {
-    return getChildElementTextTrim("defaultGoal", jdomElement);
+    return getChildElementTextTrim(POM_ELEMENT_DEFAULT_GOAL, jdomElement);
   }
 
   @Override
   public void setDefaultGoal(String defaultGoal) {
-    rewriteElement("defaultGoal", defaultGoal, jdomElement, jdomElement.getNamespace());
+    rewriteElement(POM_ELEMENT_DEFAULT_GOAL, defaultGoal, jdomElement, jdomElement.getNamespace());
   }
 
   @Override
   public String getDirectory() {
-    return getChildElementTextTrim("directory", jdomElement);
+    return getChildElementTextTrim(POM_ELEMENT_DIRECTORY, jdomElement);
   }
 
   @Override
   public void setDirectory(String directory) {
-    rewriteElement("directory", directory, jdomElement, jdomElement.getNamespace());
+    rewriteElement(POM_ELEMENT_DIRECTORY, directory, jdomElement, jdomElement.getNamespace());
   }
 
   @Override
   public List<Extension> getExtensions() {
-    Element extensionsElm = jdomElement.getChild("extensions", jdomElement.getNamespace());
+    Element extensionsElm = jdomElement.getChild(POM_ELEMENT_EXTENSIONS, jdomElement.getNamespace());
     if (extensionsElm == null) {
       return Collections.emptyList();
     } else {
-      List<Element> extensionElms = extensionsElm.getChildren("extension", jdomElement.getNamespace());
+      List<Element> extensionElms = extensionsElm.getChildren(POM_ELEMENT_EXTENSION, jdomElement.getNamespace());
       List<Extension> extensions = new ArrayList<>(extensionElms.size());
       for (Element extensionElm : extensionElms) {
         extensions.add(new JDomExtension(extensionElm));
@@ -101,27 +112,27 @@ public class JDomBuild extends Build implements JDomBacked {
 
   @Override
   public String getFinalName() {
-    return getChildElementTextTrim("finalName", jdomElement);
+    return getChildElementTextTrim(POM_ELEMENT_FINAL_NAME, jdomElement);
   }
 
   @Override
   public void setFinalName(String finalName) {
-    rewriteElement("finalName", finalName, jdomElement, jdomElement.getNamespace());
+    rewriteElement(POM_ELEMENT_FINAL_NAME, finalName, jdomElement, jdomElement.getNamespace());
   }
 
   @Override
   public String getOutputDirectory() {
-    return getChildElementTextTrim("outputDirectory", jdomElement);
+    return getChildElementTextTrim(POM_ELEMENT_OUTPUT_DIRECTORY, jdomElement);
   }
 
   @Override
   public void setOutputDirectory(String outputDirectory) {
-    rewriteElement("outputDirectory", outputDirectory, jdomElement, jdomElement.getNamespace());
+    rewriteElement(POM_ELEMENT_OUTPUT_DIRECTORY, outputDirectory, jdomElement, jdomElement.getNamespace());
   }
 
   @Override
   public PluginManagement getPluginManagement() {
-    Element pluginManagementElm = jdomElement.getChild("pluginManagement", jdomElement.getNamespace());
+    Element pluginManagementElm = jdomElement.getChild(POM_ELEMENT_PLUGIN_MANAGEMENT, jdomElement.getNamespace());
     if (pluginManagementElm == null) {
       return null;
     } else {
@@ -136,7 +147,7 @@ public class JDomBuild extends Build implements JDomBacked {
 
   @Override
   public List<Plugin> getPlugins() {
-    Element pluginsElm = jdomElement.getChild("plugins", jdomElement.getNamespace());
+    Element pluginsElm = jdomElement.getChild(POM_ELEMENT_PLUGINS, jdomElement.getNamespace());
     if (pluginsElm == null) {
       return Collections.emptyList();
     } else {
@@ -147,9 +158,9 @@ public class JDomBuild extends Build implements JDomBacked {
   @Override
   public void setPlugins(List<Plugin> plugins) {
     if (plugins == null) {
-      JDomUtils.rewriteElement("plugins", null, jdomElement, jdomElement.getNamespace());
+      rewriteElement(POM_ELEMENT_PLUGINS, null, jdomElement, jdomElement.getNamespace());
     } else {
-      new JDomPlugins(insertNewElement("plugins", jdomElement)).addAll(plugins);
+      new JDomPlugins(insertNewElement(POM_ELEMENT_PLUGINS, jdomElement)).addAll(plugins);
     }
 
   }
@@ -166,32 +177,32 @@ public class JDomBuild extends Build implements JDomBacked {
 
   @Override
   public String getScriptSourceDirectory() {
-    return getChildElementTextTrim("scriptSourceDirectory", jdomElement);
+    return getChildElementTextTrim(POM_ELEMENT_SCRIPT_SOURCE_DIRECTORY, jdomElement);
   }
 
   @Override
   public void setScriptSourceDirectory(String scriptSourceDirectory) {
-    rewriteElement("scriptSourceDirectory", scriptSourceDirectory, jdomElement, jdomElement.getNamespace());
+    rewriteElement(POM_ELEMENT_SCRIPT_SOURCE_DIRECTORY, scriptSourceDirectory, jdomElement, jdomElement.getNamespace());
   }
 
   @Override
   public String getSourceDirectory() {
-    return getChildElementTextTrim("sourceDirectory", jdomElement);
+    return getChildElementTextTrim(POM_ELEMENT_SOURCE_DIRECTORY, jdomElement);
   }
 
   @Override
   public void setSourceDirectory(String sourceDirectory) {
-    rewriteElement("sourceDirectory", sourceDirectory, jdomElement, jdomElement.getNamespace());
+    rewriteElement(POM_ELEMENT_SOURCE_DIRECTORY, sourceDirectory, jdomElement, jdomElement.getNamespace());
   }
 
   @Override
   public String getTestOutputDirectory() {
-    return getChildElementTextTrim("testOutputDirectory", jdomElement);
+    return getChildElementTextTrim(POM_ELEMENT_TEST_OUTPUT_DIRECTORY, jdomElement);
   }
 
   @Override
   public void setTestOutputDirectory(String testOutputDirectory) {
-    rewriteElement("testOutputDirectory", testOutputDirectory, jdomElement, jdomElement.getNamespace());
+    rewriteElement(POM_ELEMENT_TEST_OUTPUT_DIRECTORY, testOutputDirectory, jdomElement, jdomElement.getNamespace());
   }
 
   @Override
@@ -206,12 +217,12 @@ public class JDomBuild extends Build implements JDomBacked {
 
   @Override
   public String getTestSourceDirectory() {
-    return getChildElementTextTrim("testSourceDirectory", jdomElement);
+    return getChildElementTextTrim(POM_ELEMENT_TEST_SOURCE_DIRECTORY, jdomElement);
   }
 
   @Override
   public void setTestSourceDirectory(String testSourceDirectory) {
-    rewriteElement("testSourceDirectory", testSourceDirectory, jdomElement, jdomElement.getNamespace());
+    rewriteElement(POM_ELEMENT_TEST_SOURCE_DIRECTORY, testSourceDirectory, jdomElement, jdomElement.getNamespace());
   }
 
   @Override

@@ -22,6 +22,9 @@ package org.apache.maven.model.jdom;
 import org.jdom2.Element;
 import org.jdom2.Text;
 
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_ARTIFACT_ID;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_GROUP_ID;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_VERSION;
 import static org.apache.maven.model.jdom.util.JDomUtils.detectIndentation;
 import static org.apache.maven.model.jdom.util.JDomUtils.getChildElement;
 import static org.apache.maven.model.jdom.util.JDomUtils.getChildElementTextTrim;
@@ -42,32 +45,32 @@ public class JDomMavenCoordinate implements JDomBacked, MavenCoordinate {
 
   @Override
   public String getArtifactId() {
-    return getChildElementTextTrim("artifactId", jdomElement);
+    return getChildElementTextTrim(POM_ELEMENT_ARTIFACT_ID, jdomElement);
   }
 
   @Override
   public void setArtifactId(String artifactId) {
-    rewriteElement("artifactId", artifactId, jdomElement, jdomElement.getNamespace());
+    rewriteElement(POM_ELEMENT_ARTIFACT_ID, artifactId, jdomElement, jdomElement.getNamespace());
   }
 
   @Override
   public String getGroupId() {
-    return getChildElementTextTrim("groupId", jdomElement);
+    return getChildElementTextTrim(POM_ELEMENT_GROUP_ID, jdomElement);
   }
 
   @Override
   public void setGroupId(String groupId) {
-    rewriteElement("groupId", groupId, jdomElement, jdomElement.getNamespace());
+    rewriteElement(POM_ELEMENT_GROUP_ID, groupId, jdomElement, jdomElement.getNamespace());
   }
 
   @Override
   public String getVersion() {
-    return getChildElementTextTrim("version", jdomElement);
+    return getChildElementTextTrim(POM_ELEMENT_VERSION, jdomElement);
   }
 
   @Override
   public void setVersion(String version) {
-    Element versionElement = getChildElement("version", jdomElement);
+    Element versionElement = getChildElement(POM_ELEMENT_VERSION, jdomElement);
     if (versionElement != null) {
       if (version == null) {
         removeChildElement(jdomElement, versionElement);
@@ -79,11 +82,11 @@ public class JDomMavenCoordinate implements JDomBacked, MavenCoordinate {
       // is changed without having changed the parent version. In this case, the version cannot be inherited
       // anymore and thus the project version element must be added.
 
-      versionElement = new Element("version", jdomElement.getNamespace());
+      versionElement = new Element(POM_ELEMENT_VERSION, jdomElement.getNamespace());
       versionElement.setText(version);
 
       // Add the new version element after the artifactId.
-      int indexArtifactId = jdomElement.indexOf(jdomElement.getChild("artifactId", jdomElement.getNamespace()));
+      int indexArtifactId = jdomElement.indexOf(jdomElement.getChild(POM_ELEMENT_ARTIFACT_ID, jdomElement.getNamespace()));
 
       // Linebreak and indentation are (tried to be copied) from the existing XML structure.
       String indent = detectIndentation(jdomElement);

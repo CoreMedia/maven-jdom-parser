@@ -25,6 +25,13 @@ import org.junit.Test;
 
 import java.io.StringReader;
 
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_ARTIFACT_ID;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_CLASSIFIER;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_GROUP_ID;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_OPTIONAL;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_SCOPE;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_SYSTEM_PATH;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_VERSION;
 import static org.apache.maven.model.jdom.util.JDomUtils.getChildElementTextTrim;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -51,12 +58,12 @@ public class JDomDependencyTest {
     String content = "<dependency><optional>false</optional></dependency>";
     Element dependencyElm = builder.build(new StringReader(content)).getRootElement();
     new JDomDependency(dependencyElm).setOptional(true);
-    assertEquals("true", getChildElementTextTrim("optional", dependencyElm));
+    assertEquals("true", getChildElementTextTrim(POM_ELEMENT_OPTIONAL, dependencyElm));
 
     content = "<dependency></dependency>";
     dependencyElm = builder.build(new StringReader(content)).getRootElement();
     new JDomDependency(dependencyElm).setOptional(true);
-    assertEquals("true", getChildElementTextTrim("optional", dependencyElm));
+    assertEquals("true", getChildElementTextTrim(POM_ELEMENT_OPTIONAL, dependencyElm));
   }
 
   @Test(expected = UnsupportedOperationException.class)
@@ -156,7 +163,7 @@ public class JDomDependencyTest {
     String content = "<dependency><artifactId>OLD_ARTIFACTID</artifactId></dependency>";
     Element dependencyElm = builder.build(new StringReader(content)).getRootElement();
     new JDomDependency(dependencyElm).setArtifactId("NEW_ARTIFACTID");
-    assertEquals("NEW_ARTIFACTID", getChildElementTextTrim("artifactId", dependencyElm));
+    assertEquals("NEW_ARTIFACTID", getChildElementTextTrim(POM_ELEMENT_ARTIFACT_ID, dependencyElm));
   }
 
   @Test
@@ -164,7 +171,7 @@ public class JDomDependencyTest {
     String content = "<dependency><classifier>OLD_CLASSIFIER</classifier></dependency>";
     Element dependencyElm = builder.build(new StringReader(content)).getRootElement();
     new JDomDependency(dependencyElm).setClassifier("NEW_CLASSIFIER");
-    assertEquals("NEW_CLASSIFIER", getChildElementTextTrim("classifier", dependencyElm));
+    assertEquals("NEW_CLASSIFIER", getChildElementTextTrim(POM_ELEMENT_CLASSIFIER, dependencyElm));
   }
 
   @Test(expected = UnsupportedOperationException.class)
@@ -177,7 +184,7 @@ public class JDomDependencyTest {
     String content = "<dependency><groupId>OLD_GROUPID</groupId></dependency>";
     Element dependencyElm = builder.build(new StringReader(content)).getRootElement();
     new JDomDependency(dependencyElm).setGroupId("NEW_GROUPID");
-    assertEquals("NEW_GROUPID", getChildElementTextTrim("groupId", dependencyElm));
+    assertEquals("NEW_GROUPID", getChildElementTextTrim(POM_ELEMENT_GROUP_ID, dependencyElm));
   }
 
   @Test
@@ -185,7 +192,7 @@ public class JDomDependencyTest {
     String content = "<dependency><scope>OLD_SCOPE</scope></dependency>";
     Element dependencyElm = builder.build(new StringReader(content)).getRootElement();
     new JDomDependency(dependencyElm).setScope("NEW_SCOPE");
-    assertEquals("NEW_SCOPE", getChildElementTextTrim("scope", dependencyElm));
+    assertEquals("NEW_SCOPE", getChildElementTextTrim(POM_ELEMENT_SCOPE, dependencyElm));
   }
 
   @Test
@@ -193,7 +200,7 @@ public class JDomDependencyTest {
     String content = "<dependency><systemPath>OLD_SYSTEMPATH</systemPath></dependency>";
     Element dependencyElm = builder.build(new StringReader(content)).getRootElement();
     new JDomDependency(dependencyElm).setSystemPath("NEW_SYSTEMPATH");
-    assertEquals("NEW_SYSTEMPATH", getChildElementTextTrim("systemPath", dependencyElm));
+    assertEquals("NEW_SYSTEMPATH", getChildElementTextTrim(POM_ELEMENT_SYSTEM_PATH, dependencyElm));
   }
 
   @Test
@@ -209,6 +216,6 @@ public class JDomDependencyTest {
     String content = "<dependency><version>OLD_VERSION</version></dependency>";
     Element dependencyElm = builder.build(new StringReader(content)).getRootElement();
     new JDomDependency(dependencyElm).setVersion("NEW_VERSION");
-    assertEquals("NEW_VERSION", getChildElementTextTrim("version", dependencyElm));
+    assertEquals("NEW_VERSION", getChildElementTextTrim(POM_ELEMENT_VERSION, dependencyElm));
   }
 }

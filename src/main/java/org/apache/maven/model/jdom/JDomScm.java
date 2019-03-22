@@ -22,6 +22,10 @@ package org.apache.maven.model.jdom;
 import org.apache.maven.model.Scm;
 import org.jdom2.Element;
 
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_CONNECTION;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_DEVELOPER_CONNECTION;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_TAG;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_URL;
 import static org.apache.maven.model.jdom.util.JDomUtils.getChildElementTextTrim;
 import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
 
@@ -40,42 +44,42 @@ public class JDomScm extends Scm implements JDomBacked {
 
   @Override
   public String getConnection() {
-    return getChildElementTextTrim("connection", jdomElement);
+    return getChildElementTextTrim(POM_ELEMENT_CONNECTION, jdomElement);
   }
 
   @Override
   public void setConnection(String connection) {
-    rewriteElement("connection", connection, jdomElement, jdomElement.getNamespace());
+    rewriteElement(POM_ELEMENT_CONNECTION, connection, jdomElement, jdomElement.getNamespace());
   }
 
   @Override
   public String getDeveloperConnection() {
-    return getChildElementTextTrim("developerConnection", jdomElement);
+    return getChildElementTextTrim(POM_ELEMENT_DEVELOPER_CONNECTION, jdomElement);
   }
 
   @Override
   public void setDeveloperConnection(String developerConnection) {
-    rewriteElement("developerConnection", developerConnection, jdomElement, jdomElement.getNamespace());
+    rewriteElement(POM_ELEMENT_DEVELOPER_CONNECTION, developerConnection, jdomElement, jdomElement.getNamespace());
   }
 
   @Override
   public String getTag() {
-    return getChildElementTextTrim("tag", jdomElement);
+    return getChildElementTextTrim(POM_ELEMENT_TAG, jdomElement);
   }
 
   @Override
   public void setTag(String tag) {
-    rewriteElement("tag", tag, jdomElement, jdomElement.getNamespace());
+    rewriteElement(POM_ELEMENT_TAG, tag, jdomElement, jdomElement.getNamespace());
   }
 
   @Override
   public String getUrl() {
-    return getChildElementTextTrim("url", jdomElement);
+    return getChildElementTextTrim(POM_ELEMENT_URL, jdomElement);
   }
 
   @Override
   public void setUrl(String url) {
-    rewriteElement("url", url, jdomElement, jdomElement.getNamespace());
+    rewriteElement(POM_ELEMENT_URL, url, jdomElement, jdomElement.getNamespace());
   }
 
   /** {@inheritDoc} */

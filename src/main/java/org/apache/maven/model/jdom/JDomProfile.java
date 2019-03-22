@@ -36,6 +36,8 @@ import org.jdom2.Element;
 import java.util.List;
 import java.util.Properties;
 
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_ACTIVATION;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_ID;
 import static org.apache.maven.model.jdom.util.JDomUtils.getChildElementTextTrim;
 import static org.apache.maven.model.jdom.util.JDomUtils.insertNewElement;
 import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
@@ -58,7 +60,7 @@ public class JDomProfile extends Profile implements JDomBacked {
 
   @Override
   public Activation getActivation() {
-    Element elm = jdomElement.getChild("activation", jdomElement.getNamespace());
+    Element elm = jdomElement.getChild(POM_ELEMENT_ACTIVATION, jdomElement.getNamespace());
     if (elm == null) {
       return null;
     } else {
@@ -69,11 +71,11 @@ public class JDomProfile extends Profile implements JDomBacked {
   @Override
   public void setActivation(Activation activation) {
     if (activation == null) {
-      JDomUtils.rewriteElement("activation", null, jdomElement, jdomElement.getNamespace());
+      JDomUtils.rewriteElement(POM_ELEMENT_ACTIVATION, null, jdomElement, jdomElement.getNamespace());
     } else {
       Activation jdomActivation = getActivation();
       if (jdomActivation == null) {
-        Element activationRoot = insertNewElement("activation", jdomElement);
+        Element activationRoot = insertNewElement(POM_ELEMENT_ACTIVATION, jdomElement);
         jdomActivation = new JDomActivation(activationRoot);
       }
 
@@ -145,12 +147,12 @@ public class JDomProfile extends Profile implements JDomBacked {
 
   @Override
   public String getId() {
-    return getChildElementTextTrim("id", jdomElement);
+    return getChildElementTextTrim(POM_ELEMENT_ID, jdomElement);
   }
 
   @Override
   public void setId(String id) {
-    rewriteElement("id", id, jdomElement, jdomElement.getNamespace());
+    rewriteElement(POM_ELEMENT_ID, id, jdomElement, jdomElement.getNamespace());
   }
 
   @Override

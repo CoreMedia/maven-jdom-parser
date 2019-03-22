@@ -36,6 +36,8 @@ import java.util.Properties;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_PROFILE;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_PROFILES;
 import static org.apache.maven.model.jdom.util.JDomUtils.detectIndentation;
 import static org.apache.maven.model.jdom.util.JDomUtils.insertNewElement;
 import static org.apache.maven.model.jdom.util.JDomUtils.removeChildElement;
@@ -57,7 +59,7 @@ public class JDomProfiles extends ArrayList<Profile> implements JDomBacked {
     if (profiles == null) {
       return emptyList();
     } else {
-      return profiles.getContent(new ElementFilter("profile", profiles.getNamespace()));
+      return profiles.getContent(new ElementFilter(POM_ELEMENT_PROFILE, profiles.getNamespace()));
     }
   }
 
@@ -72,7 +74,7 @@ public class JDomProfiles extends ArrayList<Profile> implements JDomBacked {
   @Override
   public boolean add(Profile profile) {
     if (jdomElement == null) {
-      jdomElement = insertNewElement("profiles", parent.getJDomElement());
+      jdomElement = insertNewElement(POM_ELEMENT_PROFILES, parent.getJDomElement());
     }
 
     Element newElement;
@@ -86,7 +88,7 @@ public class JDomProfiles extends ArrayList<Profile> implements JDomBacked {
       resetIndentations(jdomElement, detectIndentation(jdomElement));
       resetIndentations(newElement, detectIndentation(jdomElement) + "  ");
     } else {
-      newElement = insertNewElement("profile", jdomElement);
+      newElement = insertNewElement(POM_ELEMENT_PROFILE, jdomElement);
       JDomProfile jDomProfile = new JDomProfile(newElement);
       jDomProfile.setId(profile.getId());
 

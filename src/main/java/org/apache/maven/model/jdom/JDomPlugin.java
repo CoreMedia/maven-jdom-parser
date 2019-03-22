@@ -31,6 +31,11 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.Arrays.asList;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_CONFIGURATION;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_DEPENDENCIES;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_DEPENDENCY;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_EXTENSIONS;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_INHERITED;
 import static org.apache.maven.model.jdom.util.JDomUtils.detectIndentation;
 import static org.apache.maven.model.jdom.util.JDomUtils.getChildElement;
 import static org.apache.maven.model.jdom.util.JDomUtils.getChildElementTextTrim;
@@ -66,7 +71,7 @@ public class JDomPlugin extends Plugin implements JDomBacked, MavenCoordinate {
 
   @Override
   public Object getConfiguration() {
-    Element elm = getChildElement("configuration", jdomElement);
+    Element elm = getChildElement(POM_ELEMENT_CONFIGURATION, jdomElement);
     if (elm == null) {
       return null;
     } else {
@@ -77,7 +82,7 @@ public class JDomPlugin extends Plugin implements JDomBacked, MavenCoordinate {
   @Override
   public void setConfiguration(Object configuration) {
     if (configuration == null) {
-      rewriteElement("configuration", null, jdomElement, jdomElement.getNamespace());
+      rewriteElement(POM_ELEMENT_CONFIGURATION, null, jdomElement, jdomElement.getNamespace());
     } else if (configuration instanceof JDomConfiguration) {
       Element newJDomConfigurationElement = ((JDomConfiguration) configuration).getJDomElement().clone();
 
@@ -101,11 +106,11 @@ public class JDomPlugin extends Plugin implements JDomBacked, MavenCoordinate {
 
   @Override
   public List<Dependency> getDependencies() {
-    Element dependenciesElm = jdomElement.getChild("dependencies", jdomElement.getNamespace());
+    Element dependenciesElm = jdomElement.getChild(POM_ELEMENT_DEPENDENCIES, jdomElement.getNamespace());
     if (dependenciesElm == null) {
       return Collections.emptyList();
     } else {
-      List<Element> dependencyElms = dependenciesElm.getChildren("dependency", jdomElement.getNamespace());
+      List<Element> dependencyElms = dependenciesElm.getChildren(POM_ELEMENT_DEPENDENCY, jdomElement.getNamespace());
       List<Dependency> dependencies = new ArrayList<>(dependencyElms.size());
       for (Element dependencyElm : dependencyElms) {
         dependencies.add(new JDomDependency(dependencyElm));
@@ -117,9 +122,9 @@ public class JDomPlugin extends Plugin implements JDomBacked, MavenCoordinate {
   @Override
   public void setDependencies(List<Dependency> dependencies) {
     if (dependencies == null) {
-      rewriteElement("dependencies", null, jdomElement, jdomElement.getNamespace());
+      rewriteElement(POM_ELEMENT_DEPENDENCIES, null, jdomElement, jdomElement.getNamespace());
     } else {
-      new JDomDependencies(insertNewElement("dependencies", jdomElement)).addAll(dependencies);
+      new JDomDependencies(insertNewElement(POM_ELEMENT_DEPENDENCIES, jdomElement)).addAll(dependencies);
     }
   }
 
@@ -135,12 +140,12 @@ public class JDomPlugin extends Plugin implements JDomBacked, MavenCoordinate {
 
   @Override
   public String getExtensions() {
-    return getChildElementTextTrim("extensions", jdomElement);
+    return getChildElementTextTrim(POM_ELEMENT_EXTENSIONS, jdomElement);
   }
 
   @Override
   public void setExtensions(String extensions) {
-    rewriteElement("extensions", extensions, jdomElement, jdomElement.getNamespace());
+    rewriteElement(POM_ELEMENT_EXTENSIONS, extensions, jdomElement, jdomElement.getNamespace());
   }
 
   @Override
@@ -175,12 +180,12 @@ public class JDomPlugin extends Plugin implements JDomBacked, MavenCoordinate {
 
   @Override
   public String getInherited() {
-    return getChildElementTextTrim("inherited", jdomElement);
+    return getChildElementTextTrim(POM_ELEMENT_INHERITED, jdomElement);
   }
 
   @Override
   public void setInherited(String inherited) {
-    rewriteElement("inherited", inherited, jdomElement, jdomElement.getNamespace());
+    rewriteElement(POM_ELEMENT_INHERITED, inherited, jdomElement, jdomElement.getNamespace());
   }
 
   @Override

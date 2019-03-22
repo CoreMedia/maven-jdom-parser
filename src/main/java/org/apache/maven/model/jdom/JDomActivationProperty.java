@@ -19,6 +19,8 @@ package org.apache.maven.model.jdom;
 import org.apache.maven.model.ActivationProperty;
 import org.jdom2.Element;
 
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_NAME;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_VALUE;
 import static org.apache.maven.model.jdom.util.JDomUtils.getChildElementTextTrim;
 import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
 
@@ -29,27 +31,24 @@ import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
  */
 public class JDomActivationProperty extends ActivationProperty implements JDomBacked {
 
-  private static final String ELEMENT_NAME = "name";
-  private static final String ELEMENT_VALUE = "value";
-
   private final Element jdomElement;
 
   public JDomActivationProperty(Element jdomElement) {
     this.jdomElement = jdomElement;
 
-    super.setName(getChildElementTextTrim(ELEMENT_NAME, this.jdomElement));
-    super.setValue(getChildElementTextTrim(ELEMENT_VALUE, this.jdomElement));
+    super.setName(getChildElementTextTrim(POM_ELEMENT_NAME, this.jdomElement));
+    super.setValue(getChildElementTextTrim(POM_ELEMENT_VALUE, this.jdomElement));
   }
 
   @Override
   public void setName(String name) {
-    rewriteElement(ELEMENT_NAME, name, jdomElement);
+    rewriteElement(POM_ELEMENT_NAME, name, jdomElement);
     super.setName(name);
   }
 
   @Override
   public void setValue(String value) {
-    rewriteElement(ELEMENT_VALUE, value, jdomElement);
+    rewriteElement(POM_ELEMENT_VALUE, value, jdomElement);
     super.setValue(value);
   }
 

@@ -28,6 +28,7 @@ import org.junit.Test;
 
 import java.io.StringReader;
 
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_VERSION;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -88,6 +89,6 @@ public class JDomModelTest {
   }
 
   private String getVersion(Element projectElm) {
-    return projectElm.getChildText("version", projectElm.getNamespace());
+    return projectElm.getChildText(POM_ELEMENT_VERSION, projectElm.getNamespace());
   }
 }

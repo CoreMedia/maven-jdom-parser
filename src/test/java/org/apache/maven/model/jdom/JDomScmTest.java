@@ -25,6 +25,8 @@ import org.junit.Test;
 
 import java.io.StringReader;
 
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_CONNECTION;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_DEVELOPER_CONNECTION;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
@@ -133,11 +135,11 @@ public class JDomScmTest {
   }
 
   private String getConnection(Element scmElm) {
-    return scmElm.getChildText("connection", scmElm.getNamespace());
+    return scmElm.getChildText(POM_ELEMENT_CONNECTION, scmElm.getNamespace());
   }
 
   private String getDeveloperConnection(Element scmElm) {
-    return scmElm.getChildText("developerConnection", scmElm.getNamespace());
+    return scmElm.getChildText(POM_ELEMENT_DEVELOPER_CONNECTION, scmElm.getNamespace());
   }
 
   private String getTag(Element scmElm) {

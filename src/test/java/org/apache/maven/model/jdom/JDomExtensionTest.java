@@ -25,6 +25,9 @@ import org.junit.Test;
 
 import java.io.StringReader;
 
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_ARTIFACT_ID;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_GROUP_ID;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_VERSION;
 import static org.apache.maven.model.jdom.util.JDomUtils.getChildElementTextTrim;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -71,7 +74,7 @@ public class JDomExtensionTest {
     String content = "<extension><artifactId>OLD_ARTIFACTID</artifactId></extension>";
     Element extensionElm = builder.build(new StringReader(content)).getRootElement();
     new JDomExtension(extensionElm).setArtifactId("NEW_ARTIFACTID");
-    assertEquals("NEW_ARTIFACTID", getChildElementTextTrim("artifactId", extensionElm));
+    assertEquals("NEW_ARTIFACTID", getChildElementTextTrim(POM_ELEMENT_ARTIFACT_ID, extensionElm));
   }
 
   @Test
@@ -79,7 +82,7 @@ public class JDomExtensionTest {
     String content = "<extension><groupId>OLD_GROUPID</groupId></extension>";
     Element extensionElm = builder.build(new StringReader(content)).getRootElement();
     new JDomExtension(extensionElm).setGroupId("NEW_GROUPID");
-    assertEquals("NEW_GROUPID", getChildElementTextTrim("groupId", extensionElm));
+    assertEquals("NEW_GROUPID", getChildElementTextTrim(POM_ELEMENT_GROUP_ID, extensionElm));
   }
 
   @Test
@@ -87,6 +90,6 @@ public class JDomExtensionTest {
     String content = "<extension><version>OLD_VERSION</version></extension>";
     Element extensionElm = builder.build(new StringReader(content)).getRootElement();
     new JDomExtension(extensionElm).setVersion("NEW_VERSION");
-    assertEquals("NEW_VERSION", getChildElementTextTrim("version", extensionElm));
+    assertEquals("NEW_VERSION", getChildElementTextTrim(POM_ELEMENT_VERSION, extensionElm));
   }
 }

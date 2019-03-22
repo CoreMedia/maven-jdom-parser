@@ -23,6 +23,9 @@ import org.apache.maven.model.ActivationProperty;
 import org.jdom2.Element;
 
 import static java.lang.Boolean.parseBoolean;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_ACTIVE_BY_DEFAULT;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_JDK;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_PROPERTY;
 import static org.apache.maven.model.jdom.util.JDomUtils.getChildElement;
 import static org.apache.maven.model.jdom.util.JDomUtils.getChildElementTextTrim;
 import static org.apache.maven.model.jdom.util.JDomUtils.insertNewElement;
@@ -35,19 +38,15 @@ import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
  */
 public class JDomActivation extends Activation implements JDomBacked {
 
-  private static final String ELEMENT_ACTIVE_BY_DEFAULT = "activeByDefault";
-  private static final String ELEMENT_JDK = "jdk";
-  private static final String ELEMENT_PROPERTY = "property";
-
   private final Element jdomElement;
 
   public JDomActivation(Element jdomElement) {
     this.jdomElement = jdomElement;
 
-    super.setActiveByDefault(parseBoolean(getChildElementTextTrim(ELEMENT_ACTIVE_BY_DEFAULT, this.jdomElement)));
-    super.setJdk(getChildElementTextTrim(ELEMENT_JDK, this.jdomElement));
+    super.setActiveByDefault(parseBoolean(getChildElementTextTrim(POM_ELEMENT_ACTIVE_BY_DEFAULT, this.jdomElement)));
+    super.setJdk(getChildElementTextTrim(POM_ELEMENT_JDK, this.jdomElement));
 
-    Element propertyElement = getChildElement(ELEMENT_PROPERTY, this.jdomElement);
+    Element propertyElement = getChildElement(POM_ELEMENT_PROPERTY, this.jdomElement);
     if (propertyElement != null) {
       super.setProperty(new JDomActivationProperty(propertyElement));
     }
@@ -57,7 +56,7 @@ public class JDomActivation extends Activation implements JDomBacked {
   public void setActiveByDefault(boolean activeByDefault) {
     if (activeByDefault || super.isActiveByDefault()) {
       // Don't touch if original was 'true' and isn't actually changed. Otherwise remove on 'false'.
-      rewriteElement(ELEMENT_ACTIVE_BY_DEFAULT, activeByDefault ? Boolean.TRUE.toString() : null, jdomElement);
+      rewriteElement(POM_ELEMENT_ACTIVE_BY_DEFAULT, activeByDefault ? Boolean.TRUE.toString() : null, jdomElement);
     }
     super.setActiveByDefault(activeByDefault);
   }
@@ -74,7 +73,7 @@ public class JDomActivation extends Activation implements JDomBacked {
 
   @Override
   public void setJdk(String jdk) {
-    rewriteElement(ELEMENT_JDK, jdk, jdomElement);
+    rewriteElement(POM_ELEMENT_JDK, jdk, jdomElement);
     super.setJdk(jdk);
   }
 
@@ -91,11 +90,11 @@ public class JDomActivation extends Activation implements JDomBacked {
   @Override
   public void setProperty(ActivationProperty property) {
     if (property == null) {
-      rewriteElement(ELEMENT_PROPERTY, null, jdomElement);
+      rewriteElement(POM_ELEMENT_PROPERTY, null, jdomElement);
     } else {
       JDomActivationProperty jdomProperty = (JDomActivationProperty) super.getProperty();
       if (jdomProperty == null) {
-        Element element = insertNewElement(ELEMENT_PROPERTY, jdomElement);
+        Element element = insertNewElement(POM_ELEMENT_PROPERTY, jdomElement);
         jdomProperty = new JDomActivationProperty(element);
       }
 

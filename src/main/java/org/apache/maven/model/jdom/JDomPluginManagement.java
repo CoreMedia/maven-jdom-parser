@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_PLUGINS;
 import static org.apache.maven.model.jdom.util.JDomUtils.insertNewElement;
 import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
 
@@ -45,7 +46,7 @@ public class JDomPluginManagement extends PluginManagement implements JDomBacked
 
   @Override
   public List<Plugin> getPlugins() {
-    Element pluginsElm = jdomElement.getChild("plugins", jdomElement.getNamespace());
+    Element pluginsElm = jdomElement.getChild(POM_ELEMENT_PLUGINS, jdomElement.getNamespace());
     if (pluginsElm == null) {
       return Collections.emptyList();
     } else {
@@ -56,9 +57,9 @@ public class JDomPluginManagement extends PluginManagement implements JDomBacked
   @Override
   public void setPlugins(List<Plugin> plugins) {
     if (plugins == null) {
-      rewriteElement("plugins", null, jdomElement, jdomElement.getNamespace());
+      rewriteElement(POM_ELEMENT_PLUGINS, null, jdomElement, jdomElement.getNamespace());
     } else {
-      new JDomPlugins(insertNewElement("plugins", jdomElement)).addAll(plugins);
+      new JDomPlugins(insertNewElement(POM_ELEMENT_PLUGINS, jdomElement)).addAll(plugins);
     }
   }
 

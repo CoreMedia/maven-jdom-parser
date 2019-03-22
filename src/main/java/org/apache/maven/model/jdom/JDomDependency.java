@@ -25,6 +25,11 @@ import org.jdom2.Element;
 
 import java.util.List;
 
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_CLASSIFIER;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_OPTIONAL;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_SCOPE;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_SYSTEM_PATH;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_TYPE;
 import static org.apache.maven.model.jdom.util.JDomUtils.getChildElementTextTrim;
 import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
 
@@ -56,12 +61,12 @@ public class JDomDependency extends Dependency implements JDomBacked, MavenCoord
 
   @Override
   public String getClassifier() {
-    return getChildElementTextTrim("classifier", jdomElement);
+    return getChildElementTextTrim(POM_ELEMENT_CLASSIFIER, jdomElement);
   }
 
   @Override
   public void setClassifier(String classifier) {
-    rewriteElement("classifier", classifier, jdomElement, jdomElement.getNamespace());
+    rewriteElement(POM_ELEMENT_CLASSIFIER, classifier, jdomElement, jdomElement.getNamespace());
   }
 
   @Override
@@ -86,12 +91,12 @@ public class JDomDependency extends Dependency implements JDomBacked, MavenCoord
 
   @Override
   public String getOptional() {
-    return getChildElementTextTrim("optional", jdomElement);
+    return getChildElementTextTrim(POM_ELEMENT_OPTIONAL, jdomElement);
   }
 
   @Override
   public void setOptional(String optional) {
-    rewriteElement("optional", optional, jdomElement, jdomElement.getNamespace());
+    rewriteElement(POM_ELEMENT_OPTIONAL, optional, jdomElement, jdomElement.getNamespace());
   }
 
   @Override
@@ -106,32 +111,32 @@ public class JDomDependency extends Dependency implements JDomBacked, MavenCoord
 
   @Override
   public String getScope() {
-    return getChildElementTextTrim("scope", jdomElement);
+    return getChildElementTextTrim(POM_ELEMENT_SCOPE, jdomElement);
   }
 
   @Override
   public void setScope(String scope) {
-    rewriteElement("scope", scope, jdomElement, jdomElement.getNamespace());
+    rewriteElement(POM_ELEMENT_SCOPE, scope, jdomElement, jdomElement.getNamespace());
   }
 
   @Override
   public String getSystemPath() {
-    return getChildElementTextTrim("systemPath", jdomElement);
+    return getChildElementTextTrim(POM_ELEMENT_SYSTEM_PATH, jdomElement);
   }
 
   @Override
   public void setSystemPath(String systemPath) {
-    rewriteElement("systemPath", systemPath, jdomElement, jdomElement.getNamespace());
+    rewriteElement(POM_ELEMENT_SYSTEM_PATH, systemPath, jdomElement, jdomElement.getNamespace());
   }
 
   @Override
   public String getType() {
-    return getChildElementTextTrim("type", jdomElement);
+    return getChildElementTextTrim(POM_ELEMENT_TYPE, jdomElement);
   }
 
   @Override
   public void setType(String type) {
-    rewriteElement("type", type, jdomElement, jdomElement.getNamespace());
+    rewriteElement(POM_ELEMENT_TYPE, type, jdomElement, jdomElement.getNamespace());
   }
 
   @Override

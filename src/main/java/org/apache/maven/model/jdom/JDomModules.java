@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.ListIterator;
 
 import static java.util.Arrays.asList;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_MODULE;
 import static org.apache.maven.model.jdom.util.JDomUtils.detectIndentation;
 import static org.apache.maven.model.jdom.util.JDomUtils.removeChildElement;
 
@@ -57,7 +58,7 @@ public class JDomModules extends ArrayList<String> implements JDomBacked {
 
   @Override
   public boolean add(String module) {
-    Element newModule = new Element("module", jdomElement.getNamespace());
+    Element newModule = new Element(POM_ELEMENT_MODULE, jdomElement.getNamespace());
     newModule.setText(module);
 
     jdomElement.addContent(

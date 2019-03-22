@@ -28,6 +28,14 @@ import org.junit.Test;
 import java.io.StringReader;
 
 import static java.util.Arrays.asList;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_DEFAULT_GOAL;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_DIRECTORY;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_FINAL_NAME;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_OUTPUT_DIRECTORY;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_SCRIPT_SOURCE_DIRECTORY;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_SOURCE_DIRECTORY;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_TEST_OUTPUT_DIRECTORY;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_TEST_SOURCE_DIRECTORY;
 import static org.apache.maven.model.jdom.util.JDomUtils.getChildElementTextTrim;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -153,7 +161,7 @@ public class JDomBuildTest {
     String content = "<build><outputDirectory>OLD_OUTPUTDIRECTORY</outputDirectory></build>";
     Element buildElm = builder.build(new StringReader(content)).getRootElement();
     new JDomBuild(buildElm).setOutputDirectory("NEW_OUTPUTDIRECTORY");
-    assertEquals("NEW_OUTPUTDIRECTORY", getChildElementTextTrim("outputDirectory", buildElm));
+    assertEquals("NEW_OUTPUTDIRECTORY", getChildElementTextTrim(POM_ELEMENT_OUTPUT_DIRECTORY, buildElm));
   }
 
   @Test
@@ -161,7 +169,7 @@ public class JDomBuildTest {
     String content = "<build><scriptSourceDirectory>OLD_SCRIPTSOURCEDIRECTORY</scriptSourceDirectory></build>";
     Element buildElm = builder.build(new StringReader(content)).getRootElement();
     new JDomBuild(buildElm).setScriptSourceDirectory("NEW_SCRIPTSOURCEDIRECTORY");
-    assertEquals("NEW_SCRIPTSOURCEDIRECTORY", getChildElementTextTrim("scriptSourceDirectory", buildElm));
+    assertEquals("NEW_SCRIPTSOURCEDIRECTORY", getChildElementTextTrim(POM_ELEMENT_SCRIPT_SOURCE_DIRECTORY, buildElm));
   }
 
   @Test
@@ -169,7 +177,7 @@ public class JDomBuildTest {
     String content = "<build><sourceDirectory>OLD_SOURCEDIRECTORY</sourceDirectory></build>";
     Element buildElm = builder.build(new StringReader(content)).getRootElement();
     new JDomBuild(buildElm).setSourceDirectory("NEW_SOURCEDIRECTORY");
-    assertEquals("NEW_SOURCEDIRECTORY", getChildElementTextTrim("sourceDirectory", buildElm));
+    assertEquals("NEW_SOURCEDIRECTORY", getChildElementTextTrim(POM_ELEMENT_SOURCE_DIRECTORY, buildElm));
   }
 
   @Test
@@ -177,7 +185,7 @@ public class JDomBuildTest {
     String content = "<build><testOutputDirectory>OLD_TESTOUTPUTDIRECTORY</testOutputDirectory></build>";
     Element buildElm = builder.build(new StringReader(content)).getRootElement();
     new JDomBuild(buildElm).setTestOutputDirectory("NEW_TESTOUTPUTDIRECTORY");
-    assertEquals("NEW_TESTOUTPUTDIRECTORY", getChildElementTextTrim("testOutputDirectory", buildElm));
+    assertEquals("NEW_TESTOUTPUTDIRECTORY", getChildElementTextTrim(POM_ELEMENT_TEST_OUTPUT_DIRECTORY, buildElm));
   }
 
   @Test
@@ -185,7 +193,7 @@ public class JDomBuildTest {
     String content = "<build><testSourceDirectory>OLD_TESTSOURCEDIRECTORY</testSourceDirectory></build>";
     Element buildElm = builder.build(new StringReader(content)).getRootElement();
     new JDomBuild(buildElm).setTestSourceDirectory("NEW_TESTSOURCEDIRECTORY");
-    assertEquals("NEW_TESTSOURCEDIRECTORY", getChildElementTextTrim("testSourceDirectory", buildElm));
+    assertEquals("NEW_TESTSOURCEDIRECTORY", getChildElementTextTrim(POM_ELEMENT_TEST_SOURCE_DIRECTORY, buildElm));
   }
 
   @Test(expected = UnsupportedOperationException.class)
@@ -271,7 +279,7 @@ public class JDomBuildTest {
     String content = "<build><defaultGoal>OLD_DEFAULTGOAL</defaultGoal></build>";
     Element buildElm = builder.build(new StringReader(content)).getRootElement();
     new JDomBuild(buildElm).setDefaultGoal("NEW_DEFAULTGOAL");
-    assertEquals("NEW_DEFAULTGOAL", getChildElementTextTrim("defaultGoal", buildElm));
+    assertEquals("NEW_DEFAULTGOAL", getChildElementTextTrim(POM_ELEMENT_DEFAULT_GOAL, buildElm));
   }
 
   @Test
@@ -279,7 +287,7 @@ public class JDomBuildTest {
     String content = "<build><directory>OLD_DIRECTORY</directory></build>";
     Element buildElm = builder.build(new StringReader(content)).getRootElement();
     new JDomBuild(buildElm).setDirectory("NEW_DIRECTORY");
-    assertEquals("NEW_DIRECTORY", getChildElementTextTrim("directory", buildElm));
+    assertEquals("NEW_DIRECTORY", getChildElementTextTrim(POM_ELEMENT_DIRECTORY, buildElm));
   }
 
   @Test(expected = UnsupportedOperationException.class)
@@ -292,7 +300,7 @@ public class JDomBuildTest {
     String content = "<build><finalName>OLD_FINALNAME</finalName></build>";
     Element buildElm = builder.build(new StringReader(content)).getRootElement();
     new JDomBuild(buildElm).setFinalName("NEW_FINALNAME");
-    assertEquals("NEW_FINALNAME", getChildElementTextTrim("finalName", buildElm));
+    assertEquals("NEW_FINALNAME", getChildElementTextTrim(POM_ELEMENT_FINAL_NAME, buildElm));
   }
 
   @Test(expected = UnsupportedOperationException.class)
