@@ -29,6 +29,13 @@ import java.io.IOException;
 public class ScmEtlIT extends AbstractJDomModelEtlIT {
 
   @Test
+  public void addJDomScm() throws IOException {
+    Scm scm = getSourceModel().getScm();
+    subjectModel.setScm(scm);
+    assertTransformation();
+  }
+
+  @Test
   public void addScm() throws IOException {
     Scm scm = new Scm();
     scm.setConnection("scm:git:https://github.com/CoreMedia/maven-jdom-parser.git");
@@ -42,6 +49,13 @@ public class ScmEtlIT extends AbstractJDomModelEtlIT {
   @Test
   public void removeScm() throws IOException {
     subjectModel.setScm(null);
+    assertTransformation();
+  }
+
+  @Test
+  public void replaceJDomScm() throws IOException {
+    Scm scm = getSourceModel().getScm();
+    subjectModel.setScm(scm);
     assertTransformation();
   }
 }

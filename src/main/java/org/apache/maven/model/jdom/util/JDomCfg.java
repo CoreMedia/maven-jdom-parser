@@ -22,6 +22,12 @@ import java.util.Map;
 
 import static java.util.Arrays.asList;
 
+/**
+ * Configures the behaviour of the <i>Maven JDOM Parser</i>.
+ *
+ * @author Marc Rohlfs, CoreMedia AG
+ */
+@SuppressWarnings("WeakerAccess")
 public class JDomCfg {
 
   public static final String POM_ELEMENT_ACTIVATION = "activation";
@@ -147,6 +153,12 @@ public class JDomCfg {
             POM_ELEMENT_VERSION,
             POM_ELEMENT_RELATIVE_PATH
     ));
+    elementOrder.put(POM_ELEMENT_SCM, asList(
+            POM_ELEMENT_CONNECTION,
+            POM_ELEMENT_DEVELOPER_CONNECTION,
+            POM_ELEMENT_TAG,
+            POM_ELEMENT_URL
+    ));
     elementOrder.put(POM_ELEMENT_PROFILE, asList(
             POM_ELEMENT_ID,
             POM_ELEMENT_ACTIVATION,
@@ -182,6 +194,7 @@ public class JDomCfg {
     return elementOrder.get(type);
   }
 
+  @SuppressWarnings("unused")
   public void setElementOrder(String type, List<String> elementOrder) {
     this.elementOrder.put(type, elementOrder);
   }

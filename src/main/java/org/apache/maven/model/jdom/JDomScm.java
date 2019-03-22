@@ -30,23 +30,28 @@ import static org.apache.maven.model.jdom.util.JDomUtils.getChildElementTextTrim
 import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
 
 /**
- * JDom implementation of poms SCM element
+ * JDOM implementation of the {@link Scm} class. It holds the child elements of the Maven POMs {@code scm} element.
  *
  * @author Robert Scholte (for <a href="https://github.com/apache/maven-release/">Maven Release projct</a>, version 3.0)
+ * @author Marc Rohlfs, CoreMedia AG
  */
 public class JDomScm extends Scm implements JDomBacked {
 
+  private static final long serialVersionUID = -1073839677237527269L;
+
   private Element jdomElement;
 
+  @SuppressWarnings("WeakerAccess")
   public JDomScm(Element jdomElement) {
     this.jdomElement = jdomElement;
+
+    super.setConnection(getChildElementTextTrim(POM_ELEMENT_CONNECTION, this.jdomElement));
+    super.setDeveloperConnection(getChildElementTextTrim(POM_ELEMENT_DEVELOPER_CONNECTION, this.jdomElement));
+    super.setTag(getChildElementTextTrim(POM_ELEMENT_TAG, this.jdomElement));
+    super.setUrl(getChildElementTextTrim(POM_ELEMENT_URL, this.jdomElement));
   }
 
-  @Override
-  public String getConnection() {
-    return getChildElementTextTrim(POM_ELEMENT_CONNECTION, jdomElement);
-  }
-
+  @SuppressWarnings("WeakerAccess")
   public JDomScm(Element jdomElement, Scm scm) {
     this.jdomElement = jdomElement;
 
@@ -59,36 +64,25 @@ public class JDomScm extends Scm implements JDomBacked {
   @Override
   public void setConnection(String connection) {
     rewriteElement(POM_ELEMENT_CONNECTION, connection, jdomElement);
-  }
-
-  @Override
-  public String getDeveloperConnection() {
-    return getChildElementTextTrim(POM_ELEMENT_DEVELOPER_CONNECTION, jdomElement);
+    super.setConnection(connection);
   }
 
   @Override
   public void setDeveloperConnection(String developerConnection) {
     rewriteElement(POM_ELEMENT_DEVELOPER_CONNECTION, developerConnection, jdomElement);
-  }
-
-  @Override
-  public String getTag() {
-    return getChildElementTextTrim(POM_ELEMENT_TAG, jdomElement);
+    super.setDeveloperConnection(developerConnection);
   }
 
   @Override
   public void setTag(String tag) {
     rewriteElement(POM_ELEMENT_TAG, tag, jdomElement);
-  }
-
-  @Override
-  public String getUrl() {
-    return getChildElementTextTrim(POM_ELEMENT_URL, jdomElement);
+    super.setTag(tag);
   }
 
   @Override
   public void setUrl(String url) {
     rewriteElement(POM_ELEMENT_URL, url, jdomElement);
+    super.setUrl(url);
   }
 
   /** {@inheritDoc} */
