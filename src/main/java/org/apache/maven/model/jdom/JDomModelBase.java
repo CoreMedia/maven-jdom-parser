@@ -32,7 +32,6 @@ import java.util.Map;
 import java.util.Properties;
 
 import static java.util.Collections.emptyList;
-import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_BUILD;
 import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_DEPENDENCIES;
 import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_DEPENDENCY_MANAGEMENT;
 import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_MODULES;
@@ -44,12 +43,17 @@ import static org.apache.maven.model.jdom.util.JDomUtils.newDetachedElement;
 import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
 
 /**
+ * JDOM implementation of the {@link ModelBase} class. It holds the child elements of the Maven POMs root
+ * ({@code project}) element that are also definable in a {@code profile}.
+ *
  * @author Robert Scholte (for <a href="https://github.com/apache/maven-release/">Maven Release projct</a>, version 3.0)
+ * @author Marc Rohlfs, CoreMedia AG
  */
 public class JDomModelBase extends ModelBase implements JDomBacked {
 
   private final Element jdomElement;
 
+  @SuppressWarnings("WeakerAccess")
   public JDomModelBase(Element jdomElement) {
     this.jdomElement = jdomElement;
 
@@ -65,9 +69,15 @@ public class JDomModelBase extends ModelBase implements JDomBacked {
       insertNewElement(POM_ELEMENT_DEPENDENCIES, dependencyManagementElement);
     }
     super.setDependencyManagement(new JDomDependencyManagement(dependencyManagementElement, this));
+
+    Element modulesElement = getChildElement(POM_ELEMENT_MODULES, jdomElement);
+    if (modulesElement != null) {
+      super.setModules(new JDomModules(modulesElement));
+    }
   }
 
   public DistributionManagement getDistributionManagement() {
+    // TODO Implement support for setting ModelBase#distributionManagement (in #JDomModelBase and #setDistributionManagement) and remove this method override
     throw new UnsupportedOperationException();
   }
 
@@ -83,16 +93,20 @@ public class JDomModelBase extends ModelBase implements JDomBacked {
     }
   }
 
+  @Override
   public void setDependencyManagement(DependencyManagement dependencyManagement) {
     if (dependencyManagement == null) {
       rewriteElement(POM_ELEMENT_DEPENDENCY_MANAGEMENT, null, jdomElement);
+      super.setDependencyManagement(null);
+    } else if (dependencyManagement instanceof JDomDependencyManagement) {
+      rewriteElement(((JDomDependencyManagement) dependencyManagement).getJDomElement(), jdomElement);
+      super.setDependencyManagement(dependencyManagement);
     } else {
       DependencyManagement jdomDependencyManagement = getDependencyManagement();
       if (jdomDependencyManagement == null) {
         Element dependencyManagementRoot = insertNewElement(POM_ELEMENT_DEPENDENCY_MANAGEMENT, jdomElement);
         jdomDependencyManagement = new JDomDependencyManagement(dependencyManagementRoot, this);
       }
-
       jdomDependencyManagement.setDependencies(dependencyManagement.getDependencies());
     }
   }
@@ -121,6 +135,7 @@ public class JDomModelBase extends ModelBase implements JDomBacked {
   }
 
   public List<Repository> getPluginRepositories() {
+    // TODO Implement support for setting ModelBase#pluginRepositories (in #JDomModelBase and #setPluginRepositories) and remove this method override
     throw new UnsupportedOperationException();
   }
 

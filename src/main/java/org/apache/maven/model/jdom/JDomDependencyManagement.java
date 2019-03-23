@@ -52,6 +52,13 @@ public class JDomDependencyManagement extends DependencyManagement implements JD
     super.setDependencies(new JDomDependencies(dependenciesElement, this));
   }
 
+  public JDomDependencyManagement(Element jdomElement, JDomBacked parent, DependencyManagement dependencyManagement) {
+    this.jdomElement = jdomElement;
+    this.parent = parent;
+
+    setDependencies(dependencyManagement.getDependencies());
+  }
+
   @Override
   public void setDependencies(List<Dependency> dependencies) {
     if (dependencies == null) {

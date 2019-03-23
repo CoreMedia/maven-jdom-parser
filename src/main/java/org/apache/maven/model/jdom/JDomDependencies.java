@@ -51,6 +51,13 @@ public class JDomDependencies extends ArrayList<Dependency> implements JDomBacke
     this.parent = parent;
   }
 
+  public JDomDependencies(Element jdomElement, JDomBacked parent, List<Dependency> dependencies) {
+    this.jdomElement = jdomElement;
+    this.parent = parent;
+
+    addAll(dependencies);
+  }
+
   private static List<JDomDependency> transformDependencyElementsToJDomDependencyList(Element jdomElement) {
     Filter<Element> dependencyElementFilter = new ElementFilter(POM_ELEMENT_DEPENDENCY, jdomElement.getNamespace());
     List<Element> dependencyElements = jdomElement.getContent(dependencyElementFilter);
