@@ -19,8 +19,6 @@ package org.apache.maven.model.jdom;
  * under the License.
  */
 
-import org.apache.maven.model.Build;
-import org.apache.maven.model.BuildBase;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.DependencyManagement;
 import org.apache.maven.model.DistributionManagement;
@@ -67,20 +65,6 @@ public class JDomModelBase extends ModelBase implements JDomBacked {
       insertNewElement(POM_ELEMENT_DEPENDENCIES, dependencyManagementElement);
     }
     super.setDependencyManagement(new JDomDependencyManagement(dependencyManagementElement, this));
-  }
-
-  public Build getBuild() {
-    Element elm = jdomElement.getChild(POM_ELEMENT_BUILD, jdomElement.getNamespace());
-    if (elm == null) {
-      return null;
-    } else {
-      // this way build setters change DOM tree immediately
-      return new JDomBuild(elm);
-    }
-  }
-
-  public void setBuild(BuildBase build) {
-    throw new UnsupportedOperationException();
   }
 
   public DistributionManagement getDistributionManagement() {

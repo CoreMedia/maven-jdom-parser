@@ -101,21 +101,25 @@ public class JDomBuild extends Build implements JDomBacked {
 
   @Override
   public String getDefaultGoal() {
+    // TODO Move to new class JDomBuildBase
     return getChildElementTextTrim(POM_ELEMENT_DEFAULT_GOAL, jdomElement);
   }
 
   @Override
   public void setDefaultGoal(String defaultGoal) {
+    // TODO Move to new class JDomBuildBase
     rewriteElement(POM_ELEMENT_DEFAULT_GOAL, defaultGoal, jdomElement);
   }
 
   @Override
   public String getDirectory() {
+    // TODO Move to new class JDomBuildBase
     return getChildElementTextTrim(POM_ELEMENT_DIRECTORY, jdomElement);
   }
 
   @Override
   public void setDirectory(String directory) {
+    // TODO Move to new class JDomBuildBase
     rewriteElement(POM_ELEMENT_DIRECTORY, directory, jdomElement);
   }
 
@@ -141,21 +145,25 @@ public class JDomBuild extends Build implements JDomBacked {
 
   @Override
   public List<String> getFilters() {
+    // TODO Move to new class JDomBuildBase
     throw new UnsupportedOperationException();
   }
 
   @Override
   public void setFilters(List<String> filters) {
+    // TODO Move to new class JDomBuildBase
     throw new UnsupportedOperationException();
   }
 
   @Override
   public String getFinalName() {
+    // TODO Move to new class JDomBuildBase
     return getChildElementTextTrim(POM_ELEMENT_FINAL_NAME, jdomElement);
   }
 
   @Override
   public void setFinalName(String finalName) {
+    // TODO Move to new class JDomBuildBase
     rewriteElement(POM_ELEMENT_FINAL_NAME, finalName, jdomElement);
   }
 
@@ -171,6 +179,7 @@ public class JDomBuild extends Build implements JDomBacked {
 
   @Override
   public PluginManagement getPluginManagement() {
+    // TODO Move to new class JDomBuildBase
     Element pluginManagementElm = jdomElement.getChild(POM_ELEMENT_PLUGIN_MANAGEMENT, jdomElement.getNamespace());
     if (pluginManagementElm == null) {
       return null;
@@ -181,11 +190,13 @@ public class JDomBuild extends Build implements JDomBacked {
 
   @Override
   public void setPluginManagement(PluginManagement pluginManagement) {
+    // TODO Move to new class JDomBuildBase
     throw new UnsupportedOperationException();
   }
 
   @Override
   public List<Plugin> getPlugins() {
+    // TODO Move to new class JDomBuildBase
     Element pluginsElm = jdomElement.getChild(POM_ELEMENT_PLUGINS, jdomElement.getNamespace());
     if (pluginsElm == null) {
       return Collections.emptyList();
@@ -196,6 +207,7 @@ public class JDomBuild extends Build implements JDomBacked {
 
   @Override
   public void setPlugins(List<Plugin> plugins) {
+    // TODO Move to new class JDomBuildBase
     if (plugins == null) {
       rewriteElement(POM_ELEMENT_PLUGINS, null, jdomElement);
     } else {
@@ -209,11 +221,13 @@ public class JDomBuild extends Build implements JDomBacked {
 
   @Override
   public List<Resource> getResources() {
+    // TODO Move to new class JDomBuildBase
     throw new UnsupportedOperationException();
   }
 
   @Override
   public void setResources(List<Resource> resources) {
+    // TODO Move to new class JDomBuildBase
     throw new UnsupportedOperationException();
   }
 
@@ -249,11 +263,13 @@ public class JDomBuild extends Build implements JDomBacked {
 
   @Override
   public List<Resource> getTestResources() {
+    // TODO Move to new class JDomBuildBase
     throw new UnsupportedOperationException();
   }
 
   @Override
   public void setTestResources(List<Resource> testResources) {
+    // TODO Move to new class JDomBuildBase
     throw new UnsupportedOperationException();
   }
 

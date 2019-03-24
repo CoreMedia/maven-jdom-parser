@@ -52,6 +52,24 @@ public class JDomActivation extends Activation implements JDomBacked {
     }
   }
 
+  public JDomActivation(Element jdomElement, Activation activation) {
+    this.jdomElement = jdomElement;
+
+    setActiveByDefault(activation.isActiveByDefault());
+    setJdk(activation.getJdk());
+    setProperty(activation.getProperty());
+
+    ActivationFile file = activation.getFile();
+    if (file != null) {
+      setFile(file);
+    }
+
+    ActivationOS os = activation.getOs();
+    if (os != null) {
+      setOs(os);
+    }
+  }
+
   @Override
   public void setActiveByDefault(boolean activeByDefault) {
     if (activeByDefault || super.isActiveByDefault()) {
