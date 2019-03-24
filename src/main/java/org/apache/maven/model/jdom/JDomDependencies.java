@@ -24,9 +24,12 @@ import org.jdom2.filter.Filter;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
 
+import static java.util.Arrays.asList;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_DEPENDENCIES;
 import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_DEPENDENCY;
 import static org.apache.maven.model.jdom.util.JDomUtils.addElement;
 import static org.apache.maven.model.jdom.util.JDomUtils.getElementIndex;
@@ -41,7 +44,7 @@ import static org.codehaus.plexus.util.StringUtils.defaultString;
  */
 public class JDomDependencies extends ArrayList<Dependency> implements JDomBacked {
 
-  private final Element jdomElement;
+  private Element jdomElement;
 
   private final JDomBacked parent;
 

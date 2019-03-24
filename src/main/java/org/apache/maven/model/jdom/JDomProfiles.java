@@ -44,9 +44,9 @@ public class JDomProfiles extends ArrayList<Profile> implements JDomBacked {
 
   private Element jdomElement;
 
-  private JDomModel parent;
+  private JDomBacked parent;
 
-  public JDomProfiles(Element jdomElement, JDomModel parent) {
+  public JDomProfiles(Element jdomElement, JDomBacked parent) {
     super(transformToJDomProfileList(getProfileElements(jdomElement)));
     this.jdomElement = jdomElement;
     this.parent = parent;
@@ -145,6 +145,7 @@ public class JDomProfiles extends ArrayList<Profile> implements JDomBacked {
         boolean remove = super.remove(candidate);
         if (super.isEmpty()) {
           removeChildElement(parent.getJDomElement(), jdomElement);
+          jdomElement = null;
         }
         return remove;
       }

@@ -27,22 +27,32 @@ import java.util.Collection;
 import java.util.List;
 import java.util.ListIterator;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_PLUGIN;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_PLUGINS;
 import static org.apache.maven.model.jdom.util.JDomUtils.addElement;
 import static org.apache.maven.model.jdom.util.JDomUtils.insertNewElement;
 import static org.apache.maven.model.jdom.util.JDomUtils.removeChildElement;
 
 public class JDomPlugins extends ArrayList<Plugin> implements JDomBacked {
 
-  private final Element jdomElement;
+  private Element jdomElement;
 
-  public JDomPlugins(Element jdomElement) {
+  private JDomBacked parent;
+
+  public JDomPlugins(Element jdomElement, JDomBacked parent) {
     super(transformToJDomPluginList(getPluginElements(jdomElement)));
     this.jdomElement = jdomElement;
+    this.parent = parent;
   }
 
   private static List<Element> getPluginElements(Element plugins) {
-    return plugins.getContent(new ElementFilter(POM_ELEMENT_PLUGIN, plugins.getNamespace()));
+    if (plugins == null) {
+      return emptyList();
+    } else {
+      return plugins.getContent(new ElementFilter(POM_ELEMENT_PLUGIN, plugins.getNamespace()));
+    }
   }
 
   private static List<JDomPlugin> transformToJDomPluginList(List<Element> pluginElements) {
@@ -55,6 +65,10 @@ public class JDomPlugins extends ArrayList<Plugin> implements JDomBacked {
 
   @Override
   public boolean add(Plugin plugin) {
+    if (jdomElement == null) {
+      jdomElement = insertNewElement(POM_ELEMENT_PLUGINS, jdomElement);
+    }
+
     Element newElement;
     if (plugin instanceof JDomPlugin) {
       addElement(((JDomPlugin) plugin).getJDomElement().clone(), jdomElement);
@@ -95,7 +109,12 @@ public class JDomPlugins extends ArrayList<Plugin> implements JDomBacked {
       if (candidate.getGroupId().equals(removePlugin.getGroupId())
               && candidate.getArtifactId().equals(removePlugin.getArtifactId())) {
         removeChildElement(jdomElement, ((JDomPlugin) candidate).getJDomElement());
-        return super.remove(removePlugin);
+        boolean remove = super.remove(candidate);
+        if (super.isEmpty()) {
+          removeChildElement(parent.getJDomElement(), jdomElement);
+          jdomElement = null;
+        }
+        return remove;
       }
     }
     return false;

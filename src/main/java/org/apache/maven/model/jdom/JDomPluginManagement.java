@@ -50,7 +50,7 @@ public class JDomPluginManagement extends PluginManagement implements JDomBacked
     if (pluginsElm == null) {
       return Collections.emptyList();
     } else {
-      return new JDomPlugins(pluginsElm);
+      return new JDomPlugins(pluginsElm, this);
     }
   }
 
@@ -59,7 +59,7 @@ public class JDomPluginManagement extends PluginManagement implements JDomBacked
     if (plugins == null) {
       rewriteElement(POM_ELEMENT_PLUGINS, null, jdomElement);
     } else {
-      new JDomPlugins(insertNewElement(POM_ELEMENT_PLUGINS, jdomElement)).addAll(plugins);
+      new JDomPlugins(insertNewElement(POM_ELEMENT_PLUGINS, jdomElement), this).addAll(plugins);
     }
   }
 

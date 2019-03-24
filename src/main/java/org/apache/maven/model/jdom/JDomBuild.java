@@ -151,7 +151,7 @@ public class JDomBuild extends Build implements JDomBacked {
     if (pluginsElm == null) {
       return Collections.emptyList();
     } else {
-      return new JDomPlugins(pluginsElm);
+      return new JDomPlugins(pluginsElm, this);
     }
   }
 
@@ -162,7 +162,7 @@ public class JDomBuild extends Build implements JDomBacked {
     } else {
       List<Plugin> jdomPlugins = getPlugins();
       if (!(jdomPlugins instanceof JDomPlugins)) {
-        jdomPlugins = new JDomPlugins(insertNewElement(POM_ELEMENT_PLUGINS, jdomElement));
+        jdomPlugins = new JDomPlugins(insertNewElement(POM_ELEMENT_PLUGINS, jdomElement), this);
       }
       jdomPlugins.addAll(plugins);
     }
