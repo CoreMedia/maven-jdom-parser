@@ -32,8 +32,20 @@ import java.util.List;
 public class ModulesEtlIT extends AbstractJDomModelEtlIT {
 
   @Test
+  public void addFirstModule() throws IOException {
+    subjectModel.addModule("first-module");
+    assertTransformation();
+  }
+
+  @Test
   public void addModule() throws IOException {
     subjectModel.addModule("new-module");
+    assertTransformation();
+  }
+
+  @Test
+  public void removeLastModule() throws IOException {
+    subjectModel.removeModule("last-module");
     assertTransformation();
   }
 
@@ -47,13 +59,11 @@ public class ModulesEtlIT extends AbstractJDomModelEtlIT {
   public void resetProfileModules() throws IOException {
     List<Profile> profiles = subjectModel.getProfiles();
     for (Profile profile : profiles) {
-      switch (profile.getId()) {
-        case "profile-1":
-          profile.setModules(Arrays.asList("new-module-1", "new-module-2", "new-module-3"));
-          break;
-        case "profile-2":
-          profile.setModules(Collections.singletonList("new-module-4"));
-          break;
+      String s = profile.getId();
+      if ("profile-1".equals(s)) {
+        profile.setModules(Arrays.asList("new-module-1", "new-module-2", "new-module-3"));
+      } else if ("profile-2".equals(s)) {
+        profile.setModules(Collections.singletonList("new-module-4"));
       }
     }
     assertTransformation();

@@ -17,7 +17,6 @@ package org.apache.maven.model.jdom;
  */
 
 import org.jdom2.Element;
-import org.jdom2.Text;
 import org.jdom2.filter.ElementFilter;
 
 import java.util.ArrayList;
@@ -25,53 +24,66 @@ import java.util.Collection;
 import java.util.List;
 import java.util.ListIterator;
 
-import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_MODULE;
-import static org.apache.maven.model.jdom.util.JDomUtils.detectIndentation;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_MODULES;
+import static org.apache.maven.model.jdom.util.JDomUtils.insertNewElement;
 import static org.apache.maven.model.jdom.util.JDomUtils.removeChildElement;
 
 /**
- * JDOM implementation of POMs {@code modules} element.
+ * JDOM implementation of the {@link ArrayList<String>} class, holding the child elements of the Maven POMs
+ * {@code modules} element.
  *
  * @author Marc Rohlfs, CoreMedia AG
  */
 public class JDomModules extends ArrayList<String> implements JDomBacked {
 
-  private final Element jdomElement;
+  private static final long serialVersionUID = -4351000399917342663L;
 
-  public JDomModules(Element jdomElement) {
-    super(transformToElementTextList(getModuleElements(jdomElement)));
+  private Element jdomElement;
+
+  private final JDomBacked parent;
+
+  @SuppressWarnings("WeakerAccess")
+  public JDomModules(Element jdomElement, JDomBacked parent) {
+    super(transformModuleElementsToModuleNameList(jdomElement));
     this.jdomElement = jdomElement;
+    this.parent = parent;
   }
 
-  private static List<Element> getModuleElements(Element modules) {
-    return modules.getContent(new ElementFilter(modules.getNamespace()));
-  }
-
-  private static List<String> transformToElementTextList(List<Element> elements) {
-    List<String> elementTextList = new ArrayList<>(elements.size());
-    for (Element element : elements) {
-      elementTextList.add(element.getTextTrim());
+  private static List<String> transformModuleElementsToModuleNameList(Element jdomElement) {
+    if (jdomElement == null) {
+      return emptyList();
+    } else {
+      List<Element> moduleElements = jdomElement.getContent(new ElementFilter(POM_ELEMENT_MODULE, jdomElement.getNamespace()));
+      List<String> moduleNameList = new ArrayList<>(moduleElements.size());
+      for (Element moduleElement : moduleElements) {
+        moduleNameList.add(moduleElement.getTextTrim());
+      }
+      return moduleNameList;
     }
-    return elementTextList;
   }
 
   @Override
   public boolean add(String module) {
-    Element newModule = new Element(POM_ELEMENT_MODULE, jdomElement.getNamespace());
-    newModule.setText(module);
+    assert module != null;
 
-    jdomElement.addContent(
-            jdomElement.getContentSize() - 1,
-            asList(
-                    new Text("\n" + detectIndentation(jdomElement)),
-                    newModule));
+    if (jdomElement == null || jdomElement.getParent() == null) {
+      jdomElement = insertNewElement(POM_ELEMENT_MODULES, parent.getJDomElement());
+    }
+
+    Element newElement = insertNewElement(POM_ELEMENT_MODULE, jdomElement);
+    newElement.removeContent(0); // Remove line break that is created with the new element.
+    newElement.addContent(module);
+
     return super.add(module);
   }
 
   @Override
   public boolean remove(final Object module) {
     List<Element> removeElements = jdomElement.getContent(new ElementFilter() {
+      private static final long serialVersionUID = 4738814199213496535L;
+
       @Override
       public Element filter(Object content) {
         Element element = super.filter(content);
@@ -83,7 +95,11 @@ public class JDomModules extends ArrayList<String> implements JDomBacked {
       removeChildElement(jdomElement, removeElement);
     }
 
-    return super.remove(module);
+    boolean remove = super.remove(module);
+    if (super.isEmpty()) {
+      removeChildElement(parent.getJDomElement(), jdomElement);
+    }
+    return remove;
   }
 
   @Override

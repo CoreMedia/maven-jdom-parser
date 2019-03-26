@@ -52,7 +52,7 @@ public class JDomModelBase extends ModelBase implements JDomBacked {
 
   private final Element jdomElement;
 
-  public JDomModelBase(Element jdomElement) {
+  JDomModelBase(Element jdomElement) {
     this.jdomElement = jdomElement;
 
     Element dependenciesElement = getChildElement(POM_ELEMENT_DEPENDENCIES, jdomElement);
@@ -67,6 +67,8 @@ public class JDomModelBase extends ModelBase implements JDomBacked {
       insertNewElement(POM_ELEMENT_DEPENDENCIES, dependencyManagementElement);
     }
     super.setDependencyManagement(new JDomDependencyManagement(dependencyManagementElement, this));
+
+    super.setModules(new JDomModules(getChildElement(POM_ELEMENT_MODULES, this.jdomElement), this));
   }
 
   public Build getBuild() {
@@ -113,26 +115,19 @@ public class JDomModelBase extends ModelBase implements JDomBacked {
     }
   }
 
-  public List<String> getModules() {
-    Element modulesElement = getChildElement(POM_ELEMENT_MODULES, jdomElement);
-    if (modulesElement == null) {
-      return emptyList();
-    } else {
-      return new JDomModules(modulesElement);
-    }
-  }
-
+  @Override
   public void setModules(List<String> modules) {
+    //noinspection IfStatementWithTooManyBranches
     if (modules == null) {
       rewriteElement(POM_ELEMENT_MODULES, null, jdomElement);
+      super.setModules(new JDomModules(null, this));
+    } else if (modules instanceof JDomModules) {
+      rewriteElement(((JDomModules) modules).getJDomElement(), jdomElement);
+      super.setModules(modules);
     } else {
-      List<String> jDomModules = getModules();
-      if (jDomModules instanceof JDomModules) {
-        jDomModules.clear();
-      } else {
-        jDomModules = new JDomModules(insertNewElement(POM_ELEMENT_MODULES, jdomElement));
-      }
-      jDomModules.addAll(modules);
+      List<String> jdomModules = super.getModules();
+      jdomModules.clear();
+      jdomModules.addAll(modules);
     }
   }
 
