@@ -185,6 +185,7 @@ public final class JDomUtils {
       // Remove prepending whitespaces (linebreaks and indentation)
       parent.removeContent(index);
     }
+    removeChild.detach();
   }
 
   /**
