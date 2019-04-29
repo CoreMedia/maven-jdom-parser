@@ -25,7 +25,6 @@ import org.apache.maven.model.Profile;
 import org.apache.maven.model.Reporting;
 import org.apache.maven.model.Repository;
 import org.jdom2.Element;
-import org.jdom2.Text;
 import org.jdom2.filter.ElementFilter;
 
 import java.util.ArrayList;
@@ -34,14 +33,12 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Properties;
 
-import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_PROFILE;
 import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_PROFILES;
-import static org.apache.maven.model.jdom.util.JDomUtils.detectIndentation;
+import static org.apache.maven.model.jdom.util.JDomUtils.addElement;
 import static org.apache.maven.model.jdom.util.JDomUtils.insertNewElement;
 import static org.apache.maven.model.jdom.util.JDomUtils.removeChildElement;
-import static org.apache.maven.model.jdom.util.JDomUtils.resetIndentations;
 
 public class JDomProfiles extends ArrayList<Profile> implements JDomBacked {
 
@@ -79,14 +76,7 @@ public class JDomProfiles extends ArrayList<Profile> implements JDomBacked {
 
     Element newElement;
     if (profile instanceof JDomProfile) {
-      newElement = ((JDomProfile) profile).getJDomElement().clone();
-      jdomElement.addContent(
-              jdomElement.getContentSize() - 1,
-              asList(
-                      new Text("\n" + detectIndentation(jdomElement)),
-                      newElement));
-      resetIndentations(jdomElement, detectIndentation(jdomElement));
-      resetIndentations(newElement, detectIndentation(jdomElement) + "  ");
+      addElement(((JDomProfile) profile).getJDomElement().clone(), jdomElement);
     } else {
       newElement = insertNewElement(POM_ELEMENT_PROFILE, jdomElement);
       JDomProfile jDomProfile = new JDomProfile(newElement);

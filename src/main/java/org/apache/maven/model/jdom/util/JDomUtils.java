@@ -29,6 +29,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import static java.lang.Math.max;
+import static java.util.Arrays.asList;
 
 /**
  * Common JDom functions
@@ -39,6 +40,23 @@ public final class JDomUtils {
 
   private JDomUtils() {
     // noop
+  }
+
+  /**
+   * Adds an element as new child to the given root element. The indentation of the new element nodes will be reset to
+   * the indentation that is (tried to be) detected from the root element (see {@link #detectIndentation(Element)}).
+   *
+   * @param element the name of the new element.
+   * @param root    the root element.
+   */
+  public static void addElement(Element element, Element root) {
+    root.addContent(
+            root.getContentSize() - 1,
+            asList(
+                    new Text("\n" + detectIndentation(root)),
+                    element));
+    resetIndentations(root, detectIndentation(root));
+    resetIndentations(element, detectIndentation(root) + "  ");
   }
 
   /**

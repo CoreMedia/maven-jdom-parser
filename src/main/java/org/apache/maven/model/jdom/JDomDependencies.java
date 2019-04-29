@@ -29,7 +29,7 @@ import java.util.ListIterator;
 
 import static java.util.Arrays.asList;
 import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_DEPENDENCY;
-import static org.apache.maven.model.jdom.util.JDomUtils.detectIndentation;
+import static org.apache.maven.model.jdom.util.JDomUtils.addElement;
 import static org.apache.maven.model.jdom.util.JDomUtils.insertNewElement;
 import static org.apache.maven.model.jdom.util.JDomUtils.removeChildElement;
 import static org.apache.maven.model.jdom.util.JDomUtils.resetIndentations;
@@ -65,14 +65,7 @@ public class JDomDependencies extends ArrayList<Dependency> implements JDomBacke
   public boolean add(Dependency dependency) {
     Element newElement;
     if (dependency instanceof JDomDependency) {
-      newElement = ((JDomDependency) dependency).getJDomElement().clone();
-      jdomElement.addContent(
-              jdomElement.getContentSize() - 1,
-              asList(
-                      new Text("\n" + detectIndentation(jdomElement)),
-                      newElement));
-      resetIndentations(jdomElement, detectIndentation(jdomElement));
-      resetIndentations(newElement, detectIndentation(jdomElement) + "  ");
+      addElement(((JDomDependency) dependency).getJDomElement().clone(), jdomElement);
     } else {
       newElement = insertNewElement(POM_ELEMENT_DEPENDENCY, jdomElement);
       JDomDependency jDomDependency = new JDomDependency(newElement);

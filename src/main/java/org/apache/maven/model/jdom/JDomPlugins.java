@@ -20,7 +20,6 @@ import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.model.PluginExecution;
 import org.jdom2.Element;
-import org.jdom2.Text;
 import org.jdom2.filter.ElementFilter;
 
 import java.util.ArrayList;
@@ -28,12 +27,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.ListIterator;
 
-import static java.util.Arrays.asList;
 import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_PLUGIN;
-import static org.apache.maven.model.jdom.util.JDomUtils.detectIndentation;
+import static org.apache.maven.model.jdom.util.JDomUtils.addElement;
 import static org.apache.maven.model.jdom.util.JDomUtils.insertNewElement;
 import static org.apache.maven.model.jdom.util.JDomUtils.removeChildElement;
-import static org.apache.maven.model.jdom.util.JDomUtils.resetIndentations;
 
 public class JDomPlugins extends ArrayList<Plugin> implements JDomBacked {
 
@@ -60,14 +57,7 @@ public class JDomPlugins extends ArrayList<Plugin> implements JDomBacked {
   public boolean add(Plugin plugin) {
     Element newElement;
     if (plugin instanceof JDomPlugin) {
-      newElement = ((JDomPlugin) plugin).getJDomElement().clone();
-      jdomElement.addContent(
-              jdomElement.getContentSize() - 1,
-              asList(
-                      new Text("\n" + detectIndentation(jdomElement)),
-                      newElement));
-      resetIndentations(jdomElement, detectIndentation(jdomElement));
-      resetIndentations(newElement, detectIndentation(jdomElement) + "  ");
+      addElement(((JDomPlugin) plugin).getJDomElement().clone(), jdomElement);
     } else {
       newElement = insertNewElement(POM_ELEMENT_PLUGIN, jdomElement);
       JDomPlugin jDomPlugin = new JDomPlugin(newElement);
