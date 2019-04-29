@@ -230,6 +230,13 @@ public class JDomProperties extends Properties implements JDomBacked {
       return previousValue;
     }
 
+    /** {@inheritDoc} */
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+      throw new UnsupportedOperationException();
+    }
+
+    /** {@inheritDoc} */
     @Override
     public Element getJDomElement() {
       return jdElement;

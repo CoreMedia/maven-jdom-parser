@@ -75,6 +75,12 @@ public class JDomPluginManagement extends PluginManagement implements JDomBacked
 
   /** {@inheritDoc} */
   @Override
+  public PluginManagement clone() {
+    throw new UnsupportedOperationException();
+  }
+
+  /** {@inheritDoc} */
+  @Override
   public Element getJDomElement() {
     return jdomElement;
   }

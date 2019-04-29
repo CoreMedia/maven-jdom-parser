@@ -104,6 +104,12 @@ public class JDomReporting extends Reporting implements JDomBacked {
 
   /** {@inheritDoc} */
   @Override
+  public Reporting clone() {
+    throw new UnsupportedOperationException();
+  }
+
+  /** {@inheritDoc} */
+  @Override
   public Element getJDomElement() {
     return jdomElement;
   }

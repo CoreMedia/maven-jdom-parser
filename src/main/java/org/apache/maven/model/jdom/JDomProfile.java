@@ -206,6 +206,12 @@ public class JDomProfile extends Profile implements JDomBacked {
 
   /** {@inheritDoc} */
   @Override
+  public Profile clone() {
+    throw new UnsupportedOperationException();
+  }
+
+  /** {@inheritDoc} */
+  @Override
   public Element getJDomElement() {
     return jdomElement;
   }

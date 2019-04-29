@@ -84,6 +84,12 @@ public class JDomScm extends Scm implements JDomBacked {
 
   /** {@inheritDoc} */
   @Override
+  public Scm clone() {
+    throw new UnsupportedOperationException();
+  }
+
+  /** {@inheritDoc} */
+  @Override
   public Element getJDomElement() {
     return jdomElement;
   }

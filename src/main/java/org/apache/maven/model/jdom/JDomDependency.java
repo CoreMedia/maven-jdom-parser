@@ -156,6 +156,12 @@ public class JDomDependency extends Dependency implements JDomBacked, MavenCoord
 
   /** {@inheritDoc} */
   @Override
+  public Dependency clone() {
+    throw new UnsupportedOperationException();
+  }
+
+  /** {@inheritDoc} */
+  @Override
   public Element getJDomElement() {
     return jdomElement;
   }

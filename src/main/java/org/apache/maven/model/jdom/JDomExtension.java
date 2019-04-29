@@ -70,6 +70,12 @@ public class JDomExtension extends Extension implements JDomBacked, MavenCoordin
 
   /** {@inheritDoc} */
   @Override
+  public Extension clone() {
+    throw new UnsupportedOperationException();
+  }
+
+  /** {@inheritDoc} */
+  @Override
   public Element getJDomElement() {
     return jdomElement;
   }

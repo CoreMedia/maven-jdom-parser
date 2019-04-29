@@ -140,6 +140,12 @@ public class JDomConfiguration extends Xpp3Dom implements JDomBacked {
 
   /** {@inheritDoc} */
   @Override
+  protected Object clone() throws CloneNotSupportedException {
+    throw new UnsupportedOperationException();
+  }
+
+  /** {@inheritDoc} */
+  @Override
   public Element getJDomElement() {
     return jdomElement;
   }

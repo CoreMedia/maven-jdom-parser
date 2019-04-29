@@ -54,6 +54,12 @@ public class JDomActivationProperty extends ActivationProperty implements JDomBa
 
   /** {@inheritDoc} */
   @Override
+  public ActivationProperty clone() {
+    throw new UnsupportedOperationException();
+  }
+
+  /** {@inheritDoc} */
+  @Override
   public Element getJDomElement() {
     return jdomElement;
   }

@@ -122,6 +122,12 @@ public class JDomReportPlugin extends ReportPlugin implements JDomBacked, MavenC
 
   /** {@inheritDoc} */
   @Override
+  public ReportPlugin clone() {
+    throw new UnsupportedOperationException();
+  }
+
+  /** {@inheritDoc} */
+  @Override
   public Element getJDomElement() {
     return jdomElement;
   }

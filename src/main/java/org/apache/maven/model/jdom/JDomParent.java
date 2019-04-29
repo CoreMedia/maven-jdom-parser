@@ -84,6 +84,12 @@ public class JDomParent extends Parent implements JDomBacked, MavenCoordinate {
 
   /** {@inheritDoc} */
   @Override
+  public Parent clone() {
+    throw new UnsupportedOperationException();
+  }
+
+  /** {@inheritDoc} */
+  @Override
   public Element getJDomElement() {
     return jdomElement;
   }

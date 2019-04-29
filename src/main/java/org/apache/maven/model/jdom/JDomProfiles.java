@@ -232,6 +232,12 @@ public class JDomProfiles extends ArrayList<Profile> implements JDomBacked {
 
   /** {@inheritDoc} */
   @Override
+  public Object clone() {
+    throw new UnsupportedOperationException();
+  }
+
+  /** {@inheritDoc} */
+  @Override
   public Element getJDomElement() {
     return jdomElement;
   }

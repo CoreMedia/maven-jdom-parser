@@ -237,6 +237,12 @@ public class JDomBuild extends Build implements JDomBacked {
 
   /** {@inheritDoc} */
   @Override
+  public Build clone() {
+    throw new UnsupportedOperationException();
+  }
+
+  /** {@inheritDoc} */
+  @Override
   public Element getJDomElement() {
     return jdomElement;
   }

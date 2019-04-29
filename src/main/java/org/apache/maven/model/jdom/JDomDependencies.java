@@ -199,6 +199,12 @@ public class JDomDependencies extends ArrayList<Dependency> implements JDomBacke
 
   /** {@inheritDoc} */
   @Override
+  public Object clone() {
+    throw new UnsupportedOperationException();
+  }
+
+  /** {@inheritDoc} */
+  @Override
   public Element getJDomElement() {
     return jdomElement;
   }

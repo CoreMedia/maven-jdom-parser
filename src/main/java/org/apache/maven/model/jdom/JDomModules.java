@@ -156,6 +156,12 @@ public class JDomModules extends ArrayList<String> implements JDomBacked {
 
   /** {@inheritDoc} */
   @Override
+  public Object clone() {
+    throw new UnsupportedOperationException();
+  }
+
+  /** {@inheritDoc} */
+  @Override
   public Element getJDomElement() {
     return jdomElement;
   }

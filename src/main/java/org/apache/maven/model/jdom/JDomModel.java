@@ -449,6 +449,12 @@ public class JDomModel extends Model implements JDomBacked, MavenCoordinate {
 
   /** {@inheritDoc} */
   @Override
+  public Model clone() {
+    throw new UnsupportedOperationException();
+  }
+
+  /** {@inheritDoc} */
+  @Override
   public Element getJDomElement() {
     return jdomElement;
   }

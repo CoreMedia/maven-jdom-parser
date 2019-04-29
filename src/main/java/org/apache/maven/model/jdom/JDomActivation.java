@@ -114,6 +114,12 @@ public class JDomActivation extends Activation implements JDomBacked {
 
   /** {@inheritDoc} */
   @Override
+  public Activation clone() {
+    throw new UnsupportedOperationException();
+  }
+
+  /** {@inheritDoc} */
+  @Override
   public Element getJDomElement() {
     return jdomElement;
   }

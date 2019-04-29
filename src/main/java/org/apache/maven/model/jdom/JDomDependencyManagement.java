@@ -64,6 +64,12 @@ public class JDomDependencyManagement extends DependencyManagement implements JD
 
   /** {@inheritDoc} */
   @Override
+  public DependencyManagement clone() {
+    return super.clone();
+  }
+
+  /** {@inheritDoc} */
+  @Override
   public Element getJDomElement() {
     return jdomElement;
   }
