@@ -30,7 +30,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import static java.lang.Math.max;
-import static java.util.Arrays.asList;
 import static org.jdom2.filter.Filters.textOnly;
 
 /**
@@ -53,7 +52,7 @@ public final class JDomUtils {
    * @param root    the root element.
    */
   public static void addElement(Element element, Element root) {
-    addElement(element, root, getLastElementIndex(root) + 1);
+    addElement(element, root, calcNewElementIndex(element.getName(), root));
   }
 
   /**
@@ -63,11 +62,15 @@ public final class JDomUtils {
    * @param index the index where the element should be inserted.
    */
   public static void addElement(Element element, Element root, int index) {
-    root.addContent(
-            index,
-            asList(
-                    new Text("\n" + detectIndentation(root)),
-                    element));
+    root.addContent(index, element);
+
+    String prependingElementName = ((Element) root.getContent(max(0, index - 1))).getName();
+    if (isBlankLineBetweenElements(prependingElementName, element.getName(), root)) {
+      root.addContent(index, new Text("\n\n" + detectIndentation(root)));
+    } else {
+      root.addContent(index, new Text("\n" + detectIndentation(root)));
+    }
+
     resetIndentations(root, detectIndentation(root));
     resetIndentations(element, detectIndentation(root) + "  ");
   }
@@ -117,7 +120,8 @@ public final class JDomUtils {
     newElement.addContent("\n" + indent);
     root.addContent(index, newElement);
 
-    if (isBlankLineBeforeElement(name, root)) {
+    String prependingElementName = ((Element) root.getContent(max(0, index - 1))).getName();
+    if (isBlankLineBetweenElements(prependingElementName, name, root)) {
       root.addContent(index, new Text("\n\n" + indent));
     } else {
       root.addContent(index, new Text("\n" + indent));
@@ -148,9 +152,14 @@ public final class JDomUtils {
     return addIndex;
   }
 
-  private static boolean isBlankLineBeforeElement(String name, Element root) {
+  private static boolean isBlankLineBetweenElements(String element1, String element2, Element root) {
     List<String> elementOrder = JDomCfg.getInstance().getElementOrder(root.getName());
-    return elementOrder != null && elementOrder.get(max(0, elementOrder.indexOf(name) - 1)).equals("");
+    if (elementOrder != null) {
+      return elementOrder
+              .subList(elementOrder.indexOf(element1), elementOrder.indexOf(element2))
+              .contains("");
+    }
+    return false;
   }
 
   /**
@@ -185,6 +194,20 @@ public final class JDomUtils {
     }
 
     return "";
+  }
+
+  /**
+   * Creates a new element with the given name. The new element has the same namespace and the same indentation (before)
+   * its closing tag) like the given parent element, but is not yet attached to it.
+   *
+   * @param name   the name of the new e.lement
+   * @param parent the parent element.
+   * @return the new element.
+   */
+  public static Element newDetachedElement(String name, Element parent) {
+    Element newElement = new Element(name, parent.getNamespace());
+    newElement.addContent("\n" + detectIndentation(parent));
+    return newElement;
   }
 
   /**
