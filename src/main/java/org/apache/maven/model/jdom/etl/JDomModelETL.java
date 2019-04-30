@@ -117,6 +117,7 @@ public class JDomModelETL implements ModelETL {
     }
 
     model = new JDomModel(document);
+    model.setPomFile(pomFile);
   }
 
   @Override
