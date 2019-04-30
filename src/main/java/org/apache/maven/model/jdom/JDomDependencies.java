@@ -18,6 +18,7 @@ package org.apache.maven.model.jdom;
 
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Exclusion;
+import org.codehaus.plexus.util.StringUtils;
 import org.jdom2.Element;
 import org.jdom2.Text;
 import org.jdom2.filter.ElementFilter;
@@ -112,8 +113,8 @@ public class JDomDependencies extends ArrayList<Dependency> implements JDomBacke
   public boolean remove(final Object dependency) {
     Dependency removeDependency = (Dependency) dependency;
     for (Dependency candidate : this) {
-      if (candidate.getGroupId().equals(removeDependency.getGroupId())
-              && candidate.getArtifactId().equals(removeDependency.getArtifactId())
+      if (StringUtils.equals(candidate.getGroupId(), removeDependency.getGroupId())
+              && StringUtils.equals(candidate.getArtifactId(), removeDependency.getArtifactId())
               && defaultString(candidate.getType(), "jar").equals(defaultString(removeDependency.getType(), "jar"))) {
         removeChildElement(jdomElement, ((JDomDependency) candidate).getJDomElement());
         return super.remove(removeDependency);
