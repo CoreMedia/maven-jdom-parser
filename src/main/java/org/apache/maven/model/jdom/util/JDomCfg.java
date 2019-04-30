@@ -42,6 +42,8 @@ public class JDomCfg {
   public static final String POM_ELEMENT_DEVELOPERS = "developers";
   public static final String POM_ELEMENT_DIRECTORY = "directory";
   public static final String POM_ELEMENT_DISTRIBUTION_MANAGEMENT = "distributionManagement";
+  public static final String POM_ELEMENT_EXCLUSIONS = "exclusions";
+  public static final String POM_ELEMENT_EXCLUSION = "exclusion";
   public static final String POM_ELEMENT_EXTENSIONS = "extensions";
   public static final String POM_ELEMENT_EXTENSION = "extension";
   public static final String POM_ELEMENT_FINAL_NAME = "finalName";
@@ -152,6 +154,18 @@ public class JDomCfg {
             POM_ELEMENT_PLUGIN_REPOSITORIES,
             POM_ELEMENT_BUILD,
             POM_ELEMENT_REPORTING
+            )
+    );
+    elementOrder.put(POM_ELEMENT_DEPENDENCY, asList(
+            POM_ELEMENT_GROUP_ID,
+            POM_ELEMENT_ARTIFACT_ID,
+            POM_ELEMENT_VERSION,
+            POM_ELEMENT_CLASSIFIER,
+            POM_ELEMENT_TYPE,
+            POM_ELEMENT_SCOPE,
+            POM_ELEMENT_SYSTEM_PATH,
+            POM_ELEMENT_OPTIONAL,
+            POM_ELEMENT_EXCLUSIONS
             )
     );
   }
