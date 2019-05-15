@@ -64,49 +64,7 @@ public class JDomDependencies extends ArrayList<Dependency> implements JDomBacke
 
   @Override
   public boolean add(Dependency dependency) {
-    Element newElement;
-    if (dependency instanceof JDomDependency) {
-      addElement(((JDomDependency) dependency).getJDomElement().clone(), jdomElement);
-    } else {
-      newElement = insertNewElement(POM_ELEMENT_DEPENDENCY, jdomElement);
-      JDomDependency jDomDependency = new JDomDependency(newElement);
-
-      jDomDependency.setGroupId(dependency.getGroupId());
-      jDomDependency.setArtifactId(dependency.getArtifactId());
-      jDomDependency.setVersion(dependency.getVersion());
-
-      String classifier = dependency.getClassifier();
-      if (classifier != null) {
-        jDomDependency.setClassifier(classifier);
-      }
-
-      List<Exclusion> exclusions = dependency.getExclusions();
-      if (!exclusions.isEmpty()) {
-        jDomDependency.setExclusions(exclusions);
-      }
-
-      if (dependency.isOptional()) {
-        jDomDependency.setOptional(true);
-      }
-
-      String scope = dependency.getScope();
-      if (!"compile".equals(scope)) {
-        jDomDependency.setScope(scope);
-      }
-
-
-      String systemPath = dependency.getSystemPath();
-      if (systemPath != null) {
-        jDomDependency.setSystemPath(systemPath);
-      }
-
-      String type = dependency.getType();
-      if (!"jar".equals(type)) {
-        jDomDependency.setType(type);
-      }
-    }
-
-    return super.add(dependency);
+    return addInternal(dependency, -1);
   }
 
   @Override
@@ -161,7 +119,53 @@ public class JDomDependencies extends ArrayList<Dependency> implements JDomBacke
 
   @Override
   public void add(int index, Dependency dependency) {
-    throw new UnsupportedOperationException();
+    addInternal(dependency, index);
+  }
+
+  private boolean addInternal(Dependency dependency, int index) {
+    Element newElement;
+    if (dependency instanceof JDomDependency) {
+      addElement(((JDomDependency) dependency).getJDomElement().clone(), jdomElement, index);
+    } else {
+      newElement = insertNewElement(POM_ELEMENT_DEPENDENCY, jdomElement, index);
+      JDomDependency jDomDependency = new JDomDependency(newElement);
+
+      jDomDependency.setGroupId(dependency.getGroupId());
+      jDomDependency.setArtifactId(dependency.getArtifactId());
+      jDomDependency.setVersion(dependency.getVersion());
+
+      String classifier = dependency.getClassifier();
+      if (classifier != null) {
+        jDomDependency.setClassifier(classifier);
+      }
+
+      List<Exclusion> exclusions = dependency.getExclusions();
+      if (!exclusions.isEmpty()) {
+        jDomDependency.setExclusions(exclusions);
+      }
+
+      if (dependency.isOptional()) {
+        jDomDependency.setOptional(true);
+      }
+
+      String scope = dependency.getScope();
+      if (!"compile".equals(scope)) {
+        jDomDependency.setScope(scope);
+      }
+
+
+      String systemPath = dependency.getSystemPath();
+      if (systemPath != null) {
+        jDomDependency.setSystemPath(systemPath);
+      }
+
+      String type = dependency.getType();
+      if (!"jar".equals(type)) {
+        jDomDependency.setType(type);
+      }
+    }
+
+    return super.add(dependency);
   }
 
   @Override
