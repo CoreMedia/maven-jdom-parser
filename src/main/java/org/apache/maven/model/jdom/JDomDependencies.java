@@ -64,11 +64,74 @@ public class JDomDependencies extends ArrayList<Dependency> implements JDomBacke
 
   @Override
   public boolean add(Dependency dependency) {
+    return addInternal(dependency, -1);
+  }
+
+  @Override
+  public boolean remove(final Object dependency) {
+    Dependency removeDependency = (Dependency) dependency;
+    for (Dependency candidate : this) {
+      if (StringUtils.equals(candidate.getGroupId(), removeDependency.getGroupId())
+              && StringUtils.equals(candidate.getArtifactId(), removeDependency.getArtifactId())
+              && defaultString(candidate.getType(), "jar").equals(defaultString(removeDependency.getType(), "jar"))) {
+        removeChildElement(jdomElement, ((JDomDependency) candidate).getJDomElement());
+        return super.remove(removeDependency);
+      }
+    }
+    return false;
+  }
+
+  @Override
+  public boolean addAll(Collection<? extends Dependency> dependencies) {
+    boolean added = false;
+    for (Dependency dependency : dependencies) {
+      added |= this.add(dependency);
+    }
+    return added;
+  }
+
+  @Override
+  public boolean addAll(int index, Collection<? extends Dependency> dependencies) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public boolean removeAll(Collection<?> dependencies) {
+    boolean result = false;
+    for (Object dependency : dependencies) {
+      result |= remove(dependency);
+    }
+    return result;
+  }
+
+  @Override
+  public boolean retainAll(Collection<?> dependencies) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void clear() {
+    while (size() > 0) {
+      remove(0);
+    }
+  }
+
+  @Override
+  public Dependency set(int index, Dependency dependency) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void add(int index, Dependency dependency) {
+    addInternal(dependency, index);
+  }
+
+  private boolean addInternal(Dependency dependency, int index) {
     Element newElement;
     if (dependency instanceof JDomDependency) {
-      addElement(((JDomDependency) dependency).getJDomElement().clone(), jdomElement);
+      addElement(((JDomDependency) dependency).getJDomElement().clone(), jdomElement, index);
     } else {
-      newElement = insertNewElement(POM_ELEMENT_DEPENDENCY, jdomElement);
+      newElement = insertNewElement(POM_ELEMENT_DEPENDENCY, jdomElement, index);
       JDomDependency jDomDependency = new JDomDependency(newElement);
 
       jDomDependency.setGroupId(dependency.getGroupId());
@@ -107,61 +170,6 @@ public class JDomDependencies extends ArrayList<Dependency> implements JDomBacke
     }
 
     return super.add(dependency);
-  }
-
-  @Override
-  public boolean remove(final Object dependency) {
-    Dependency removeDependency = (Dependency) dependency;
-    for (Dependency candidate : this) {
-      if (StringUtils.equals(candidate.getGroupId(), removeDependency.getGroupId())
-              && StringUtils.equals(candidate.getArtifactId(), removeDependency.getArtifactId())
-              && defaultString(candidate.getType(), "jar").equals(defaultString(removeDependency.getType(), "jar"))) {
-        removeChildElement(jdomElement, ((JDomDependency) candidate).getJDomElement());
-        return super.remove(removeDependency);
-      }
-    }
-    return false;
-  }
-
-  @Override
-  public boolean addAll(Collection<? extends Dependency> dependencies) {
-    boolean added = false;
-    for (Dependency dependency : dependencies) {
-      added |= this.add(dependency);
-    }
-    return added;
-  }
-
-  @Override
-  public boolean addAll(int index, Collection<? extends Dependency> dependencies) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public boolean removeAll(Collection<?> dependencies) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public boolean retainAll(Collection<?> dependencies) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public void clear() {
-    while (size() > 0) {
-      remove(0);
-    }
-  }
-
-  @Override
-  public Dependency set(int index, Dependency dependency) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public void add(int index, Dependency dependency) {
-    throw new UnsupportedOperationException();
   }
 
   @Override

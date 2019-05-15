@@ -50,8 +50,18 @@ public final class JDomUtils {
    * @param root    the root element.
    */
   public static void addElement(Element element, Element root) {
+    addElement(element, root, -1);
+  }
+
+  /**
+   * Inserts a new child element to the given root element at the given index.
+   * For details see {@link #addElement(Element, Element)}
+   *
+   * @param index the index where the element should be inserted.
+   */
+  public static void addElement(Element element, Element root, int index) {
     root.addContent(
-            root.getContentSize() - 1,
+            index == -1 ? root.getContentSize() - 1 : index,
             asList(
                     new Text("\n" + detectIndentation(root)),
                     element));
@@ -71,13 +81,23 @@ public final class JDomUtils {
    * @return the new element.
    */
   public static Element insertNewElement(String name, Element root) {
+    return insertNewElement(name, root, -1);
+  }
+
+  /**
+   * Inserts a new child element to the given root element at the given index.
+   * For details see {@link #insertNewElement(String, Element)}
+   *
+   * @param index the index where the element should be inserted.
+   */
+  public static Element insertNewElement(String name, Element root, int index) {
     Element newElement;
 
     String indent = detectIndentation(root);
 
     newElement = new Element(name, root.getNamespace());
     newElement.addContent("\n" + indent);
-    int newElementIndex = calcNewElementIndex(name, root);
+    int newElementIndex = index == -1 ? calcNewElementIndex(name, root) : index;
     root.addContent(newElementIndex, newElement);
 
     if (isBlankLineBeforeElement(name, root)) {
