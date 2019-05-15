@@ -97,7 +97,11 @@ public class JDomDependencies extends ArrayList<Dependency> implements JDomBacke
 
   @Override
   public boolean removeAll(Collection<?> dependencies) {
-    throw new UnsupportedOperationException();
+    boolean result = false;
+    for (Object dependency : dependencies) {
+      result |= remove(dependency);
+    }
+    return result;
   }
 
   @Override
