@@ -47,7 +47,7 @@ import static org.codehaus.plexus.util.StringUtils.trim;
  */
 public class JDomDependency extends Dependency implements JDomBacked {
 
-  private static final long serialVersionUID = -8739148446786224228L;
+  private static final long serialVersionUID = -6973299112773078102L;
 
   private final Element jdomElement;
 
@@ -68,6 +68,28 @@ public class JDomDependency extends Dependency implements JDomBacked {
     }
   }
 
+  JDomDependency(Element jdomElement, Dependency dependency) {
+    this.jdomElement = jdomElement;
+
+    setArtifactId(dependency.getArtifactId());
+    setClassifier(dependency.getClassifier());
+    setGroupId(dependency.getGroupId());
+    setOptional(dependency.getOptional());
+    setScope(dependency.getScope());
+    setSystemPath(dependency.getSystemPath());
+    setVersion(dependency.getVersion());
+
+    String type = dependency.getType();
+    if (!"jar".equals(type)) {
+      setType(type);
+    }
+
+    List<Exclusion> exclusions = dependency.getExclusions();
+    if (!exclusions.isEmpty()) {
+      setExclusions(exclusions);
+    }
+  }
+
   @Override
   public void setArtifactId(String artifactId) {
     rewriteElement(POM_ELEMENT_ARTIFACT_ID, artifactId, jdomElement);
@@ -82,7 +104,7 @@ public class JDomDependency extends Dependency implements JDomBacked {
 
   @Override
   public List<Exclusion> getExclusions() {
-    // Remove this method override when Dependency#exclusions is properly set in constructor and #setExclusions.
+    // Remove this method override when Dependency#exclusions is properly set in constructors and #setExclusions.
     throw new UnsupportedOperationException();
   }
 

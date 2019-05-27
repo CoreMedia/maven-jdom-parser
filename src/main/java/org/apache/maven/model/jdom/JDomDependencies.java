@@ -17,10 +17,8 @@ package org.apache.maven.model.jdom;
  */
 
 import org.apache.maven.model.Dependency;
-import org.apache.maven.model.Exclusion;
 import org.codehaus.plexus.util.StringUtils;
 import org.jdom2.Element;
-import org.jdom2.Text;
 import org.jdom2.filter.ElementFilter;
 
 import java.util.ArrayList;
@@ -28,12 +26,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.ListIterator;
 
-import static java.util.Arrays.asList;
 import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_DEPENDENCY;
 import static org.apache.maven.model.jdom.util.JDomUtils.addElement;
 import static org.apache.maven.model.jdom.util.JDomUtils.insertNewElement;
 import static org.apache.maven.model.jdom.util.JDomUtils.removeChildElement;
-import static org.apache.maven.model.jdom.util.JDomUtils.resetIndentations;
 import static org.codehaus.plexus.util.StringUtils.defaultString;
 
 /**
@@ -127,49 +123,16 @@ public class JDomDependencies extends ArrayList<Dependency> implements JDomBacke
   }
 
   private boolean addInternal(Dependency dependency, int index) {
-    Element newElement;
+    JDomDependency jdomDependency;
     if (dependency instanceof JDomDependency) {
-      addElement(((JDomDependency) dependency).getJDomElement().clone(), jdomElement, index);
+      jdomDependency = (JDomDependency) dependency;
+      addElement(jdomDependency.getJDomElement().clone(), jdomElement, index);
     } else {
-      newElement = insertNewElement(POM_ELEMENT_DEPENDENCY, jdomElement, index);
-      JDomDependency jDomDependency = new JDomDependency(newElement);
-
-      jDomDependency.setGroupId(dependency.getGroupId());
-      jDomDependency.setArtifactId(dependency.getArtifactId());
-      jDomDependency.setVersion(dependency.getVersion());
-
-      String classifier = dependency.getClassifier();
-      if (classifier != null) {
-        jDomDependency.setClassifier(classifier);
-      }
-
-      List<Exclusion> exclusions = dependency.getExclusions();
-      if (!exclusions.isEmpty()) {
-        jDomDependency.setExclusions(exclusions);
-      }
-
-      if (dependency.isOptional()) {
-        jDomDependency.setOptional(true);
-      }
-
-      String scope = dependency.getScope();
-      if (!"compile".equals(scope)) {
-        jDomDependency.setScope(scope);
-      }
-
-
-      String systemPath = dependency.getSystemPath();
-      if (systemPath != null) {
-        jDomDependency.setSystemPath(systemPath);
-      }
-
-      String type = dependency.getType();
-      if (!"jar".equals(type)) {
-        jDomDependency.setType(type);
-      }
+      Element newElement = insertNewElement(POM_ELEMENT_DEPENDENCY, jdomElement, index);
+      jdomDependency = new JDomDependency(newElement, dependency);
     }
 
-    return super.add(dependency);
+    return super.add(jdomDependency);
   }
 
   @Override
