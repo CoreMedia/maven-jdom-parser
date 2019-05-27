@@ -20,6 +20,7 @@ import org.apache.maven.model.Dependency;
 import org.codehaus.plexus.util.StringUtils;
 import org.jdom2.Element;
 import org.jdom2.filter.ElementFilter;
+import org.jdom2.filter.Filter;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -28,6 +29,7 @@ import java.util.ListIterator;
 
 import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_DEPENDENCY;
 import static org.apache.maven.model.jdom.util.JDomUtils.addElement;
+import static org.apache.maven.model.jdom.util.JDomUtils.getElementIndex;
 import static org.apache.maven.model.jdom.util.JDomUtils.insertNewElement;
 import static org.apache.maven.model.jdom.util.JDomUtils.removeChildElement;
 import static org.codehaus.plexus.util.StringUtils.defaultString;
@@ -42,15 +44,14 @@ public class JDomDependencies extends ArrayList<Dependency> implements JDomBacke
   private final Element jdomElement;
 
   public JDomDependencies(Element jdomElement) {
-    super(transformToJDomDependencyList(getDependencyElements(jdomElement)));
+    super(transformDependencyElementsToJDomDependencyList(jdomElement));
     this.jdomElement = jdomElement;
   }
 
-  private static List<Element> getDependencyElements(Element dependencies) {
-    return dependencies.getContent(new ElementFilter(POM_ELEMENT_DEPENDENCY, dependencies.getNamespace()));
-  }
+  private static List<JDomDependency> transformDependencyElementsToJDomDependencyList(Element jdomElement) {
+    Filter<Element> dependencyElementFilter = new ElementFilter(POM_ELEMENT_DEPENDENCY, jdomElement.getNamespace());
+    List<Element> dependencyElements = jdomElement.getContent(dependencyElementFilter);
 
-  private static List<JDomDependency> transformToJDomDependencyList(List<Element> dependencyElements) {
     List<JDomDependency> jDomDependencyList = new ArrayList<>(dependencyElements.size());
     for (Element dependencyElement : dependencyElements) {
       jDomDependencyList.add(new JDomDependency(dependencyElement));
@@ -60,7 +61,8 @@ public class JDomDependencies extends ArrayList<Dependency> implements JDomBacke
 
   @Override
   public boolean add(Dependency dependency) {
-    return addInternal(dependency, -1);
+    add(size(), dependency);
+    return true;
   }
 
   @Override
@@ -119,20 +121,26 @@ public class JDomDependencies extends ArrayList<Dependency> implements JDomBacke
 
   @Override
   public void add(int index, Dependency dependency) {
-    addInternal(dependency, index);
-  }
+    if (index > size() || index < 0) {
+      throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size());
+    }
 
-  private boolean addInternal(Dependency dependency, int index) {
+    int elementIndex = index;
+    if (index > 0) {
+      Element previousElement = ((JDomDependency) get(index - 1)).getJDomElement();
+      elementIndex = 1 + getElementIndex(previousElement, jdomElement);
+    }
+
     JDomDependency jdomDependency;
     if (dependency instanceof JDomDependency) {
       jdomDependency = (JDomDependency) dependency;
-      addElement(jdomDependency.getJDomElement().clone(), jdomElement, index);
+      addElement(jdomDependency.getJDomElement().clone(), jdomElement, elementIndex);
     } else {
-      Element newElement = insertNewElement(POM_ELEMENT_DEPENDENCY, jdomElement, index);
+      Element newElement = insertNewElement(POM_ELEMENT_DEPENDENCY, jdomElement, elementIndex);
       jdomDependency = new JDomDependency(newElement, dependency);
     }
 
-    return super.add(jdomDependency);
+    super.add(index, jdomDependency);
   }
 
   @Override

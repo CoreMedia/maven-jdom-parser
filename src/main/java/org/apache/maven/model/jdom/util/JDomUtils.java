@@ -24,6 +24,7 @@ import org.jdom2.Content;
 import org.jdom2.Element;
 import org.jdom2.Parent;
 import org.jdom2.Text;
+import org.jdom2.filter.ElementFilter;
 
 import java.util.Iterator;
 import java.util.List;
@@ -50,7 +51,7 @@ public final class JDomUtils {
    * @param root    the root element.
    */
   public static void addElement(Element element, Element root) {
-    addElement(element, root, -1);
+    addElement(element, root, getLastElementIndex(root) + 1);
   }
 
   /**
@@ -61,12 +62,27 @@ public final class JDomUtils {
    */
   public static void addElement(Element element, Element root, int index) {
     root.addContent(
-            index == -1 ? root.getContentSize() - 1 : index,
+            index,
             asList(
                     new Text("\n" + detectIndentation(root)),
                     element));
     resetIndentations(root, detectIndentation(root));
     resetIndentations(element, detectIndentation(root) + "  ");
+  }
+
+  public static int getElementIndex(Element element, Element root) {
+    return root.indexOf(element);
+  }
+
+  private static int getLastElementIndex(Element root) {
+    List<Element> elements = root.getContent(new ElementFilter());
+
+    int size = elements.size();
+    if (size == 0) {
+      return -1;
+    } else {
+      return root.indexOf(elements.get(size - 1));
+    }
   }
 
   /**
@@ -81,7 +97,7 @@ public final class JDomUtils {
    * @return the new element.
    */
   public static Element insertNewElement(String name, Element root) {
-    return insertNewElement(name, root, -1);
+    return insertNewElement(name, root, calcNewElementIndex(name, root));
   }
 
   /**
@@ -97,13 +113,12 @@ public final class JDomUtils {
 
     newElement = new Element(name, root.getNamespace());
     newElement.addContent("\n" + indent);
-    int newElementIndex = index == -1 ? calcNewElementIndex(name, root) : index;
-    root.addContent(newElementIndex, newElement);
+    root.addContent(index, newElement);
 
     if (isBlankLineBeforeElement(name, root)) {
-      root.addContent(newElementIndex, new Text("\n\n" + indent));
+      root.addContent(index, new Text("\n\n" + indent));
     } else {
-      root.addContent(newElementIndex, new Text("\n" + indent));
+      root.addContent(index, new Text("\n" + indent));
     }
 
     return newElement;
@@ -114,7 +129,7 @@ public final class JDomUtils {
 
     List<String> elementOrder = JDomCfg.getInstance().getElementOrder(root.getName());
     if (elementOrder == null) {
-      addIndex = max(0, root.getContentSize() - 1);
+      addIndex = max(0, getLastElementIndex(root) + 1);
     } else {
       for (int i = elementOrder.indexOf(name) - 1; i >= 0; i--) {
         String addAfterElementName = elementOrder.get(i);

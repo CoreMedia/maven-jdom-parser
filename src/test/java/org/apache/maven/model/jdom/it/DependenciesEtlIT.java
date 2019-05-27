@@ -30,6 +30,13 @@ import java.util.List;
 public class DependenciesEtlIT extends AbstractJDomModelEtlIT {
 
   @Test
+  public void addJDomDependencyAtIndex() throws IOException {
+    Dependency dependency = getSourceModel().getDependencies().get(0);
+    getDependenciesFromModel().add(1, dependency);
+    assertTransformation();
+  }
+
+  @Test
   public void changeDependencyGroupId() throws IOException {
     for (Dependency dependency : getDependenciesFromModel().toArray(new Dependency[]{})) {
       if (dependency.getGroupId().equals("com.coremedia.test")) {
