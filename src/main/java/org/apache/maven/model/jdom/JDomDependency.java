@@ -25,52 +25,64 @@ import org.jdom2.Element;
 
 import java.util.List;
 
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_ARTIFACT_ID;
 import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_CLASSIFIER;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_GROUP_ID;
 import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_OPTIONAL;
 import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_SCOPE;
 import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_SYSTEM_PATH;
 import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_TYPE;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_VERSION;
 import static org.apache.maven.model.jdom.util.JDomUtils.getChildElementTextTrim;
 import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
+import static org.codehaus.plexus.util.StringUtils.defaultString;
+import static org.codehaus.plexus.util.StringUtils.trim;
 
 /**
- * JDom implementation of poms DEPENDENCY element
+ * JDOM implementation of the {@link Dependency} class. It holds the child elements of the Maven POMs {@code dependency}
+ * element.
  *
  * @author Robert Scholte (for <a href="https://github.com/apache/maven-release/">Maven Release projct</a>, version 3.0)
+ * @author Marc Rohlfs, CoreMedia AG
  */
-public class JDomDependency extends Dependency implements JDomBacked, MavenCoordinate {
+public class JDomDependency extends Dependency implements JDomBacked {
+
+  private static final long serialVersionUID = -8739148446786224228L;
 
   private final Element jdomElement;
 
-  private final MavenCoordinate coordinate;
-
-  public JDomDependency(Element jdomElement) {
+  JDomDependency(Element jdomElement) {
     this.jdomElement = jdomElement;
-    this.coordinate = new JDomMavenCoordinate(jdomElement);
-  }
 
-  @Override
-  public String getArtifactId() {
-    return coordinate.getArtifactId();
+    super.setArtifactId(getChildElementTextTrim(POM_ELEMENT_ARTIFACT_ID, jdomElement));
+    super.setClassifier(getChildElementTextTrim(POM_ELEMENT_CLASSIFIER, jdomElement));
+    super.setGroupId(getChildElementTextTrim(POM_ELEMENT_GROUP_ID, jdomElement));
+    super.setOptional(getChildElementTextTrim(POM_ELEMENT_OPTIONAL, jdomElement));
+    super.setScope(getChildElementTextTrim(POM_ELEMENT_SCOPE, jdomElement));
+    super.setSystemPath(getChildElementTextTrim(POM_ELEMENT_SYSTEM_PATH, jdomElement));
+    super.setVersion(getChildElementTextTrim(POM_ELEMENT_VERSION, jdomElement));
+
+    String type = getChildElementTextTrim(POM_ELEMENT_TYPE, jdomElement);
+    if (type != null) {
+      super.setType(type);
+    }
   }
 
   @Override
   public void setArtifactId(String artifactId) {
-    coordinate.setArtifactId(artifactId);
-  }
-
-  @Override
-  public String getClassifier() {
-    return getChildElementTextTrim(POM_ELEMENT_CLASSIFIER, jdomElement);
+    rewriteElement(POM_ELEMENT_ARTIFACT_ID, artifactId, jdomElement);
+    super.setArtifactId(trim(artifactId));
   }
 
   @Override
   public void setClassifier(String classifier) {
     rewriteElement(POM_ELEMENT_CLASSIFIER, classifier, jdomElement);
+    super.setClassifier(trim(classifier));
   }
 
   @Override
   public List<Exclusion> getExclusions() {
+    // Remove this method override when Dependency#exclusions is properly set in constructor and #setExclusions.
     throw new UnsupportedOperationException();
   }
 
@@ -80,87 +92,51 @@ public class JDomDependency extends Dependency implements JDomBacked, MavenCoord
   }
 
   @Override
-  public String getGroupId() {
-    return coordinate.getGroupId();
-  }
-
-  @Override
   public void setGroupId(String groupId) {
-    coordinate.setGroupId(groupId);
-  }
-
-  @Override
-  public String getOptional() {
-    return getChildElementTextTrim(POM_ELEMENT_OPTIONAL, jdomElement);
+    rewriteElement(POM_ELEMENT_GROUP_ID, groupId, jdomElement);
+    super.setGroupId(trim(groupId));
   }
 
   @Override
   public void setOptional(String optional) {
     rewriteElement(POM_ELEMENT_OPTIONAL, optional, jdomElement);
-  }
-
-  @Override
-  public boolean isOptional() {
-    return Boolean.parseBoolean(getOptional());
+    super.setOptional(trim(optional));
   }
 
   @Override
   public void setOptional(boolean optional) {
-    setOptional(Boolean.toString(optional));
-  }
-
-  @Override
-  public String getScope() {
-    return getChildElementTextTrim(POM_ELEMENT_SCOPE, jdomElement);
+    setOptional(String.valueOf(optional));
   }
 
   @Override
   public void setScope(String scope) {
     rewriteElement(POM_ELEMENT_SCOPE, scope, jdomElement);
-  }
-
-  @Override
-  public String getSystemPath() {
-    return getChildElementTextTrim(POM_ELEMENT_SYSTEM_PATH, jdomElement);
+    super.setScope(trim(scope));
   }
 
   @Override
   public void setSystemPath(String systemPath) {
     rewriteElement(POM_ELEMENT_SYSTEM_PATH, systemPath, jdomElement);
-  }
-
-  @Override
-  public String getType() {
-    return getChildElementTextTrim(POM_ELEMENT_TYPE, jdomElement);
+    super.setSystemPath(trim(systemPath));
   }
 
   @Override
   public void setType(String type) {
     rewriteElement(POM_ELEMENT_TYPE, type, jdomElement);
-  }
-
-  @Override
-  public String getVersion() {
-    return coordinate.getVersion();
+    super.setType(defaultString(trim(type), "jar"));
   }
 
   @Override
   public void setVersion(String version) {
-    coordinate.setVersion(version);
+    rewriteElement(POM_ELEMENT_VERSION, version, jdomElement);
+    super.setVersion(trim(version));
   }
 
-  @Override
-  public String getManagementKey() {
-    throw new UnsupportedOperationException();
-  }
-
-  /** {@inheritDoc} */
   @Override
   public Dependency clone() {
     throw new UnsupportedOperationException();
   }
 
-  /** {@inheritDoc} */
   @Override
   public Element getJDomElement() {
     return jdomElement;
