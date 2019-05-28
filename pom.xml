@@ -19,7 +19,7 @@
 
   <groupId>com.coremedia.maven</groupId>
   <artifactId>maven-jdom-parser</artifactId>
-  <version>1.0.0-beta-5</version>
+  <version>1.0.0-beta-6-SNAPSHOT</version>
 
   <name>Maven JDom Parser</name>
   <licenses>
@@ -33,7 +33,7 @@
   <scm>
     <connection>scm:git:git://github.com/CoreMedia/maven-jdom-parser</connection>
     <developerConnection>scm:git:git://github.com/CoreMedia/maven-jdom-parser</developerConnection>
-    <tag>maven-jdom-parser-1.0.0-beta-5</tag>
+    <tag>HEAD</tag>
     <url>https://github.com/CoreMedia/maven-jdom-parser/tree/${project.scm.tag}</url>
   </scm>
   <issueManagement>
