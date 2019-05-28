@@ -30,6 +30,7 @@ import org.jdom2.Element;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_BUILD;
@@ -154,7 +155,19 @@ public class JDomModelBase implements JDomBacked {
   }
 
   public void setProperties(Properties properties) {
-    throw new UnsupportedOperationException();
+    if (properties == null) {
+      rewriteElement(POM_ELEMENT_PROPERTIES, null, jdomElement);
+    } else {
+      Properties jDomProperties = getProperties();
+      if (jDomProperties != null) {
+        jDomProperties.clear();
+      } else {
+        jDomProperties = new JDomProperties(insertNewElement(POM_ELEMENT_PROPERTIES, jdomElement));
+      }
+      for (Map.Entry<Object, Object> entry : properties.entrySet()) {
+        jDomProperties.setProperty((String) entry.getKey(), (String) entry.getValue());
+      }
+    }
   }
 
   public Reporting getReporting() {

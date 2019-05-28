@@ -20,6 +20,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * Tests transformations of {@code properties}.
@@ -31,6 +32,14 @@ public class PropertiesEtlIT extends AbstractJDomModelEtlIT {
   @Test
   public void addProperty() throws IOException {
     subjectModel.addProperty("property.new", "value-new");
+    assertTransformation();
+  }
+
+  @Test
+  public void addPropertyWhenEmpty() throws IOException {
+    Properties properties = new Properties();
+    properties.setProperty("property.new", "value-new");
+    subjectModel.setProperties(properties);
     assertTransformation();
   }
 
