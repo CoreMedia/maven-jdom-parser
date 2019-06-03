@@ -160,9 +160,12 @@ public class JDomBuild extends Build implements JDomBacked {
     if (plugins == null) {
       rewriteElement(POM_ELEMENT_PLUGINS, null, jdomElement);
     } else {
-      new JDomPlugins(insertNewElement(POM_ELEMENT_PLUGINS, jdomElement)).addAll(plugins);
+      List<Plugin> jdomPlugins = getPlugins();
+      if (!(jdomPlugins instanceof JDomPlugins)) {
+        jdomPlugins = new JDomPlugins(insertNewElement(POM_ELEMENT_PLUGINS, jdomElement));
+      }
+      jdomPlugins.addAll(plugins);
     }
-
   }
 
   @Override
