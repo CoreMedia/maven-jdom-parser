@@ -31,11 +31,13 @@ import java.util.List;
 
 import static java.lang.Math.max;
 import static java.util.Arrays.asList;
+import static org.jdom2.filter.Filters.textOnly;
 
 /**
  * Common JDom functions
  *
  * @author Robert Scholte (for <a href="https://github.com/apache/maven-release/">Maven Release projct</a>, version 3.0)
+ * @author Marc Rohlfs, CoreMedia AG
  */
 public final class JDomUtils {
 
@@ -155,42 +157,34 @@ public final class JDomUtils {
    * Tries to detect the indentation that is used within the given element and returns it.
    * <p>
    * The method actually returns all characters (supposed to be whitespaces) that occur after the last linebreak in a
-   * text element that is followed by an XML element.
+   * text element.
    *
    * @param element the element whose contents should be used to detect the indentation.
    * @return the detected indentation or {@code null} if not indentation can be detected.
    */
   public static String detectIndentation(Element element) {
-    String indent = null;
 
-    String indentCandidate = null;
-    for (Content childElement : element.getContent()) {
-      if (childElement instanceof Text) {
-        String text = ((Text) childElement).getText();
-        int lastLsIndex = StringUtils.lastIndexOfAny(text, new String[]{"\n", "\r"});
-        if (lastLsIndex > -1) {
-          indentCandidate = text.substring(lastLsIndex + 1);
-        }
-      } else if (indentCandidate != null) {
-        if (childElement instanceof Element) {
-          indent = indentCandidate;
-          break;
+    for (Iterator<Text> iterator = element.getContent(textOnly()).iterator(); iterator.hasNext(); ) {
+      String text = iterator.next().getText();
+      int lastLsIndex = StringUtils.lastIndexOfAny(text, new String[]{"\n", "\r"});
+      if (lastLsIndex > -1) {
+        String indent = text.substring(lastLsIndex + 1);
+        if (iterator.hasNext()) {
+          // This should be the indentation of a child element.
+          return indent;
         } else {
-          indentCandidate = null;
+          // This should be the indentation of the elements end tag.
+          return indent + "  ";
         }
       }
     }
 
-    if (indent == null) {
-      Parent parent = element.getParent();
-      if (parent instanceof Element) {
-        indent = detectIndentation((Element) parent) + "  ";
-      } else {
-        return "";
-      }
+    Parent parent = element.getParent();
+    if (parent instanceof Element) {
+      return detectIndentation((Element) parent) + "  ";
     }
 
-    return indent;
+    return "";
   }
 
   /**
