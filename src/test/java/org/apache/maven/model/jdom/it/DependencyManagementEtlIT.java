@@ -38,13 +38,6 @@ public class DependencyManagementEtlIT extends DependenciesEtlIT {
   }
 
   @Test
-  public void addJDomDependencyAtIndex() throws IOException {
-    Dependency dependency = getSourceModel().getDependencies().get(0);
-    subjectModel.getDependencyManagement().getDependencies().add(0, dependency);
-    assertTransformation();
-  }
-
-  @Test
   public void addModelDependency() throws IOException {
     Dependency dependency = new Dependency();
     dependency.setGroupId("org.apache.commons");
