@@ -45,8 +45,12 @@ public final class JDomUtils {
   }
 
   /**
-   * Adds an element as new child to the given root element. The indentation of the new element nodes will be reset to
-   * the indentation that is (tried to be) detected from the root element (see {@link #detectIndentation(Element)}).
+   * Adds an element as new child to the given root element. The position where the element is inserted is calculated
+   * using the element order that is defined in the {@link JDomCfg} (see {@link JDomCfg#getElementOrder(String)}). When
+   * no order is defined for the element, the new element is append as last element (before the closing tag of the
+   * root element). In the root element, the new element is always prepended by a text element containing a linebreak
+   * followed by the indentation characters. The indentation of the new element nodes will be reset to the indentation
+   * that is (tried to be) detected from the root element (see {@link #detectIndentation(Element)}).
    *
    * @param element the name of the new element.
    * @param root    the root element.
@@ -83,19 +87,16 @@ public final class JDomUtils {
     List<Element> elements = root.getContent(new ElementFilter());
 
     int size = elements.size();
-    if (size == 0) {
-      return -1;
-    } else {
-      return root.indexOf(elements.get(size - 1));
-    }
+    return size > 0 ? root.indexOf(elements.get(size - 1)) : -1;
   }
 
   /**
    * Inserts a new child element to the given root element. The position where the element is inserted is calculated
-   * using the element order that is defined in the {@link JDomCfg} (see {@link JDomCfg#getElementOrder(String)}). In
-   * the root element, the new element is always prepended by a text element containing a linebreak followed by the
-   * indentation characters. The indentation characters are (tried to be) detected from the root element (see {@link
-   * #detectIndentation(Element)} ).
+   * using the element order that is defined in the {@link JDomCfg} (see {@link JDomCfg#getElementOrder(String)}).
+   * When no order is defined for the element, the new element is append as last element (before the closing tag of the
+   * root element). In the root element, the new element is always prepended by a text element containing a linebreak
+   * followed by the indentation characters. The indentation characters are (tried to be) detected from the root element
+   * (see {@link #detectIndentation(Element)} ).
    *
    * @param name the name of the new element.
    * @param root the root element.
@@ -234,11 +235,7 @@ public final class JDomUtils {
       return null;
     } else {
       String text = child.getTextTrim();
-      if ("null".equals(text)) {
-        return null;
-      } else {
-        return text;
-      }
+      return "null".equals(text) ? null : text;
     }
   }
 
