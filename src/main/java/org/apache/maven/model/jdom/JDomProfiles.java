@@ -24,6 +24,7 @@ import org.apache.maven.model.DistributionManagement;
 import org.apache.maven.model.Profile;
 import org.apache.maven.model.Reporting;
 import org.apache.maven.model.Repository;
+import org.apache.maven.model.jdom.util.JDomUtils;
 import org.jdom2.Element;
 import org.jdom2.filter.ElementFilter;
 
@@ -38,7 +39,6 @@ import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_PROFILE;
 import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_PROFILES;
 import static org.apache.maven.model.jdom.util.JDomUtils.addElement;
 import static org.apache.maven.model.jdom.util.JDomUtils.insertNewElement;
-import static org.apache.maven.model.jdom.util.JDomUtils.removeChildElement;
 
 public class JDomProfiles extends ArrayList<Profile> implements JDomBacked {
 
@@ -141,10 +141,10 @@ public class JDomProfiles extends ArrayList<Profile> implements JDomBacked {
     Profile removeProfile = (Profile) profile;
     for (Profile candidate : this) {
       if (candidate.getId().equals(removeProfile.getId())) {
-        removeChildElement(jdomElement, ((JDomProfile) candidate).getJDomElement());
+        JDomUtils.removeChildContent(jdomElement, ((JDomProfile) candidate).getJDomElement());
         boolean remove = super.remove(candidate);
         if (super.isEmpty()) {
-          removeChildElement(parent.getJDomElement(), jdomElement);
+          JDomUtils.removeChildElement(parent.getJDomElement(), jdomElement);
         }
         return remove;
       }
@@ -220,13 +220,11 @@ public class JDomProfiles extends ArrayList<Profile> implements JDomBacked {
     throw new UnsupportedOperationException();
   }
 
-  /** {@inheritDoc} */
   @Override
   public Object clone() {
     throw new UnsupportedOperationException();
   }
 
-  /** {@inheritDoc} */
   @Override
   public Element getJDomElement() {
     return jdomElement;
