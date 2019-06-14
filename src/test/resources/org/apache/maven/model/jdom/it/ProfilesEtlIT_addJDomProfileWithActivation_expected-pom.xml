@@ -24,9 +24,15 @@
   <profiles>
     <profile>
       <id>profile-1</id>
+      <modules>
+        <module>my-module</module>
+      </modules>
     </profile>
     <profile>
       <id>profile-2</id>
+      <modules>
+        <module>my-module</module>
+      </modules>
     </profile>
     <profile>
       <!-- Profile to be added to input POM -->
@@ -36,6 +42,9 @@
           <name>test</name>
         </property>
       </activation>
+      <modules>
+        <module>my-module</module>
+      </modules>
     </profile>
   </profiles>
 

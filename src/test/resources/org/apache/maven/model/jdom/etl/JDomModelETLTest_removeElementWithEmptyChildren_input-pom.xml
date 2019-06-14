@@ -18,22 +18,35 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.coremedia.test</groupId>
-  <artifactId>my-source-project</artifactId>
+  <artifactId>my-test-project</artifactId>
   <version>1.0-SNAPSHOT</version>
 
   <profiles>
+
+    <!-- I AM an empty profile : 1-->
+    <!-- I AM an empty profile : 2-->
     <profile>
-      <!-- Profile to be added to input POM -->
-      <id>deflake</id>
+      <id>profile-empty</id>
       <activation>
         <property>
-          <name>test</name>
+          <name>!withoutProfileEmpty</name>
+          <value>!true</value>
         </property>
       </activation>
       <modules>
-        <module>my-module</module>
+      </modules>
+      <build/>
+      <properties/>
+    </profile>
+
+    <!-- This profile includes a module -->
+    <profile>
+      <id>profile-only-module</id>
+      <modules>
+        <module>A</module>
       </modules>
     </profile>
+
   </profiles>
 
 </project>

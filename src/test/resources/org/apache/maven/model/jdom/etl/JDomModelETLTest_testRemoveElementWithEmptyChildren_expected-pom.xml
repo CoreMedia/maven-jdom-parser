@@ -14,7 +14,8 @@
   See the License for the specific language governing permissions and
   limitations under the License.
   -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.coremedia.test</groupId>
@@ -29,22 +30,13 @@
         <module>a</module>
       </modules>
     </profile>
-
-
-
-
-
-
-
-
-
     <!-- Above: profile-2 -->
     <profile>
       <id>profile-2</id>
       <modules>
         <module>a</module>
       </modules>
-    </profile><!--  Just a comment somewhere -->
+    </profile><!--  Beside tag profile: profile-2 -->
 
 
     <!-- Dangling comment. Should stay there -->
@@ -71,13 +63,6 @@
     <!-- Above: profile-5 -->
     <profile>
       <id>profile-5</id>
-      <modules>
-        <module>a</module>
-      </modules>
-    </profile>
-
-    <profile>
-      <id>profile-5a</id>
       <modules>
         <module>a</module>
       </modules>

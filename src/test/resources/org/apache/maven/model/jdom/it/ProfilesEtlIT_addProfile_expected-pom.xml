@@ -24,12 +24,21 @@
   <profiles>
     <profile>
       <id>profile-1</id>
+      <modules>
+        <module>my-module</module>
+      </modules>
     </profile>
     <profile>
       <id>profile-2</id>
+      <modules>
+        <module>my-module</module>
+      </modules>
     </profile>
     <profile>
       <id>new-profile-1</id>
+      <modules>
+        <module>my-module</module>
+      </modules>
     </profile>
   </profiles>
 

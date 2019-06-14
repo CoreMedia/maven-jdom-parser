@@ -24,6 +24,9 @@
   <profiles>
     <profile>
       <id>first-profile</id>
+      <modules>
+        <module>my-module</module>
+      </modules>
     </profile>
   </profiles>
 
