@@ -176,6 +176,9 @@ public class JDomModelETL implements ModelETL {
       }
     }
 
+    // Remove empty properties tag
+    JDomCleanupHelper.cleanupEmptyProperties(rootElement);
+
     // Remove empty (i.e. with no elements) profile and profiles tag
     JDomCleanupHelper.cleanupEmptyProfiles(rootElement);
 

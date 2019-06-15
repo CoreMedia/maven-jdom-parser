@@ -24,6 +24,8 @@ import org.jdom2.Content;
 import org.jdom2.Element;
 import org.jdom2.filter.ElementFilter;
 import org.jdom2.util.IteratorIterable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,6 +44,8 @@ import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_PROPERTIES;
  * @author https://github.com/eva-mueller-coremedia  (for <a href="https://github.com/CoreMedia/maven-jdom-parser">Maven JDom Parser</a>, version 3.0)
  */
 public class JDomCleanupHelper {
+
+  private static final Logger LOG = LoggerFactory.getLogger(JDomCleanupHelper.class);
 
   /**
    * Remove all empty profiles and profile tags.<br>
@@ -68,6 +72,25 @@ public class JDomCleanupHelper {
       if (!profilesElement.getDescendants(new ElementFilter(POM_ELEMENT_PROFILE)).hasNext()) {
         JDomUtils.removeChildElement(rootElement, profilesElement);
       }
+    }
+  }
+
+  /**
+   * Remove empty properties tag.<br>
+   * Empty tags may contain comments which will be removed as well.
+   *
+   * @param rootElement the root element.
+   */
+  public static void cleanupEmptyProperties(Element rootElement) {
+    IteratorIterable<Element> filteredElements = rootElement.getDescendants(new ElementFilter(POM_ELEMENT_PROPERTIES));
+    List<Element> properties = new ArrayList<>();
+    for (Element propertiesElement : filteredElements) {
+      if (propertiesElement.getChildren().size() == 0) {
+        properties.add(propertiesElement);
+      }
+    }
+    for (Element propertiesElement : properties) {
+      JDomUtils.removeChildElement(propertiesElement.getParentElement(), propertiesElement);
     }
   }
 
