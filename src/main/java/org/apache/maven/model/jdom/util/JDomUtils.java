@@ -20,24 +20,18 @@ package org.apache.maven.model.jdom.util;
  */
 
 import org.codehaus.plexus.util.StringUtils;
-import org.jdom2.Comment;
 import org.jdom2.Content;
 import org.jdom2.Element;
 import org.jdom2.Parent;
 import org.jdom2.Text;
 import org.jdom2.filter.ElementFilter;
-import org.jdom2.util.IteratorIterable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
 import static java.lang.Math.max;
-import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_PROFILE;
-import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_PROFILES;
 import static org.jdom2.filter.Filters.textOnly;
 
 /**
@@ -275,29 +269,29 @@ public final class JDomUtils {
     int index = parent.indexOf(removeChild);
     if (index >= 0) {
       LOG.debug("");
-      LOG.debug("index [{}] => REMOVE: {}", index, contentToString(parent.getContent(index)));
+      LOG.debug("index [{}] => REMOVE: {}", index, JDomContentHelper.contentAsString(parent.getContent(index)));
       parent.removeContent(index);
       index--;
       // remove new line
-      if (index >= 0 && hasNewlines(parent.getContent(index))) {
-        LOG.debug("NL    [{}] => REMOVE: {}", index, contentToString(parent.getContent(index)));
+      if (index >= 0 && JDomContentHelper.hasNewlines(parent.getContent(index))) {
+        LOG.debug("NL    [{}] => REMOVE: {}", index, JDomContentHelper.contentAsString(parent.getContent(index)));
         simpleRemoveAtIndex(index, parent, false);
 
         int prevIndex = index - 1;
         if (prevIndex >= 0) {
           // remove comment
-          LOG.debug("\t@[{}] => {}", prevIndex, contentToString(parent.getContent(prevIndex)));
+          LOG.debug("\t@[{}] => {}", prevIndex, JDomContentHelper.contentAsString(parent.getContent(prevIndex)));
           int newIndex = removeCommentAtIndex(prevIndex, parent);
           if (newIndex >= 0) {
-            LOG.debug("\t*[{}] => {}", newIndex, contentToString(parent.getContent(newIndex)));
+            LOG.debug("\t*[{}] => {}", newIndex, JDomContentHelper.contentAsString(parent.getContent(newIndex)));
           }
-          while (newIndex >= 0 && isComment(parent.getContent(newIndex))) {
-            LOG.debug("\t*[{}] => ALSO REMOVE: {}", newIndex, contentToString(parent.getContent(newIndex)));
+          while (newIndex >= 0 && JDomContentHelper.isComment(parent.getContent(newIndex))) {
+            LOG.debug("\t*[{}] => ALSO REMOVE: {}", newIndex, JDomContentHelper.contentAsString(parent.getContent(newIndex)));
             newIndex = removeCommentAtIndex(newIndex, parent);
             if (newIndex >= 0) {
-              LOG.debug("\t [{}] => NEXT       : {}", newIndex, contentToString(parent.getContent(newIndex)));
+              LOG.debug("\t [{}] => NEXT       : {}", newIndex, JDomContentHelper.contentAsString(parent.getContent(newIndex)));
             }
-            if (newIndex >= 0 && isMultiNewLine(parent.getContent(newIndex - 1))) {
+            if (newIndex >= 0 && JDomContentHelper.isMultiNewLine(parent.getContent(newIndex - 1))) {
               break;
             }
           }
@@ -314,9 +308,9 @@ public final class JDomUtils {
       text = contentToRemove.getValue().replaceFirst("\n", "");
       // remove indention if ancestor is no newline text or
       // if successor is newline text
-      if ((index + 1 < parent.getContent().size() && hasNewlines(parent.getContent(index + 1))) ||
-              (index > 0 && !hasNewlines(parent.getContent(index - 1)))) {
-        LOG.debug("       VALUE: {}", contentToString(contentToRemove));
+      if ((index + 1 < parent.getContent().size() && JDomContentHelper.hasNewlines(parent.getContent(index + 1))) ||
+              (index > 0 && !JDomContentHelper.hasNewlines(parent.getContent(index - 1)))) {
+        LOG.debug("       VALUE: {}", JDomContentHelper.contentAsString(contentToRemove));
         text = text.replaceAll(" ", "");
       }
     }
@@ -324,23 +318,23 @@ public final class JDomUtils {
     contentToRemove.detach();
     if (null != text) {
       parent.addContent(index, new Text(text));
-      LOG.debug("       ML  new => " + contentToString(parent.getContent(index)));
+      LOG.debug("       ML  new => " + JDomContentHelper.contentAsString(parent.getContent(index)));
     }
   }
 
   private static int removeCommentAtIndex(int index, Element parent) {
     Content content = parent.getContent(index);
-    if (isComment(content)) {
+    if (JDomContentHelper.isComment(content)) {
       //remove comment
-      LOG.debug("remove comment => {}", contentToString(content));
+      LOG.debug("remove comment => {}", JDomContentHelper.contentAsString(content));
       simpleRemoveAtIndex(index, parent, false);
       int prevIndex = index - 1;
-      if (prevIndex >= 0 && isNewline(parent.getContent(prevIndex))) {
-        LOG.debug("remove NL      => {}", contentToString(parent.getContent(prevIndex)));
+      if (prevIndex >= 0 && JDomContentHelper.isNewline(parent.getContent(prevIndex))) {
+        LOG.debug("remove NL      => {}", JDomContentHelper.contentAsString(parent.getContent(prevIndex)));
         simpleRemoveAtIndex(prevIndex, parent, false);
         return prevIndex - 1;
-      } else if (prevIndex >= 0 && isMultiNewLine(parent.getContent(prevIndex))) {
-        LOG.debug("remove ML      => {}", contentToString(parent.getContent(prevIndex)));
+      } else if (prevIndex >= 0 && JDomContentHelper.isMultiNewLine(parent.getContent(prevIndex))) {
+        LOG.debug("remove ML      => {}", JDomContentHelper.contentAsString(parent.getContent(prevIndex)));
         simpleRemoveAtIndex(prevIndex, parent, true);
         return -1;
       }
@@ -446,194 +440,5 @@ public final class JDomUtils {
       }
     }
     return tagElement;
-  }
-
-  static String contentToString(Content content) {
-    if (content instanceof Element) {
-      return elementToString((Element) content);
-    }
-    if (content instanceof Text) {
-      return textToString((Text) content);
-    }
-    return content.getCType() + " => " + content.getValue().trim();
-  }
-
-  private static String elementToString(Element element) {
-    return element.getCType() + " => <" + element.getName() + "> : " + element.getValue().trim().replaceAll("\n", "\\\\n");
-  }
-
-  private static String textToString(Text text) {
-    String value = text.getValue().replaceAll("\n", "\\\\n");
-    if (isNewline(text)) {
-      return "New Line: '" + value + "'";
-    }
-    if (isMultiNewLine(text)) {
-      return "Multi New Line: '" + value + "'";
-    }
-    return text.getCType() + " => " + value;
-  }
-
-  /**
-   * Check if content is a newline.
-   *
-   * @param content the content to check
-   * @return boolean
-   */
-  static boolean hasNewlines(Content content) {
-    if (content instanceof Text) {
-      Text text = (Text) content;
-      return StringUtils.countMatches(text.getValue(), "\n") >= 1;
-    }
-    return false;
-  }
-
-  /**
-   * Check if content is a newline.
-   *
-   * @param content the content to check
-   * @return boolean
-   */
-  static boolean isNewline(Content content) {
-    if (content instanceof Text) {
-      Text text = (Text) content;
-      return StringUtils.countMatches(text.getValue(), "\n") == 1;
-    }
-    return false;
-  }
-
-  /**
-   * Check if content is a multiline.
-   *
-   * @param content the content to check
-   * @return boolean
-   */
-  static boolean isMultiNewLine(Content content) {
-    if (content instanceof Text) {
-      Text text = (Text) content;
-      return StringUtils.countMatches(text.getValue(), "\n") > 1;
-    }
-    return false;
-  }
-
-  /**
-   * Get all direct children of the element.
-   *
-   * @param element the element to consider.
-   * @return List of {@link Content}s
-   */
-  private static List<Content> getDirectContents(Element element) {
-    // get all direct children
-    List<Content> children = new ArrayList<>();
-    for (Content descendant : element.getParentElement().getDescendants()) {
-      if (!descendant.getParent().equals(element)) {
-        // Only consider direct children
-        continue;
-      }
-      children.add(descendant);
-    }
-    return children;
-  }
-
-  /**
-   * Check if content is a comment.
-   *
-   * @param content the content to check
-   * @return boolean
-   */
-  static boolean isComment(Content content) {
-    return content instanceof Comment;
-  }
-
-  /**
-   * Get all comments attached to the element.
-   *
-   * @param element the element to consider.
-   * @return List of {@link Comment}s
-   */
-  static List<Content> getAttachedComments(Element element) {
-    List<Content> contents = new ArrayList<>();
-    List<Content> siblings = getDirectContents(element.getParentElement());
-    int indexOfElement = siblings.indexOf(element);
-    for (int i = indexOfElement - 1; i >= 0; i--) {
-      if (isNewline(siblings.get(i))) {
-        contents.add(siblings.get(i));
-        i--;
-      }
-      if (i >= 0 && siblings.get(i) instanceof Comment) {
-        contents.add(siblings.get(i));
-        continue;
-      }
-      if (i >= 0 && isMultiNewLine(siblings.get(i))) {
-        contents.add(siblings.get(i));
-      }
-      break;
-    }
-    return contents;
-  }
-
-  /**
-   * Remove all empty profiles and profile tag.<br>
-   * Empty is defined as for tag:
-   * <ul>
-   * <li>profiles: there are no profile tags</li>
-   * <li>profile: Either there are only the tags activation and id present or all other tags are empty</li>
-   * </ul>
-   * Thus, empty tag may contain comments which will be removed as well.
-   *
-   * @param rootElement the root element.
-   */
-  public static void cleanupEmptyProfiles(Element rootElement) {
-    IteratorIterable<Element> filteredElements = rootElement.getDescendants(new ElementFilter(POM_ELEMENT_PROFILES));
-    List<Element> profiles = new ArrayList<>();
-    for (Element profilesElement : filteredElements) {
-      profiles.add(profilesElement);
-    }
-    for (Element profilesElement : profiles) {
-      removeElementWithEmptyChildren(profilesElement, POM_ELEMENT_PROFILE, Arrays.asList(JDomCfg.POM_ELEMENT_ID, JDomCfg.POM_ELEMENT_ACTIVATION));
-      if (!profilesElement.getDescendants(new ElementFilter(POM_ELEMENT_PROFILE)).hasNext()) {
-        JDomUtils.removeChildElement(rootElement, profilesElement);
-      }
-    }
-  }
-
-  /**
-   * Remove all empty children with tag name from parent element.<br>
-   * The child is considered as empty if the child has either:
-   * <ul>
-   * <li>no children itself or</li>
-   * <li>only children which are ignored or/and</li>
-   * <li>empty children itself which are not ignored</li>
-   * </ul>
-   *
-   * @param parent         the parent element.
-   * @param tagName        the tag name to search for.
-   * @param ignoreChildren List of children tag names which are ignored when searching for child elements.
-   */
-  private static void removeElementWithEmptyChildren(Element parent, String tagName, List<String> ignoreChildren) {
-    // Example:
-    // parent === 'profiles' Element
-    // tagName === 'profile'
-    // ignoreChildren === ['id', 'activation']
-
-    // filteredElements === direct children of parent which are of type Element and matching 'tagName'
-    IteratorIterable<Element> filteredElements = parent.getDescendants(new ElementFilter(tagName));
-
-    List<Content> contentToBeRemoved = new ArrayList<>();
-    for (Element filteredElement : filteredElements) {
-      boolean empty = true;
-      for (Element child : filteredElement.getChildren()) {
-        if (!ignoreChildren.contains(child.getName()) && child.getChildren().size() > 0) {
-          empty = false;
-          break;
-        }
-      }
-      if (empty) {
-        contentToBeRemoved.add(filteredElement);
-        contentToBeRemoved.addAll(getAttachedComments(filteredElement));
-      }
-    }
-    for (Content elementToBeRemoved : contentToBeRemoved) {
-      JDomUtils.removeChildContent(parent, elementToBeRemoved);
-    }
   }
 }
