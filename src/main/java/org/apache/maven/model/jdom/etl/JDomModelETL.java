@@ -21,7 +21,7 @@ package org.apache.maven.model.jdom.etl;
 
 import org.apache.maven.model.Model;
 import org.apache.maven.model.jdom.JDomModel;
-import org.apache.maven.model.jdom.util.JDomUtils;
+import org.apache.maven.model.jdom.util.JDomCleanupHelper;
 import org.codehaus.plexus.util.IOUtil;
 import org.codehaus.plexus.util.ReaderFactory;
 import org.codehaus.plexus.util.WriterFactory;
@@ -177,7 +177,7 @@ public class JDomModelETL implements ModelETL {
     }
 
     // Remove empty (i.e. with no elements) profile and profiles tag
-    JDomUtils.cleanupEmptyProfiles(rootElement);
+    JDomCleanupHelper.cleanupEmptyProfiles(rootElement);
 
     try (Writer writer = WriterFactory.newXmlWriter(pomFile)) {
       if (intro != null) {
@@ -238,7 +238,7 @@ public class JDomModelETL implements ModelETL {
     return norm;
   }
 
-  public void setModelETLRequest(ModelETLRequest modelETLRequest) {
+  void setModelETLRequest(ModelETLRequest modelETLRequest) {
     this.modelETLRequest = modelETLRequest;
   }
 }
