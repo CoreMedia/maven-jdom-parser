@@ -30,12 +30,13 @@ import java.util.Iterator;
 import java.util.List;
 
 import static java.lang.Math.max;
-import static java.util.Arrays.asList;
+import static org.jdom2.filter.Filters.textOnly;
 
 /**
  * Common JDom functions
  *
  * @author Robert Scholte (for <a href="https://github.com/apache/maven-release/">Maven Release projct</a>, version 3.0)
+ * @author Marc Rohlfs, CoreMedia AG
  */
 public final class JDomUtils {
 
@@ -55,7 +56,7 @@ public final class JDomUtils {
    * @param root    the root element.
    */
   public static void addElement(Element element, Element root) {
-    addElement(element, root, getLastElementIndex(root) + 1);
+    addElement(element, root, calcNewElementIndex(element.getName(), root));
   }
 
   /**
@@ -65,11 +66,15 @@ public final class JDomUtils {
    * @param index the index where the element should be inserted.
    */
   public static void addElement(Element element, Element root, int index) {
-    root.addContent(
-            index,
-            asList(
-                    new Text("\n" + detectIndentation(root)),
-                    element));
+    root.addContent(index, element);
+
+    String prependingElementName = ((Element) root.getContent(max(0, index - 1))).getName();
+    if (isBlankLineBetweenElements(prependingElementName, element.getName(), root)) {
+      root.addContent(index, new Text("\n\n" + detectIndentation(root)));
+    } else {
+      root.addContent(index, new Text("\n" + detectIndentation(root)));
+    }
+
     resetIndentations(root, detectIndentation(root));
     resetIndentations(element, detectIndentation(root) + "  ");
   }
@@ -116,7 +121,8 @@ public final class JDomUtils {
     newElement.addContent("\n" + indent);
     root.addContent(index, newElement);
 
-    if (isBlankLineBeforeElement(name, root)) {
+    String prependingElementName = ((Element) root.getContent(max(0, index - 1))).getName();
+    if (isBlankLineBetweenElements(prependingElementName, name, root)) {
       root.addContent(index, new Text("\n\n" + indent));
     } else {
       root.addContent(index, new Text("\n" + indent));
@@ -147,51 +153,62 @@ public final class JDomUtils {
     return addIndex;
   }
 
-  private static boolean isBlankLineBeforeElement(String name, Element root) {
+  private static boolean isBlankLineBetweenElements(String element1, String element2, Element root) {
     List<String> elementOrder = JDomCfg.getInstance().getElementOrder(root.getName());
-    return elementOrder != null && elementOrder.get(max(0, elementOrder.indexOf(name) - 1)).equals("");
+    if (elementOrder != null) {
+      return elementOrder
+              .subList(elementOrder.indexOf(element1), elementOrder.indexOf(element2))
+              .contains("");
+    }
+    return false;
   }
 
   /**
    * Tries to detect the indentation that is used within the given element and returns it.
    * <p>
    * The method actually returns all characters (supposed to be whitespaces) that occur after the last linebreak in a
-   * text element that is followed by an XML element.
+   * text element.
    *
    * @param element the element whose contents should be used to detect the indentation.
    * @return the detected indentation or {@code null} if not indentation can be detected.
    */
   public static String detectIndentation(Element element) {
-    String indent = null;
 
-    String indentCandidate = null;
-    for (Content childElement : element.getContent()) {
-      if (childElement instanceof Text) {
-        String text = ((Text) childElement).getText();
-        int lastLsIndex = StringUtils.lastIndexOfAny(text, new String[]{"\n", "\r"});
-        if (lastLsIndex > -1) {
-          indentCandidate = text.substring(lastLsIndex + 1);
-        }
-      } else if (indentCandidate != null) {
-        if (childElement instanceof Element) {
-          indent = indentCandidate;
-          break;
+    for (Iterator<Text> iterator = element.getContent(textOnly()).iterator(); iterator.hasNext(); ) {
+      String text = iterator.next().getText();
+      int lastLsIndex = StringUtils.lastIndexOfAny(text, new String[]{"\n", "\r"});
+      if (lastLsIndex > -1) {
+        String indent = text.substring(lastLsIndex + 1);
+        if (iterator.hasNext()) {
+          // This should be the indentation of a child element.
+          return indent;
         } else {
-          indentCandidate = null;
+          // This should be the indentation of the elements end tag.
+          return indent + "  ";
         }
       }
     }
 
-    if (indent == null) {
-      Parent parent = element.getParent();
-      if (parent instanceof Element) {
-        indent = detectIndentation((Element) parent) + "  ";
-      } else {
-        return "";
-      }
+    Parent parent = element.getParent();
+    if (parent instanceof Element) {
+      return detectIndentation((Element) parent) + "  ";
     }
 
-    return indent;
+    return "";
+  }
+
+  /**
+   * Creates a new element with the given name. The new element has the same namespace and the same indentation (before)
+   * its closing tag) like the given parent element, but is not yet attached to it.
+   *
+   * @param name   the name of the new e.lement
+   * @param parent the parent element.
+   * @return the new element.
+   */
+  public static Element newDetachedElement(String name, Element parent) {
+    Element newElement = new Element(name, parent.getNamespace());
+    newElement.addContent("\n" + detectIndentation(parent));
+    return newElement;
   }
 
   /**

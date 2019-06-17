@@ -107,16 +107,7 @@ public class JDomPlugin extends Plugin implements JDomBacked, MavenCoordinate {
   @Override
   public List<Dependency> getDependencies() {
     Element dependenciesElm = jdomElement.getChild(POM_ELEMENT_DEPENDENCIES, jdomElement.getNamespace());
-    if (dependenciesElm == null) {
-      return Collections.emptyList();
-    } else {
-      List<Element> dependencyElms = dependenciesElm.getChildren(POM_ELEMENT_DEPENDENCY, jdomElement.getNamespace());
-      List<Dependency> dependencies = new ArrayList<>(dependencyElms.size());
-      for (Element dependencyElm : dependencyElms) {
-        dependencies.add(new JDomDependency(dependencyElm));
-      }
-      return dependencies;
-    }
+    return new JDomDependencies(dependenciesElm, this);
   }
 
   @Override
@@ -124,7 +115,7 @@ public class JDomPlugin extends Plugin implements JDomBacked, MavenCoordinate {
     if (dependencies == null) {
       rewriteElement(POM_ELEMENT_DEPENDENCIES, null, jdomElement);
     } else {
-      new JDomDependencies(insertNewElement(POM_ELEMENT_DEPENDENCIES, jdomElement)).addAll(dependencies);
+      new JDomDependencies(insertNewElement(POM_ELEMENT_DEPENDENCIES, jdomElement), this).addAll(dependencies);
     }
   }
 
