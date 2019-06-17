@@ -104,6 +104,16 @@ public abstract class AbstractJDomModelEtlIT {
   }
 
   @SuppressWarnings("WeakerAccess")
+  protected void assertTransformationWithCleanup() throws IOException {
+    subjectModelETL.loadWithCleanup(outputPomFile);
+
+    String actualXml = FileUtils.fileRead(outputPomFile);
+    String expectedXml = FileUtils.fileRead(expectedPomFile);
+    String message = "Unexpected contents in output file " + outputPomFile + System.getProperty("line.separator");
+    assertEquals(message, expectedXml, actualXml);
+  }
+
+  @SuppressWarnings("WeakerAccess")
   protected Model getSourceModel() {
     if (sourceModel == null) {
       fail("Test resource not found: " + getTestResourceNamePrefix() + "_source-pom.xml");

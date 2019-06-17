@@ -133,7 +133,17 @@ public class JDomModelETL implements ModelETL {
     if (model == null) {
       throw new IllegalStateException("A model must be extracted first");
     }
-    writePom(targetFile);
+    writePom(targetFile, false);
+  }
+
+  /**
+   * Load targetFile and do cleanup before writing the pom.
+   */
+  public void loadWithCleanup(File targetFile) throws IOException {
+    if (model == null) {
+      throw new IllegalStateException("A model must be extracted first");
+    }
+    writePom(targetFile, true);
   }
 
   @Override
@@ -155,7 +165,7 @@ public class JDomModelETL implements ModelETL {
     }
   }
 
-  private void writePom(File pomFile) throws IOException {
+  private void writePom(File pomFile, boolean cleanup) throws IOException {
     Element rootElement = document.getRootElement();
 
     if (modelETLRequest.isAddSchema()) {
@@ -178,15 +188,17 @@ public class JDomModelETL implements ModelETL {
       }
     }
 
-    // Remove empty properties tags for project and profile tags
-    JDomCleanupHelper.cleanupEmptyProperties(rootElement, Arrays.asList(JDomCfg.POM_ELEMENT_PROJECT, JDomCfg.POM_ELEMENT_PROFILE));
+    if (cleanup) {
+      // Remove empty properties tags for project and profile tags
+      JDomCleanupHelper.cleanupEmptyProperties(rootElement, Arrays.asList(JDomCfg.POM_ELEMENT_PROJECT, JDomCfg.POM_ELEMENT_PROFILE));
 
-    // Remove empty elements
-    JDomCleanupHelper.cleanupEmptyElements(rootElement, JDomCfg.POM_ELEMENT_DEPENDENCIES);
-    JDomCleanupHelper.cleanupEmptyElements(rootElement, JDomCfg.POM_ELEMENT_DEPENDENCY_MANAGEMENT);
+      // Remove empty elements
+      JDomCleanupHelper.cleanupEmptyElements(rootElement, JDomCfg.POM_ELEMENT_DEPENDENCIES);
+      JDomCleanupHelper.cleanupEmptyElements(rootElement, JDomCfg.POM_ELEMENT_DEPENDENCY_MANAGEMENT);
 
-    // Remove empty (i.e. with no elements) profile and profiles tag
-    JDomCleanupHelper.cleanupEmptyProfiles(rootElement);
+      // Remove empty (i.e. with no elements) profile and profiles tag
+      JDomCleanupHelper.cleanupEmptyProfiles(rootElement);
+    }
 
     try (Writer writer = WriterFactory.newXmlWriter(pomFile)) {
       if (intro != null) {

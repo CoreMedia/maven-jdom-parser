@@ -9,12 +9,12 @@ public class JDomModelETLTest extends AbstractJDomModelEtlIT {
 
   @Test
   public void removeElementWithEmptyChildren() throws IOException {
-    assertTransformation();
+    assertTransformationWithCleanup();
   }
 
   @Test
   public void removeElementWithOnlyEmptyChildren() throws IOException {
-    assertTransformation();
+    assertTransformationWithCleanup();
   }
 
 }

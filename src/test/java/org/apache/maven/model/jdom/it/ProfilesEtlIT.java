@@ -94,7 +94,7 @@ public class ProfilesEtlIT extends AbstractJDomModelEtlIT {
   }
 
   @Test
-  public void removeProfile() throws IOException {
+  public void removeProfiles() throws IOException {
     List<String> profiles = Arrays.asList("profile-1", "profile-2", "profile-3", "profile-5", "profile-5a");
     for (String id : profiles) {
       Profile profile = new Profile();
@@ -102,5 +102,16 @@ public class ProfilesEtlIT extends AbstractJDomModelEtlIT {
       subjectModel.removeProfile(profile);
     }
     assertTransformation();
+  }
+
+  @Test
+  public void removeProfilesWithCleanup() throws IOException {
+    List<String> profiles = Arrays.asList("profile-1", "profile-2", "profile-3", "profile-5", "profile-5a");
+    for (String id : profiles) {
+      Profile profile = new Profile();
+      profile.setId(id);
+      subjectModel.removeProfile(profile);
+    }
+    assertTransformationWithCleanup();
   }
 }
