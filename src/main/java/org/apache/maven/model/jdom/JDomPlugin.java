@@ -25,15 +25,12 @@ import org.apache.maven.model.PluginExecution;
 import org.jdom2.Element;
 import org.jdom2.Text;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import static java.util.Arrays.asList;
 import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_CONFIGURATION;
 import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_DEPENDENCIES;
-import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_DEPENDENCY;
 import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_EXTENSIONS;
 import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_INHERITED;
 import static org.apache.maven.model.jdom.util.JDomUtils.detectIndentation;
@@ -214,13 +211,17 @@ public class JDomPlugin extends Plugin implements JDomBacked, MavenCoordinate {
     return constructKey(getGroupId(), getArtifactId());
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Plugin clone() {
     throw new UnsupportedOperationException();
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Element getJDomElement() {
     return jdomElement;

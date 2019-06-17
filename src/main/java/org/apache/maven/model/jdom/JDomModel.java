@@ -43,6 +43,7 @@ import org.jdom2.Element;
 import java.util.List;
 import java.util.Properties;
 
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_DEPENDENCIES;
 import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_DESCRIPTION;
 import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_INCEPTION_YEAR;
 import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_MODEL_VERSION;

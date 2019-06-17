@@ -17,6 +17,7 @@ package org.apache.maven.model.jdom;
  */
 
 import org.apache.maven.model.Dependency;
+import org.apache.maven.model.jdom.util.JDomUtils;
 import org.codehaus.plexus.util.StringUtils;
 import org.jdom2.Element;
 import org.jdom2.filter.ElementFilter;
@@ -31,7 +32,6 @@ import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_DEPENDENCY;
 import static org.apache.maven.model.jdom.util.JDomUtils.addElement;
 import static org.apache.maven.model.jdom.util.JDomUtils.getElementIndex;
 import static org.apache.maven.model.jdom.util.JDomUtils.insertNewElement;
-import static org.apache.maven.model.jdom.util.JDomUtils.removeChildElement;
 import static org.codehaus.plexus.util.StringUtils.defaultString;
 
 /**
@@ -75,15 +75,15 @@ public class JDomDependencies extends ArrayList<Dependency> implements JDomBacke
       if (StringUtils.equals(candidate.getGroupId(), removeDependency.getGroupId())
               && StringUtils.equals(candidate.getArtifactId(), removeDependency.getArtifactId())
               && defaultString(candidate.getType(), "jar").equals(defaultString(removeDependency.getType(), "jar"))) {
-        removeChildElement(jdomElement, ((JDomDependency) candidate).getJDomElement());
+        JDomUtils.removeChildContent(jdomElement, ((JDomDependency) candidate).getJDomElement());
 
         boolean remove = super.remove(candidate);
         if (super.isEmpty()) {
           if (parent instanceof JDomDependencyManagement) {
             JDomBacked parentOfDependencyManagement = ((JDomDependencyManagement) parent).getParent();
-            removeChildElement(parentOfDependencyManagement.getJDomElement(), this.parent.getJDomElement());
+            JDomUtils.removeChildContent(parentOfDependencyManagement.getJDomElement(), this.parent.getJDomElement());
           } else {
-            removeChildElement(parent.getJDomElement(), jdomElement);
+            JDomUtils.removeChildContent(parent.getJDomElement(), jdomElement);
           }
         }
         return remove;
@@ -192,13 +192,11 @@ public class JDomDependencies extends ArrayList<Dependency> implements JDomBacke
     throw new UnsupportedOperationException();
   }
 
-  /** {@inheritDoc} */
   @Override
   public Object clone() {
     throw new UnsupportedOperationException();
   }
 
-  /** {@inheritDoc} */
   @Override
   public Element getJDomElement() {
     return jdomElement;

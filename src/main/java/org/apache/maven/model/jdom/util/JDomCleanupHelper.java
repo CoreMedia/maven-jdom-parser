@@ -24,8 +24,6 @@ import org.jdom2.Content;
 import org.jdom2.Element;
 import org.jdom2.filter.ElementFilter;
 import org.jdom2.util.IteratorIterable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,7 +31,6 @@ import java.util.List;
 
 import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_PROFILE;
 import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_PROFILES;
-import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_PROPERTIES;
 
 /**
  * JDom cleanup methods for:
@@ -44,8 +41,6 @@ import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_PROPERTIES;
  * @author https://github.com/eva-mueller-coremedia  (for <a href="https://github.com/CoreMedia/maven-jdom-parser">Maven JDom Parser</a>, version 3.0)
  */
 public class JDomCleanupHelper {
-
-  private static final Logger LOG = LoggerFactory.getLogger(JDomCleanupHelper.class);
 
   /**
    * Remove all empty profiles and profile tags.<br>
@@ -70,27 +65,49 @@ public class JDomCleanupHelper {
               Arrays.asList(JDomCfg.POM_ELEMENT_ID, JDomCfg.POM_ELEMENT_ACTIVATION)
       );
       if (!profilesElement.getDescendants(new ElementFilter(POM_ELEMENT_PROFILE)).hasNext()) {
-        JDomUtils.removeChildElement(rootElement, profilesElement);
+        JDomUtils.removeChildElement(profilesElement.getParentElement(), profilesElement);
       }
     }
   }
 
   /**
-   * Remove empty properties tag.<br>
+   * Remove empty properties tags with special parents.<br>
    * Empty tags may contain comments which will be removed as well.
    *
    * @param rootElement the root element.
+   * @param parentTags  Allowed parent tags.
    */
-  public static void cleanupEmptyProperties(Element rootElement) {
-    IteratorIterable<Element> filteredElements = rootElement.getDescendants(new ElementFilter(POM_ELEMENT_PROPERTIES));
+  public static void cleanupEmptyProperties(Element rootElement, List<String> parentTags) {
+    IteratorIterable<Element> filteredElements = rootElement.getDescendants(new ElementFilter(JDomCfg.POM_ELEMENT_PROPERTIES));
     List<Element> properties = new ArrayList<>();
     for (Element propertiesElement : filteredElements) {
-      if (propertiesElement.getChildren().size() == 0) {
+      if (parentTags.contains(propertiesElement.getParentElement().getName()) && propertiesElement.getChildren().size() == 0) {
         properties.add(propertiesElement);
       }
     }
     for (Element propertiesElement : properties) {
       JDomUtils.removeChildElement(propertiesElement.getParentElement(), propertiesElement);
+    }
+  }
+
+  /**
+   * Remove empty element tags and their empty child tags.<br>
+   * Empty tags may contain comments which will be removed as well.
+   *
+   * @param rootElement the root element.
+   * @param tag         Tag to check.
+   */
+  public static void cleanupEmptyElements(Element rootElement, String tag) {
+    IteratorIterable<Element> filteredElements = rootElement.getDescendants(new ElementFilter(tag));
+    List<Element> elementsToRemoveIfEmpty = new ArrayList<>();
+    for (Element element : filteredElements) {
+      elementsToRemoveIfEmpty.add(element);
+    }
+    for (Element elementToRemove : elementsToRemoveIfEmpty) {
+      List<Element> children = elementToRemove.getChildren();
+      if (children.size() == 0) {
+        JDomUtils.removeChildElement(elementToRemove.getParentElement(), elementToRemove);
+      }
     }
   }
 
@@ -132,23 +149,6 @@ public class JDomCleanupHelper {
     }
     for (Content elementToBeRemoved : contentToBeRemoved) {
       JDomUtils.removeChildContent(parent, elementToBeRemoved);
-    }
-  }
-
-  /**
-   * Remove childless element and its comments.<br>
-   *
-   * @param elementToRemove the element to remove.
-   */
-  private static void removeElementWithEmptyChildren(Element elementToRemove) {
-    // filteredElements === direct children of elementToRemove which are of type Element and matching 'tagName'
-    List<Content> contentToBeRemoved = new ArrayList<>();
-    if (elementToRemove.getChildren().size() == 0) {
-      contentToBeRemoved.add(elementToRemove);
-      contentToBeRemoved.addAll(getAttachedComments(elementToRemove));
-    }
-    for (Content elementToBeRemoved : contentToBeRemoved) {
-      JDomUtils.removeChildContent(elementToRemove, elementToBeRemoved);
     }
   }
 

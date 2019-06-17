@@ -77,6 +77,20 @@ public class DependencyManagementEtlIT extends DependenciesEtlIT {
     assertTransformation();
   }
 
+  @Test
+  public void removeAllDependencies() throws IOException {
+    DependencyManagement dependencyManagement = subjectModel.getDependencyManagement();
+    for (Dependency dependency : dependencyManagement.getDependencies().toArray(new Dependency[]{})) {
+      if (dependency.getArtifactId().equals("commons-collections4")) {
+        dependencyManagement.removeDependency(dependency);
+      }
+      if (dependency.getArtifactId().equals("commons-lang3")) {
+        dependencyManagement.removeDependency(dependency);
+      }
+    }
+    assertTransformation();
+  }
+
   @Override
   protected List<Dependency> getDependenciesFromModel() {
     return subjectModel.getDependencyManagement().getDependencies();

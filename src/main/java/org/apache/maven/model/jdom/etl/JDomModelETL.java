@@ -21,6 +21,7 @@ package org.apache.maven.model.jdom.etl;
 
 import org.apache.maven.model.Model;
 import org.apache.maven.model.jdom.JDomModel;
+import org.apache.maven.model.jdom.util.JDomCfg;
 import org.apache.maven.model.jdom.util.JDomCleanupHelper;
 import org.codehaus.plexus.util.IOUtil;
 import org.codehaus.plexus.util.ReaderFactory;
@@ -43,6 +44,7 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -176,8 +178,12 @@ public class JDomModelETL implements ModelETL {
       }
     }
 
-    // Remove empty properties tag
-    JDomCleanupHelper.cleanupEmptyProperties(rootElement);
+    // Remove empty properties tags for project and profile tags
+    JDomCleanupHelper.cleanupEmptyProperties(rootElement, Arrays.asList(JDomCfg.POM_ELEMENT_PROJECT, JDomCfg.POM_ELEMENT_PROFILE));
+
+    // Remove empty elements
+    JDomCleanupHelper.cleanupEmptyElements(rootElement, JDomCfg.POM_ELEMENT_DEPENDENCIES);
+    JDomCleanupHelper.cleanupEmptyElements(rootElement, JDomCfg.POM_ELEMENT_DEPENDENCY_MANAGEMENT);
 
     // Remove empty (i.e. with no elements) profile and profiles tag
     JDomCleanupHelper.cleanupEmptyProfiles(rootElement);
