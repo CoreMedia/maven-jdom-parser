@@ -42,9 +42,10 @@ import static org.codehaus.plexus.util.StringUtils.defaultString;
 public class JDomDependencies extends ArrayList<Dependency> implements JDomBacked {
 
   private final Element jdomElement;
-  private final Element parent;
 
-  public JDomDependencies(Element jdomElement, Element parent) {
+  private final JDomBacked parent;
+
+  public JDomDependencies(Element jdomElement, JDomBacked parent) {
     super(transformDependencyElementsToJDomDependencyList(jdomElement));
     this.jdomElement = jdomElement;
     this.parent = parent;
@@ -75,9 +76,15 @@ public class JDomDependencies extends ArrayList<Dependency> implements JDomBacke
               && StringUtils.equals(candidate.getArtifactId(), removeDependency.getArtifactId())
               && defaultString(candidate.getType(), "jar").equals(defaultString(removeDependency.getType(), "jar"))) {
         JDomUtils.removeChildContent(jdomElement, ((JDomDependency) candidate).getJDomElement());
+
         boolean remove = super.remove(candidate);
         if (super.isEmpty()) {
-          JDomUtils.removeChildElement(parent, jdomElement);
+          if (parent instanceof JDomDependencyManagement) {
+            JDomBacked parentOfDependencyManagement = ((JDomDependencyManagement) parent).getParent();
+            JDomUtils.removeChildContent(parentOfDependencyManagement.getJDomElement(), this.parent.getJDomElement());
+          } else {
+            JDomUtils.removeChildContent(parent.getJDomElement(), jdomElement);
+          }
         }
         return remove;
       }
@@ -135,6 +142,15 @@ public class JDomDependencies extends ArrayList<Dependency> implements JDomBacke
     if (index > 0) {
       Element previousElement = ((JDomDependency) get(index - 1)).getJDomElement();
       elementIndex = 1 + getElementIndex(previousElement, jdomElement);
+    }
+
+    if (jdomElement.getParent() == null) {
+      addElement(jdomElement, parent.getJDomElement());
+    }
+    if (parent instanceof JDomDependencyManagement) {
+      if (parent.getJDomElement().getParent() == null) {
+        addElement(this.parent.getJDomElement(), ((JDomDependencyManagement) parent).getParent().getJDomElement());
+      }
     }
 
     JDomDependency jdomDependency;

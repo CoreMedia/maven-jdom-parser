@@ -32,13 +32,13 @@ import java.util.Iterator;
 import java.util.List;
 
 import static java.lang.Math.max;
-import static java.util.Arrays.asList;
+import static org.jdom2.filter.Filters.textOnly;
 
 /**
  * Common JDom functions
  *
  * @author Robert Scholte (for <a href="https://github.com/apache/maven-release/">Maven Release projct</a>, version 3.0)
- * @author https://github.com/eva-mueller-coremedia  (for <a href="https://github.com/CoreMedia/maven-jdom-parser">Maven JDom Parser</a>, version 3.0)
+ * @author Marc Rohlfs, CoreMedia AG
  */
 public final class JDomUtils {
 
@@ -46,6 +46,41 @@ public final class JDomUtils {
 
   private JDomUtils() {
     // noop
+  }
+
+  /**
+   * Adds an element as new child to the given root element. The position where the element is inserted is calculated
+   * using the element order that is defined in the {@link JDomCfg} (see {@link JDomCfg#getElementOrder(String)}). When
+   * no order is defined for the element, the new element is append as last element (before the closing tag of the
+   * root element). In the root element, the new element is always prepended by a text element containing a linebreak
+   * followed by the indentation characters. The indentation of the new element nodes will be reset to the indentation
+   * that is (tried to be) detected from the root element (see {@link #detectIndentation(Element)}).
+   *
+   * @param element the name of the new element.
+   * @param root    the root element.
+   */
+  public static void addElement(Element element, Element root) {
+    addElement(element, root, calcNewElementIndex(element.getName(), root));
+  }
+
+  /**
+   * Inserts a new child element to the given root element at the given index.
+   * For details see {@link #addElement(Element, Element)}
+   *
+   * @param index the index where the element should be inserted.
+   */
+  public static void addElement(Element element, Element root, int index) {
+    root.addContent(index, element);
+
+    String prependingElementName = ((Element) root.getContent(max(0, index - 1))).getName();
+    if (isBlankLineBetweenElements(prependingElementName, element.getName(), root)) {
+      root.addContent(index, new Text("\n\n" + detectIndentation(root)));
+    } else {
+      root.addContent(index, new Text("\n" + detectIndentation(root)));
+    }
+
+    resetIndentations(root, detectIndentation(root));
+    resetIndentations(element, detectIndentation(root) + "  ");
   }
 
   public static int getElementIndex(Element element, Element root) {
@@ -57,6 +92,127 @@ public final class JDomUtils {
 
     int size = elements.size();
     return size > 0 ? root.indexOf(elements.get(size - 1)) : -1;
+  }
+
+  /**
+   * Inserts a new child element to the given root element. The position where the element is inserted is calculated
+   * using the element order that is defined in the {@link JDomCfg} (see {@link JDomCfg#getElementOrder(String)}).
+   * When no order is defined for the element, the new element is append as last element (before the closing tag of the
+   * root element). In the root element, the new element is always prepended by a text element containing a linebreak
+   * followed by the indentation characters. The indentation characters are (tried to be) detected from the root element
+   * (see {@link #detectIndentation(Element)} ).
+   *
+   * @param name the name of the new element.
+   * @param root the root element.
+   * @return the new element.
+   */
+  public static Element insertNewElement(String name, Element root) {
+    return insertNewElement(name, root, calcNewElementIndex(name, root));
+  }
+
+  /**
+   * Inserts a new child element to the given root element at the given index.
+   * For details see {@link #insertNewElement(String, Element)}
+   *
+   * @param index the index where the element should be inserted.
+   */
+  public static Element insertNewElement(String name, Element root, int index) {
+    Element newElement;
+
+    String indent = detectIndentation(root);
+
+    newElement = new Element(name, root.getNamespace());
+    newElement.addContent("\n" + indent);
+    root.addContent(index, newElement);
+
+    String prependingElementName = ((Element) root.getContent(max(0, index - 1))).getName();
+    if (isBlankLineBetweenElements(prependingElementName, name, root)) {
+      root.addContent(index, new Text("\n\n" + indent));
+    } else {
+      root.addContent(index, new Text("\n" + indent));
+    }
+
+    return newElement;
+  }
+
+  private static int calcNewElementIndex(String name, Element root) {
+    int addIndex = 0;
+
+    List<String> elementOrder = JDomCfg.getInstance().getElementOrder(root.getName());
+    if (elementOrder == null) {
+      addIndex = max(0, getLastElementIndex(root) + 1);
+    } else {
+      for (int i = elementOrder.indexOf(name) - 1; i >= 0; i--) {
+        String addAfterElementName = elementOrder.get(i);
+        if (!addAfterElementName.equals("")) {
+          Element addAfterElement = root.getChild(addAfterElementName, root.getNamespace());
+          if (addAfterElement != null) {
+            addIndex = root.indexOf(addAfterElement) + 1;
+            break;
+          }
+        }
+      }
+    }
+
+    return addIndex;
+  }
+
+  private static boolean isBlankLineBetweenElements(String element1, String element2, Element root) {
+    List<String> elementOrder = JDomCfg.getInstance().getElementOrder(root.getName());
+    if (elementOrder != null) {
+      return elementOrder
+              .subList(elementOrder.indexOf(element1), elementOrder.indexOf(element2))
+              .contains("");
+    }
+    return false;
+  }
+
+  /**
+   * Tries to detect the indentation that is used within the given element and returns it.
+   * <p>
+   * The method actually returns all characters (supposed to be whitespaces) that occur after the last linebreak in a
+   * text element.
+   *
+   * @param element the element whose contents should be used to detect the indentation.
+   * @return the detected indentation or {@code null} if not indentation can be detected.
+   */
+  public static String detectIndentation(Element element) {
+
+    for (Iterator<Text> iterator = element.getContent(textOnly()).iterator(); iterator.hasNext(); ) {
+      String text = iterator.next().getText();
+      int lastLsIndex = StringUtils.lastIndexOfAny(text, new String[]{"\n", "\r"});
+      if (lastLsIndex > -1) {
+        String indent = text.substring(lastLsIndex + 1);
+        if (iterator.hasNext()) {
+          // This should be the indentation of a child element.
+          return indent;
+        } else {
+          // This should be the indentation of the elements end tag.
+          return indent + "  ";
+        }
+      }
+    }
+
+    Parent parent = element.getParent();
+    if (parent instanceof Element) {
+      return detectIndentation((Element) parent) + "  ";
+    }
+
+    return "";
+  }
+
+  /**
+   * Creates a new element with the given name. The new element has the same namespace and the same indentation (before)
+   * its closing tag) like the given parent element, but is not yet attached to it.
+   *
+   * @param name   the name of the new e.lement
+   * @param parent the parent element.
+   * @return the new element.
+   */
+  public static Element newDetachedElement(String name, Element parent) {
+    Element newElement = new Element(name, parent.getNamespace());
+    newElement.addContent("\n" + detectIndentation(parent));
+    return newElement;
   }
 
   /**
@@ -85,104 +241,6 @@ public final class JDomUtils {
       String text = child.getTextTrim();
       return "null".equals(text) ? null : text;
     }
-  }
-
-  /**
-   * Adds an element as new child to the given root element. The position where the element is inserted is calculated
-   * using the element order that is defined in the {@link JDomCfg} (see {@link JDomCfg#getElementOrder(String)}). When
-   * no order is defined for the element, the new element is append as last element (before the closing tag of the
-   * root element). In the root element, the new element is always prepended by a text element containing a linebreak
-   * followed by the indentation characters. The indentation of the new element nodes will be reset to the indentation
-   * that is (tried to be) detected from the root element (see {@link JDomUtils#detectIndentation(Element)}).
-   *
-   * @param element the name of the new element.
-   * @param root    the root element.
-   */
-  public static void addElement(Element element, Element root) {
-    addElement(element, root, getLastElementIndex(root) + 1);
-  }
-
-  /**
-   * Inserts a new child element to the given root element at the given index.
-   * For details see {@link #addElement(Element, Element)}
-   *
-   * @param index the index where the element should be inserted.
-   */
-  public static void addElement(Element element, Element root, int index) {
-    root.addContent(
-            index,
-            asList(
-                    new Text("\n" + detectIndentation(root)),
-                    element));
-    resetIndentations(root, detectIndentation(root));
-    resetIndentations(element, detectIndentation(root) + "  ");
-  }
-
-  /**
-   * Inserts a new child element to the given root element. The position where the element is inserted is calculated
-   * using the element order that is defined in the {@link JDomCfg} (see {@link JDomCfg#getElementOrder(String)}).
-   * When no order is defined for the element, the new element is append as last element (before the closing tag of the
-   * root element). In the root element, the new element is always prepended by a text element containing a linebreak
-   * followed by the indentation characters. The indentation characters are (tried to be) detected from the root element
-   * (see {@link JDomUtils#detectIndentation(Element)} ).
-   *
-   * @param name the name of the new element.
-   * @param root the root element.
-   * @return the new element.
-   */
-  public static Element insertNewElement(String name, Element root) {
-    return insertNewElement(name, root, calcNewElementIndex(name, root));
-  }
-
-  private static int calcNewElementIndex(String name, Element root) {
-    int addIndex = 0;
-
-    List<String> elementOrder = JDomCfg.getInstance().getElementOrder(root.getName());
-    if (elementOrder == null) {
-      addIndex = max(0, getLastElementIndex(root) + 1);
-    } else {
-      for (int i = elementOrder.indexOf(name) - 1; i >= 0; i--) {
-        String addAfterElementName = elementOrder.get(i);
-        if (!addAfterElementName.equals("")) {
-          Element addAfterElement = root.getChild(addAfterElementName, root.getNamespace());
-          if (addAfterElement != null) {
-            addIndex = root.indexOf(addAfterElement) + 1;
-            break;
-          }
-        }
-      }
-    }
-
-    return addIndex;
-  }
-
-  /**
-   * Inserts a new child element to the given root element at the given index.
-   * For details see {@link #insertNewElement(String, Element)}
-   *
-   * @param index the index where the element should be inserted.
-   */
-  public static Element insertNewElement(String name, Element root, int index) {
-    Element newElement;
-
-    String indent = detectIndentation(root);
-
-    newElement = new Element(name, root.getNamespace());
-    newElement.addContent("\n" + indent);
-    root.addContent(index, newElement);
-
-    if (isBlankLineBeforeElement(name, root)) {
-      root.addContent(index, new Text("\n\n" + indent));
-    } else {
-      root.addContent(index, new Text("\n" + indent));
-    }
-
-    return newElement;
-  }
-
-  private static boolean isBlankLineBeforeElement(String name, Element root) {
-    List<String> elementOrder = JDomCfg.getInstance().getElementOrder(root.getName());
-    return elementOrder != null && elementOrder.get(max(0, elementOrder.indexOf(name) - 1)).equals("");
   }
 
   /**
@@ -387,47 +445,5 @@ public final class JDomUtils {
       }
     }
     return tagElement;
-  }
-
-  /**
-   * Tries to detect the indentation that is used within the given element and returns it.
-   * <p>
-   * The method actually returns all characters (supposed to be whitespaces) that occur after the last linebreak in a
-   * text element that is followed by an XML element.
-   *
-   * @param element the element whose contents should be used to detect the indentation.
-   * @return the detected indentation or {@code null} if not indentation can be detected.
-   */
-  public static String detectIndentation(Element element) {
-    String indent = null;
-
-    String indentCandidate = null;
-    for (Content childElement : element.getContent()) {
-      if (childElement instanceof Text) {
-        String text = ((Text) childElement).getText();
-        int lastLsIndex = StringUtils.lastIndexOfAny(text, new String[]{"\n", "\r"});
-        if (lastLsIndex > -1) {
-          indentCandidate = text.substring(lastLsIndex + 1);
-        }
-      } else if (indentCandidate != null) {
-        if (childElement instanceof Element) {
-          indent = indentCandidate;
-          break;
-        } else {
-          indentCandidate = null;
-        }
-      }
-    }
-
-    if (indent == null) {
-      Parent parent = element.getParent();
-      if (parent instanceof Element) {
-        indent = detectIndentation((Element) parent) + "  ";
-      } else {
-        return "";
-      }
-    }
-
-    return indent;
   }
 }

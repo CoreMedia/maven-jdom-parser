@@ -21,12 +21,16 @@ package org.apache.maven.model.jdom;
 
 import org.apache.maven.model.Dependency;
 import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
+import org.junit.Before;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.io.StringReader;
-import java.util.Arrays;
 
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -34,78 +38,84 @@ public class JDomDependencyManagementTest {
 
   private SAXBuilder builder = new SAXBuilder();
 
+  private JDomDependencyManagement dependencyManagement;
+
+  @Before
+  public void setUp() throws IOException, JDOMException {
+    String dependencyContent = "<dependency><groupId>x</groupId><artifactId>y</artifactId></dependency>";
+    String dependenciesContent = "<dependencies>" + dependencyContent + "</dependencies>";
+    String dependencyManagementContent = "<dependencyManagement>" + dependenciesContent + "</dependencyManagement>";
+    String projectContent = "<project>" + dependencyManagementContent + "</project>";
+
+    Element elementPrj = builder.build(new StringReader(projectContent)).getRootElement();
+    Element elementDepMgmt = elementPrj.getChildren().get(0);
+
+    dependencyManagement = new JDomDependencyManagement(elementDepMgmt, new JDomModel(elementPrj));
+  }
+
   @Test
   public void testGetDependencies() throws Exception {
-    String content = "<dependencyManamgement></dependencyManamgement>";
+    String content = "<dependencyManagement></dependencyManagement>";
     Document document = builder.build(new StringReader(content));
-    assertNotNull(new JDomDependencyManagement(document.getRootElement()).getDependencies());
-    assertEquals(0, new JDomDependencyManagement(document.getRootElement()).getDependencies().size());
+    assertNotNull(new JDomDependencyManagement(document.getRootElement(), null).getDependencies());
+    assertEquals(0, new JDomDependencyManagement(document.getRootElement(), null).getDependencies().size());
 
-    content = "<dependencyManamgement><dependencies/></dependencyManamgement>";
+    content = "<dependencyManagement><dependencies/></dependencyManagement>";
     document = builder.build(new StringReader(content));
-    assertEquals(0, new JDomDependencyManagement(document.getRootElement()).getDependencies().size());
+    assertEquals(0, new JDomDependencyManagement(document.getRootElement(), null).getDependencies().size());
 
-    content = "<dependencyManamgement><dependencies><dependency/></dependencies></dependencyManamgement>";
+    content = "<dependencyManagement><dependencies><dependency/></dependencies></dependencyManagement>";
     document = builder.build(new StringReader(content));
-    assertEquals(1, new JDomDependencyManagement(document.getRootElement()).getDependencies().size());
+    assertEquals(1, new JDomDependencyManagement(document.getRootElement(), null).getDependencies().size());
   }
 
   @Test
   public void testAddDependency() throws Exception {
-    Dependency addDependency = new Dependency();
-    addDependency.setGroupId("a");
-    addDependency.setArtifactId("b");
-
-    String content = "<dependencyManamgement><dependencies> </dependencies></dependencyManamgement>";
-    Document document = builder.build(new StringReader(content));
-    JDomDependencyManagement dependencyManagement = new JDomDependencyManagement(document.getRootElement());
-    assertEquals(0, dependencyManagement.getDependencies().size());
-    dependencyManagement.addDependency(addDependency);
     assertEquals(1, dependencyManagement.getDependencies().size());
+
+    Dependency dependency = new Dependency();
+    dependency.setGroupId("a");
+    dependency.setArtifactId("b");
+    dependencyManagement.addDependency(dependency);
+
+    assertEquals(2, dependencyManagement.getDependencies().size());
   }
 
   @Test
   public void testRemoveJDomDependency() throws Exception {
-    String contentDep = "<dependency><groupId>a</groupId><artifactId>b</artifactId></dependency>";
-    String contentDepMgmt = "<dependencyManamgement><dependencies>" + contentDep + "</dependencies></dependencyManamgement>";
-    Document documentDep = builder.build(new StringReader(contentDep));
-    Document documentDepMgmt = builder.build(new StringReader(contentDepMgmt));
-    JDomDependencyManagement dependencyManagement = new JDomDependencyManagement(documentDepMgmt.getRootElement());
     assertEquals(1, dependencyManagement.getDependencies().size());
-    dependencyManagement.removeDependency(new JDomDependency(documentDep.getRootElement()));
+
+    String dependencyContent = "<dependency> <groupId>x</groupId> <artifactId>y</artifactId> </dependency>";
+    Element dependencyElement = builder.build(new StringReader(dependencyContent)).getRootElement();
+    dependencyManagement.removeDependency(new JDomDependency(dependencyElement));
+
     assertEquals(0, dependencyManagement.getDependencies().size());
   }
 
   @Test
   public void testRemoveModelDependency() throws Exception {
-    Dependency removeDependency = new Dependency();
-    removeDependency.setGroupId("a");
-    removeDependency.setArtifactId("b");
-
-    String contentDepMgmt = "<dependencyManamgement><dependencies><dependency><groupId>a</groupId><artifactId>b</artifactId></dependency></dependencies></dependencyManamgement>";
-    Document documentDepMgmt = builder.build(new StringReader(contentDepMgmt));
-    JDomDependencyManagement dependencyManagement = new JDomDependencyManagement(documentDepMgmt.getRootElement());
     assertEquals(1, dependencyManagement.getDependencies().size());
-    dependencyManagement.removeDependency(removeDependency);
+
+    Dependency dependency = new Dependency();
+    dependency.setGroupId("x");
+    dependency.setArtifactId("y");
+    dependencyManagement.removeDependency(dependency);
+
     assertEquals(0, dependencyManagement.getDependencies().size());
   }
 
-  // All other methods throw UnsupportedOperationException
-
   @Test
   public void testSetDependenciesListOfDependency() throws Exception {
-    Dependency addDependency1 = new Dependency();
-    addDependency1.setGroupId("a");
-    addDependency1.setArtifactId("b");
-    Dependency addDependency2 = new Dependency();
-    addDependency2.setGroupId("c");
-    addDependency2.setArtifactId("d");
+    assertEquals(1, dependencyManagement.getDependencies().size());
 
-    String content = "<dependencyManamgement> </dependencyManamgement>";
-    Document document = builder.build(new StringReader(content));
-    JDomDependencyManagement dependencyManagement = new JDomDependencyManagement(document.getRootElement());
-    assertEquals(0, dependencyManagement.getDependencies().size());
-    dependencyManagement.setDependencies(Arrays.asList(addDependency1, addDependency2));
+    Dependency dependency1 = new Dependency();
+    dependency1.setGroupId("a");
+    dependency1.setArtifactId("b");
+    Dependency dependency2 = new Dependency();
+    dependency2.setGroupId("c");
+    dependency2.setArtifactId("d");
+    dependencyManagement.setDependencies(asList(dependency1, dependency2));
+
     assertEquals(2, dependencyManagement.getDependencies().size());
   }
 }

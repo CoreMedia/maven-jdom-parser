@@ -1,0 +1,10 @@
+<root>
+  <detectByParent></detectByParent>
+    <detectByEndTag>
+    </detectByEndTag>
+ <detectByChild>
+
+
+        <childElement/>
+ </detectByChild>
+</root>

@@ -31,6 +31,16 @@ import java.util.List;
 public class DependenciesEtlIT extends AbstractJDomModelEtlIT {
 
   @Test
+  public void addFirstDependency() throws IOException {
+    Dependency dependency = new Dependency();
+    dependency.setGroupId("org.apache.commons");
+    dependency.setArtifactId("commons-lang3");
+    dependency.setVersion("3.8.1");
+    this.getDependenciesFromModel().add(dependency);
+    assertTransformation();
+  }
+
+  @Test
   public void addJDomDependencyAtIndex0() throws IOException {
     Dependency dependency = getSourceModel().getDependencies().get(0);
     getDependenciesFromModel().add(0, dependency);
@@ -61,6 +71,12 @@ public class DependenciesEtlIT extends AbstractJDomModelEtlIT {
         dependency.setVersion("1.0");
       }
     }
+    assertTransformation();
+  }
+
+  @Test
+  public void removeLastDependency() throws IOException {
+    this.getDependenciesFromModel().remove(0);
     assertTransformation();
   }
 

@@ -23,11 +23,11 @@ import org.apache.maven.model.Dependency;
 import org.apache.maven.model.DependencyManagement;
 import org.jdom2.Element;
 
-import java.util.Collections;
 import java.util.List;
 
 import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_DEPENDENCIES;
-import static org.apache.maven.model.jdom.util.JDomUtils.insertNewElement;
+import static org.apache.maven.model.jdom.util.JDomUtils.getChildElement;
+import static org.apache.maven.model.jdom.util.JDomUtils.newDetachedElement;
 import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
 
 /**
@@ -39,18 +39,17 @@ public class JDomDependencyManagement extends DependencyManagement implements JD
 
   private final Element jdomElement;
 
-  public JDomDependencyManagement(Element jdomElement) {
-    this.jdomElement = jdomElement;
-  }
+  private final JDomBacked parent;
 
-  @Override
-  public List<Dependency> getDependencies() {
-    Element dependenciesElm = jdomElement.getChild(POM_ELEMENT_DEPENDENCIES, jdomElement.getNamespace());
-    if (dependenciesElm == null) {
-      return Collections.emptyList();
-    } else {
-      return new JDomDependencies(dependenciesElm, jdomElement);
+  public JDomDependencyManagement(Element jdomElement, JDomBacked parent) {
+    this.jdomElement = jdomElement;
+    this.parent = parent;
+
+    Element dependenciesElement = getChildElement(POM_ELEMENT_DEPENDENCIES, jdomElement);
+    if (dependenciesElement == null) {
+      dependenciesElement = newDetachedElement(POM_ELEMENT_DEPENDENCIES, jdomElement);
     }
+    super.setDependencies(new JDomDependencies(dependenciesElement, this));
   }
 
   @Override
@@ -58,7 +57,9 @@ public class JDomDependencyManagement extends DependencyManagement implements JD
     if (dependencies == null) {
       rewriteElement(POM_ELEMENT_DEPENDENCIES, null, jdomElement);
     } else {
-      new JDomDependencies(insertNewElement(POM_ELEMENT_DEPENDENCIES, jdomElement), jdomElement).addAll(dependencies);
+      JDomDependencies jdomDependencies = (JDomDependencies) getDependencies();
+      jdomDependencies.clear();
+      jdomDependencies.addAll(dependencies);
     }
   }
 
@@ -72,5 +73,9 @@ public class JDomDependencyManagement extends DependencyManagement implements JD
   @Override
   public Element getJDomElement() {
     return jdomElement;
+  }
+
+  public JDomBacked getParent() {
+    return parent;
   }
 }

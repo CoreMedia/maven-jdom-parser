@@ -43,7 +43,6 @@ import org.jdom2.Element;
 import java.util.List;
 import java.util.Properties;
 
-import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_DEPENDENCIES;
 import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_DESCRIPTION;
 import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_INCEPTION_YEAR;
 import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_MODEL_VERSION;
@@ -122,7 +121,7 @@ public class JDomModel extends Model implements JDomBacked, MavenCoordinate {
 
   @Override
   public List<Dependency> getDependencies() {
-    return new JDomDependencies(jdomElement.getChild(POM_ELEMENT_DEPENDENCIES, jdomElement.getNamespace()), jdomElement);
+    return modelBase.getDependencies();
   }
 
   @Override

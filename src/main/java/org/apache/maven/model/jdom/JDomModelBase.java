@@ -24,15 +24,16 @@ import org.apache.maven.model.BuildBase;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.DependencyManagement;
 import org.apache.maven.model.DistributionManagement;
+import org.apache.maven.model.ModelBase;
 import org.apache.maven.model.Reporting;
 import org.apache.maven.model.Repository;
 import org.jdom2.Element;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import static java.util.Collections.emptyList;
 import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_BUILD;
 import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_DEPENDENCIES;
 import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_DEPENDENCY_MANAGEMENT;
@@ -41,17 +42,31 @@ import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_PROPERTIES;
 import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_REPORTING;
 import static org.apache.maven.model.jdom.util.JDomUtils.getChildElement;
 import static org.apache.maven.model.jdom.util.JDomUtils.insertNewElement;
+import static org.apache.maven.model.jdom.util.JDomUtils.newDetachedElement;
 import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
 
 /**
  * @author Robert Scholte (for <a href="https://github.com/apache/maven-release/">Maven Release projct</a>, version 3.0)
  */
-public class JDomModelBase implements JDomBacked {
+public class JDomModelBase extends ModelBase implements JDomBacked {
 
   private final Element jdomElement;
 
   public JDomModelBase(Element jdomElement) {
     this.jdomElement = jdomElement;
+
+    Element dependenciesElement = getChildElement(POM_ELEMENT_DEPENDENCIES, jdomElement);
+    if (dependenciesElement == null) {
+      dependenciesElement = newDetachedElement(POM_ELEMENT_DEPENDENCIES, jdomElement);
+    }
+    super.setDependencies(new JDomDependencies(dependenciesElement, this));
+
+    Element dependencyManagementElement = getChildElement(POM_ELEMENT_DEPENDENCY_MANAGEMENT, jdomElement);
+    if (dependencyManagementElement == null) {
+      dependencyManagementElement = newDetachedElement(POM_ELEMENT_DEPENDENCY_MANAGEMENT, jdomElement);
+      insertNewElement(POM_ELEMENT_DEPENDENCIES, dependencyManagementElement);
+    }
+    super.setDependencyManagement(new JDomDependencyManagement(dependencyManagementElement, this));
   }
 
   public Build getBuild() {
@@ -76,26 +91,11 @@ public class JDomModelBase implements JDomBacked {
     throw new UnsupportedOperationException();
   }
 
-  public List<Dependency> getDependencies() {
-    Element dependenciesElm = jdomElement.getChild(POM_ELEMENT_DEPENDENCIES, jdomElement.getNamespace());
-    if (dependenciesElm == null) {
-      return Collections.emptyList();
-    } else {
-      return new JDomDependencies(dependenciesElm, dependenciesElm.getParentElement());
-    }
-  }
-
   public void setDependencies(List<Dependency> dependencies) {
-    throw new UnsupportedOperationException();
-  }
-
-  public DependencyManagement getDependencyManagement() {
-    Element elm = jdomElement.getChild(POM_ELEMENT_DEPENDENCY_MANAGEMENT, jdomElement.getNamespace());
-    if (elm == null) {
-      return null;
+    if (dependencies == null) {
+      rewriteElement(POM_ELEMENT_DEPENDENCIES, null, jdomElement);
     } else {
-      // this way build setters change DOM tree immediately
-      return new JDomDependencyManagement(elm);
+      new JDomDependencies(insertNewElement(POM_ELEMENT_DEPENDENCIES, jdomElement), this).addAll(dependencies);
     }
   }
 
@@ -106,7 +106,7 @@ public class JDomModelBase implements JDomBacked {
       DependencyManagement jdomDependencyManagement = getDependencyManagement();
       if (jdomDependencyManagement == null) {
         Element dependencyManagementRoot = insertNewElement(POM_ELEMENT_DEPENDENCY_MANAGEMENT, jdomElement);
-        jdomDependencyManagement = new JDomDependencyManagement(dependencyManagementRoot);
+        jdomDependencyManagement = new JDomDependencyManagement(dependencyManagementRoot, this);
       }
 
       jdomDependencyManagement.setDependencies(dependencyManagement.getDependencies());
@@ -116,7 +116,7 @@ public class JDomModelBase implements JDomBacked {
   public List<String> getModules() {
     Element modulesElement = getChildElement(POM_ELEMENT_MODULES, jdomElement);
     if (modulesElement == null) {
-      return Collections.emptyList();
+      return emptyList();
     } else {
       return new JDomModules(modulesElement);
     }
@@ -194,7 +194,7 @@ public class JDomModelBase implements JDomBacked {
 
   /** {@inheritDoc} */
   @Override
-  public Object clone() {
+  public ModelBase clone() {
     throw new UnsupportedOperationException();
   }
 
