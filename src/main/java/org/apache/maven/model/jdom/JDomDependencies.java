@@ -75,15 +75,15 @@ public class JDomDependencies extends ArrayList<Dependency> implements JDomBacke
       if (StringUtils.equals(candidate.getGroupId(), removeDependency.getGroupId())
               && StringUtils.equals(candidate.getArtifactId(), removeDependency.getArtifactId())
               && defaultString(candidate.getType(), "jar").equals(defaultString(removeDependency.getType(), "jar"))) {
-        JDomUtils.removeChildContent(jdomElement, ((JDomDependency) candidate).getJDomElement());
+        JDomUtils.removeChildAndItsCommentFromContent(jdomElement, ((JDomDependency) candidate).getJDomElement());
 
         boolean remove = super.remove(candidate);
         if (super.isEmpty()) {
           if (parent instanceof JDomDependencyManagement) {
             JDomBacked parentOfDependencyManagement = ((JDomDependencyManagement) parent).getParent();
-            JDomUtils.removeChildContent(parentOfDependencyManagement.getJDomElement(), this.parent.getJDomElement());
+            JDomUtils.removeChildAndItsCommentFromContent(parentOfDependencyManagement.getJDomElement(), this.parent.getJDomElement());
           } else {
-            JDomUtils.removeChildContent(parent.getJDomElement(), jdomElement);
+            JDomUtils.removeChildAndItsCommentFromContent(parent.getJDomElement(), jdomElement);
           }
         }
         return remove;

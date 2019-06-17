@@ -260,12 +260,12 @@ public final class JDomUtils {
   }
 
   /**
-   * Remove a child of type {@link Content} from the parent.
+   * Remove a child of type {@link Content} and its attached comments from the parent.
    *
    * @param parent      the parent element.
    * @param removeChild the child content to be removed.
    */
-  public static void removeChildContent(Element parent, Content removeChild) {
+  public static void removeChildAndItsCommentFromContent(Element parent, Content removeChild) {
     int index = parent.indexOf(removeChild);
     if (index >= 0) {
       LOG.debug("");
