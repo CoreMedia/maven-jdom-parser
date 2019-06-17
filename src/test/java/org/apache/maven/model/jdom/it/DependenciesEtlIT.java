@@ -20,6 +20,7 @@ import org.apache.maven.model.Dependency;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -79,6 +80,32 @@ public class DependenciesEtlIT extends AbstractJDomModelEtlIT {
       if (dependency.getArtifactId().equals("commons-lang3")) {
         dependency.setVersion(null);
       }
+    }
+    assertTransformation();
+  }
+
+  @Test
+  public void removeDependency() throws IOException {
+    List<String> dependencies = Arrays.asList("commons-lang3", "commons-another", "commons-collections4");
+    for (String artifactId : dependencies) {
+      Dependency dependency = new Dependency();
+      dependency.setGroupId("org.apache.commons");
+      dependency.setArtifactId(artifactId);
+      dependency.setVersion("1.0");
+      subjectModel.removeDependency(dependency);
+    }
+    assertTransformation();
+  }
+
+  @Test
+  public void removeAllDependencies() throws IOException {
+    List<String> dependencies = Arrays.asList("commons-lang3", "commons-collections4", "commons-test", "commons-another", "commons-more");
+    for (String artifactId : dependencies) {
+      Dependency dependency = new Dependency();
+      dependency.setGroupId("org.apache.commons");
+      dependency.setArtifactId(artifactId);
+      dependency.setVersion("1.0");
+      subjectModel.removeDependency(dependency);
     }
     assertTransformation();
   }

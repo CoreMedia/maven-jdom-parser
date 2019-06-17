@@ -49,7 +49,7 @@ public class JDomDependencyManagement extends DependencyManagement implements JD
     if (dependenciesElm == null) {
       return Collections.emptyList();
     } else {
-      return new JDomDependencies(dependenciesElm);
+      return new JDomDependencies(dependenciesElm, jdomElement);
     }
   }
 
@@ -58,7 +58,7 @@ public class JDomDependencyManagement extends DependencyManagement implements JD
     if (dependencies == null) {
       rewriteElement(POM_ELEMENT_DEPENDENCIES, null, jdomElement);
     } else {
-      new JDomDependencies(insertNewElement(POM_ELEMENT_DEPENDENCIES, jdomElement)).addAll(dependencies);
+      new JDomDependencies(insertNewElement(POM_ELEMENT_DEPENDENCIES, jdomElement), jdomElement).addAll(dependencies);
     }
   }
 

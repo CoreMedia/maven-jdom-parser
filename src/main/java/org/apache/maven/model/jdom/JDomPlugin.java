@@ -124,7 +124,7 @@ public class JDomPlugin extends Plugin implements JDomBacked, MavenCoordinate {
     if (dependencies == null) {
       rewriteElement(POM_ELEMENT_DEPENDENCIES, null, jdomElement);
     } else {
-      new JDomDependencies(insertNewElement(POM_ELEMENT_DEPENDENCIES, jdomElement)).addAll(dependencies);
+      new JDomDependencies(insertNewElement(POM_ELEMENT_DEPENDENCIES, jdomElement), jdomElement).addAll(dependencies);
     }
   }
 

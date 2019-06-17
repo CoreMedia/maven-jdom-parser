@@ -17,6 +17,7 @@ package org.apache.maven.model.jdom;
  */
 
 import org.apache.maven.model.Dependency;
+import org.apache.maven.model.jdom.util.JDomUtils;
 import org.codehaus.plexus.util.StringUtils;
 import org.jdom2.Element;
 import org.jdom2.filter.ElementFilter;
@@ -31,7 +32,6 @@ import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_DEPENDENCY;
 import static org.apache.maven.model.jdom.util.JDomUtils.addElement;
 import static org.apache.maven.model.jdom.util.JDomUtils.getElementIndex;
 import static org.apache.maven.model.jdom.util.JDomUtils.insertNewElement;
-import static org.apache.maven.model.jdom.util.JDomUtils.removeChildElement;
 import static org.codehaus.plexus.util.StringUtils.defaultString;
 
 /**
@@ -42,10 +42,12 @@ import static org.codehaus.plexus.util.StringUtils.defaultString;
 public class JDomDependencies extends ArrayList<Dependency> implements JDomBacked {
 
   private final Element jdomElement;
+  private final Element parent;
 
-  public JDomDependencies(Element jdomElement) {
+  public JDomDependencies(Element jdomElement, Element parent) {
     super(transformDependencyElementsToJDomDependencyList(jdomElement));
     this.jdomElement = jdomElement;
+    this.parent = parent;
   }
 
   private static List<JDomDependency> transformDependencyElementsToJDomDependencyList(Element jdomElement) {
@@ -72,8 +74,12 @@ public class JDomDependencies extends ArrayList<Dependency> implements JDomBacke
       if (StringUtils.equals(candidate.getGroupId(), removeDependency.getGroupId())
               && StringUtils.equals(candidate.getArtifactId(), removeDependency.getArtifactId())
               && defaultString(candidate.getType(), "jar").equals(defaultString(removeDependency.getType(), "jar"))) {
-        removeChildElement(jdomElement, ((JDomDependency) candidate).getJDomElement());
-        return super.remove(removeDependency);
+        JDomUtils.removeChildContent(jdomElement, ((JDomDependency) candidate).getJDomElement());
+        boolean remove = super.remove(candidate);
+        if (super.isEmpty()) {
+          JDomUtils.removeChildElement(parent, jdomElement);
+        }
+        return remove;
       }
     }
     return false;
@@ -170,13 +176,11 @@ public class JDomDependencies extends ArrayList<Dependency> implements JDomBacke
     throw new UnsupportedOperationException();
   }
 
-  /** {@inheritDoc} */
   @Override
   public Object clone() {
     throw new UnsupportedOperationException();
   }
 
-  /** {@inheritDoc} */
   @Override
   public Element getJDomElement() {
     return jdomElement;

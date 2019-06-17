@@ -22,41 +22,42 @@
   <artifactId>my-test-project</artifactId>
   <version>1.0-SNAPSHOT</version>
 
-  <properties>
+  <dependencies>
 
-    <!-- DANGLING comment -->
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-test</artifactId>
+      <version>1.0</version>
+    </dependency>
 
-  </properties>
+    <!-- Comment : commons-lang3
 
-  <dependencyManagement>
+    about org.apache.commons:commons-lang3 -->
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>1.0</version>
+    </dependency>
 
     <!-- DANGLING COMMENT -->
 
-    <dependencies>
-    </dependencies>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-another</artifactId>
+      <version>1.0</version>
+    </dependency>
 
-  </dependencyManagement>
-
-  <profiles>
-
-    <!-- DANGLING comment -->
-
-    <!-- I AM an empty profile : 1-->
-    <!-- I AM an empty profile : 2-->
-    <profile>
-      <id>profile-empty</id>
-      <activation>
-        <property>
-          <name>!withoutProfileEmpty</name>
-          <value>!true</value>
-        </property>
-      </activation>
-      <modules>
-      </modules>
-      <build/>
-      <properties/>
-    </profile>
-
-  </profiles>
+    <!-- Comment about org.apache.commons:commons-collections4 -->
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-collections4</artifactId>
+      <version>1.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-more</artifactId>
+      <version>1.0</version>
+    </dependency>
+  </dependencies>
 
 </project>

@@ -18,11 +18,15 @@ package org.apache.maven.model.jdom.util;
  * specific language governing permissions and limitations
  * under the License.
  */
+
 import org.codehaus.plexus.util.StringUtils;
 import org.jdom2.Comment;
 import org.jdom2.Content;
 import org.jdom2.Element;
 import org.jdom2.Text;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Utility methods for {@link Content}.

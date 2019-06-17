@@ -48,12 +48,11 @@
       </modules>
     </profile>
 
-    <!-- This profile includes an empty property tag -->
+    <!-- This profile includes an empty properties tag -->
     <profile>
       <id>profile-only-module</id>
       <properties/>
     </profile>
-
   </profiles>
 
 </project>

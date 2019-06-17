@@ -81,7 +81,7 @@ public class JDomModelBase implements JDomBacked {
     if (dependenciesElm == null) {
       return Collections.emptyList();
     } else {
-      return new JDomDependencies(dependenciesElm);
+      return new JDomDependencies(dependenciesElm, dependenciesElm.getParentElement());
     }
   }
 
