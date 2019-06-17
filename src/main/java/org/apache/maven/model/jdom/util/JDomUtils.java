@@ -298,7 +298,7 @@ public final class JDomUtils {
           }
         }
       } else if (index >= 0 && JDomContentHelper.isMultiNewLine(elementToCheck)) {
-        LOG.debug("ML    [{}] => *******REPLACE one newline and indentation: {}", index, JDomContentHelper.contentAsString(elementToCheck));
+        LOG.debug("ML    [{}] => REPLACE one newline and indentation: {}", index, JDomContentHelper.contentAsString(elementToCheck));
         ((Text) elementToCheck).setText(elementToCheck.getValue().replaceFirst("\n", "").replaceAll(" ", ""));
       }
       // Now detach removed child
