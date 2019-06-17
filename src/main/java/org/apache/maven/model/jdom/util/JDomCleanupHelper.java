@@ -65,7 +65,7 @@ public class JDomCleanupHelper {
               Arrays.asList(JDomCfg.POM_ELEMENT_ID, JDomCfg.POM_ELEMENT_ACTIVATION)
       );
       if (!profilesElement.getDescendants(new ElementFilter(POM_ELEMENT_PROFILE)).hasNext()) {
-        JDomUtils.removeChildElement(profilesElement.getParentElement(), profilesElement);
+        JDomUtils.removeChildAndItsCommentFromContent(profilesElement.getParentElement(), profilesElement);
       }
     }
   }
@@ -86,7 +86,7 @@ public class JDomCleanupHelper {
       }
     }
     for (Element propertiesElement : properties) {
-      JDomUtils.removeChildElement(propertiesElement.getParentElement(), propertiesElement);
+      JDomUtils.removeChildAndItsCommentFromContent(propertiesElement.getParentElement(), propertiesElement);
     }
   }
 
@@ -106,7 +106,7 @@ public class JDomCleanupHelper {
     for (Element elementToRemove : elementsToRemoveIfEmpty) {
       List<Element> children = elementToRemove.getChildren();
       if (children.size() == 0) {
-        JDomUtils.removeChildElement(elementToRemove.getParentElement(), elementToRemove);
+        JDomUtils.removeChildAndItsCommentFromContent(elementToRemove.getParentElement(), elementToRemove);
       }
     }
   }
@@ -148,7 +148,7 @@ public class JDomCleanupHelper {
       }
     }
     for (Content elementToBeRemoved : contentToBeRemoved) {
-      JDomUtils.removeChildContent(parent, elementToBeRemoved);
+      JDomUtils.removeChildAndItsCommentFromContent(parent, elementToBeRemoved);
     }
   }
 
