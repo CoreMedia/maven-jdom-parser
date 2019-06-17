@@ -22,12 +22,59 @@
   <version>1.0-SNAPSHOT</version>
 
   <profiles>
+
+
+
+
+
+
+
+
+    <!--  Just a comment somewhere -->
+
+
+    <!-- Dangling comment. Should stay there -->
+
+    <!-- 1. Above:
+
+
+    profile-4 -->
     <profile>
-      <id>profile-1</id>
+      <id>profile-4</id>
+      <modules>
+        <module>a</module>
+      </modules>
     </profile>
+
+
+    <!-- Above: profile-6 -->
     <profile>
-      <id>profile-3</id>
+      <id>profile-6</id>
+      <properties>
+        <test>property</test>
+      </properties>
     </profile>
+
+    <profile>
+      <id>profile-7</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>3.8.0</version>
+            <configuration>
+              <showDeprecation>true</showDeprecation>
+              <showWarnings>true</showWarnings>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+      <modules>
+        <module>a</module>
+      </modules>
+    </profile>
+
   </profiles>
 
 </project>

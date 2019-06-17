@@ -24,6 +24,9 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Tests transformations of {@code profiles}.
@@ -36,6 +39,7 @@ public class ProfilesEtlIT extends AbstractJDomModelEtlIT {
   public void addFirstProfile() throws IOException {
     Profile profile = new Profile();
     profile.setId("first-profile");
+    profile.setModules(Collections.singletonList("my-module"));
     subjectModel.addProfile(profile);
     assertTransformation();
   }
@@ -58,6 +62,7 @@ public class ProfilesEtlIT extends AbstractJDomModelEtlIT {
     Profile profile = new Profile();
     profile.setId("deflake");
     profile.setActivation(activation);
+    profile.setModules(Collections.singletonList("my-module"));
 
     subjectModel.addProfile(profile);
     assertTransformation();
@@ -67,6 +72,7 @@ public class ProfilesEtlIT extends AbstractJDomModelEtlIT {
   public void addProfile() throws IOException {
     Profile profile = new Profile();
     profile.setId("new-profile-1");
+    profile.setModules(Collections.singletonList("my-module"));
     subjectModel.addProfile(profile);
     assertTransformation();
   }
@@ -89,9 +95,12 @@ public class ProfilesEtlIT extends AbstractJDomModelEtlIT {
 
   @Test
   public void removeProfile() throws IOException {
-    Profile profile = new Profile();
-    profile.setId("profile-2");
-    subjectModel.removeProfile(profile);
+    List<String> profiles = Arrays.asList("profile-1", "profile-2", "profile-3", "profile-5", "profile-5a");
+    for (String id : profiles) {
+      Profile profile = new Profile();
+      profile.setId(id);
+      subjectModel.removeProfile(profile);
+    }
     assertTransformation();
   }
 }
