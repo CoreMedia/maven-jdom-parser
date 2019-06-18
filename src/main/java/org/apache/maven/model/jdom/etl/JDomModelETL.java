@@ -21,6 +21,8 @@ package org.apache.maven.model.jdom.etl;
 
 import org.apache.maven.model.Model;
 import org.apache.maven.model.jdom.JDomModel;
+import org.apache.maven.model.jdom.util.JDomCfg;
+import org.apache.maven.model.jdom.util.JDomCleanupHelper;
 import org.codehaus.plexus.util.IOUtil;
 import org.codehaus.plexus.util.ReaderFactory;
 import org.codehaus.plexus.util.WriterFactory;
@@ -152,6 +154,29 @@ public class JDomModelETL implements ModelETL {
     }
   }
 
+  /**
+   * Clean pom.xml by
+   * <ul>
+   * <li>removing empty profiles tags</li>
+   * <li>removing empty tags:
+   * <ul>
+   *   <li>{@link JDomCfg#POM_ELEMENT_DEPENDENCIES}</li>
+   *   <li>{@link JDomCfg#POM_ELEMENT_DEPENDENCY_MANAGEMENT}</li>
+   * </ul>
+   * </li>
+   * </ul>
+   */
+  public void cleanup() {
+    Element rootElement = document.getRootElement();
+
+    // Remove empty elements
+    JDomCleanupHelper.cleanupEmptyElements(rootElement, JDomCfg.POM_ELEMENT_DEPENDENCIES);
+    JDomCleanupHelper.cleanupEmptyElements(rootElement, JDomCfg.POM_ELEMENT_DEPENDENCY_MANAGEMENT);
+
+    // Remove empty (i.e. with no elements) profile and profiles tag
+    JDomCleanupHelper.cleanupEmptyProfiles(rootElement);
+  }
+
   private void writePom(File pomFile) throws IOException {
     Element rootElement = document.getRootElement();
 
@@ -174,7 +199,6 @@ public class JDomModelETL implements ModelETL {
         e.setNamespace(pomNamespace);
       }
     }
-
 
     try (Writer writer = WriterFactory.newXmlWriter(pomFile)) {
       if (intro != null) {
@@ -235,7 +259,7 @@ public class JDomModelETL implements ModelETL {
     return norm;
   }
 
-  public void setModelETLRequest(ModelETLRequest modelETLRequest) {
+  void setModelETLRequest(ModelETLRequest modelETLRequest) {
     this.modelETLRequest = modelETLRequest;
   }
 }

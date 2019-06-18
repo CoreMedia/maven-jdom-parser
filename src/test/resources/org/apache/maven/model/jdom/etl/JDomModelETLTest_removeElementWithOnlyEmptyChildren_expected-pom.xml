@@ -21,13 +21,12 @@
   <artifactId>my-test-project</artifactId>
   <version>1.0-SNAPSHOT</version>
 
-  <profiles>
-    <profile>
-      <id>profile-1</id>
-    </profile>
-    <profile>
-      <id>profile-3</id>
-    </profile>
-  </profiles>
+  <properties>
+
+    <!-- DANGLING comment -->
+
+  </properties>
+
+
 
 </project>

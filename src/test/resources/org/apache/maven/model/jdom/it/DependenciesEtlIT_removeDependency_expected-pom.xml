@@ -18,22 +18,26 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.coremedia.test</groupId>
-  <artifactId>my-source-project</artifactId>
+  <artifactId>my-test-project</artifactId>
   <version>1.0-SNAPSHOT</version>
 
-  <profiles>
-    <profile>
-      <!-- Profile to be added to input POM -->
-      <id>deflake</id>
-      <activation>
-        <property>
-          <name>test</name>
-        </property>
-      </activation>
-      <modules>
-        <module>my-module</module>
-      </modules>
-    </profile>
-  </profiles>
+  <dependencies>
+
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-test</artifactId>
+      <version>1.0</version>
+    </dependency>
+
+
+    <!-- DANGLING COMMENT -->
+
+
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-more</artifactId>
+      <version>1.0</version>
+    </dependency>
+  </dependencies>
 
 </project>

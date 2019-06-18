@@ -25,6 +25,8 @@ import org.jdom2.Element;
 import org.jdom2.Parent;
 import org.jdom2.Text;
 import org.jdom2.filter.ElementFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Iterator;
 import java.util.List;
@@ -39,6 +41,8 @@ import static org.jdom2.filter.Filters.textOnly;
  * @author Marc Rohlfs, CoreMedia AG
  */
 public final class JDomUtils {
+
+  private static final Logger LOG = LoggerFactory.getLogger(JDomUtils.class);
 
   private JDomUtils() {
     // noop
@@ -256,6 +260,134 @@ public final class JDomUtils {
   }
 
   /**
+   * Remove a child of type {@link Content} and its attached comments from the parent.
+   *
+   * @param parent      the parent element.
+   * @param removeChild the child content to be removed.
+   */
+  public static void removeChildAndItsCommentFromContent(Element parent, Content removeChild) {
+    int index = parent.indexOf(removeChild);
+    if (index >= 0) {
+      LOG.debug("");
+      LOG.debug("index [{}] => REMOVE: {}", index, JDomContentHelper.contentAsString(parent.getContent(index)));
+      parent.removeContent(index);
+      index--;
+      Content elementToCheck = JDomContentHelper.getContentWithIndex(index, parent);
+      // remove new line
+      if (JDomContentHelper.isNewline(elementToCheck) && simpleRemoveAtIndex(index, parent)) {
+        int newIndex = index - 1;
+        int prevIndex;
+        do {
+          prevIndex = newIndex;
+          newIndex = removeContentAtIndexIfContentIsComment(newIndex, parent);
+        } while (newIndex >= 0 && newIndex != prevIndex);
+      } else if (JDomContentHelper.isMultiNewLine(elementToCheck)) {
+        removeFirstNewLineFromMultiline(parent.indexOf(elementToCheck), parent);
+      }
+      // Now detach removed child
+      removeChild.detach();
+    }
+  }
+
+  /**
+   * Remove and detach content.
+   *
+   * @param index  the index of the content
+   * @param parent the parent of the content
+   */
+  private static boolean simpleRemoveAtIndex(int index, Element parent) {
+    if (!JDomContentHelper.isIndexValid(index, parent)) {
+      return false;
+    }
+    Content contentToRemove = parent.getContent(index);
+    LOG.debug("remove content => {} from parent tag: <{}>", JDomContentHelper.contentAsString(contentToRemove), parent.getName());
+    parent.removeContent(index);
+    contentToRemove.detach();
+    return true;
+  }
+
+  /**
+   * Remove first newline from multiline
+   *
+   * @param index  the index of the multiline content
+   * @param parent the parent of the multiline content
+   */
+  private static void removeFirstNewLineFromMultiline(int index, Element parent) {
+    if (!JDomContentHelper.isIndexValid(index, parent)) {
+      return;
+    }
+    Content contentToRemove = parent.getContent(index);
+    LOG.debug("       Content to remove  : {}", JDomContentHelper.contentAsString(contentToRemove));
+
+    // Remove first newline
+    String text = contentToRemove.getValue().replaceFirst("\n", "");
+
+    // Remove indention if
+    // * predecessor has no newlines or
+    // * successor has newlines
+    Content predecessor = JDomContentHelper.getPredecessorOfContentWithIndex(index, parent);
+    Content successor = JDomContentHelper.getSuccessorOfContentWithIndex(index, parent);
+    if (JDomContentHelper.hasNewlines(successor) || (predecessor != null && !JDomContentHelper.hasNewlines(predecessor))) {
+      // remove indentation
+      text = text.replaceAll(" ", "");
+      LOG.debug("       Replaced intention : {}", text);
+    }
+
+    // Remove multiline content
+    simpleRemoveAtIndex(index, parent);
+
+    // Add new Text content
+    Text replacement = new Text(text);
+    parent.addContent(index, replacement);
+    LOG.debug("       Content replacement: {}", JDomContentHelper.contentAsString(replacement));
+  }
+
+  /**
+   * Remove comment at index position from parent.<br>
+   * The return value is:
+   * <ul>
+   * <li><b>-1</b>: Index is not valid</li>
+   * <li><b>-2</b>: Comment has been removed but there is no predecessor</li>
+   * <li><b>-3</b>: Comment has been removed but the predecessor is a multi newline (whose first line is removed as well and its indentation - if necessary)</li>
+   * <li><b>index</b>: The same index if content at this index is no comment</li>
+   * <li><b>index - 1</b>: Content at the given index is a comment and there is no new newline predecessor</li>
+   * <li><b>index - 2</b>: Content at the given index is a comment and there is one new newline predecessor (which is removed as well)</li>
+   * </ul>
+   *
+   * @param index  the index of the content to check
+   * @param parent the parent of the content
+   * @return int the new index
+   */
+  private static int removeContentAtIndexIfContentIsComment(int index, Element parent) {
+    if (!JDomContentHelper.isIndexValid(index, parent)) {
+      return -1;
+    }
+    Content content = parent.getContent(index);
+    if (!JDomContentHelper.isComment(content)) {
+      LOG.debug("Content at index {} is no comment", index);
+      return index;
+    }
+
+    // remove comment
+    simpleRemoveAtIndex(index, parent);
+
+    // get predecessor
+    int prevIndex = index - 1;
+    if (prevIndex < 0) {
+      return -2;
+    }
+    Content predecessor = JDomContentHelper.getPredecessorOfContentWithIndex(index, parent);
+    if (JDomContentHelper.isNewline(predecessor)) {
+      simpleRemoveAtIndex(prevIndex, parent);
+      return prevIndex - 1;
+    } else if (JDomContentHelper.isMultiNewLine(predecessor)) {
+      removeFirstNewLineFromMultiline(prevIndex, parent);
+      return -3;
+    }
+    return prevIndex;
+  }
+
+  /**
    * Resets the XML indentations of an element.
    *
    * @param element the element whose indentations should be reset.
@@ -334,15 +466,7 @@ public final class JDomUtils {
       if (value != null) {
         rewriteValue(tagElement, value);
       } else {
-        int index = root.indexOf(tagElement);
-        root.removeContent(index);
-        for (int i = index - 1; i >= 0; i--) {
-          if (root.getContent(i) instanceof Text) {
-            root.removeContent(i);
-          } else {
-            break;
-          }
-        }
+        JDomUtils.removeChildAndItsCommentFromContent(root, tagElement);
       }
     } else {
       if (value != null) {

@@ -22,21 +22,42 @@
   <artifactId>my-test-project</artifactId>
   <version>1.0-SNAPSHOT</version>
 
-  <properties>
+  <dependencies>
 
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-test</artifactId>
+      <version>1.0</version>
+    </dependency>
 
-    <property.0>value-0</property.0>
-    <!-- comment: a
-     with multiline
-     -->
-    <property.a>value-a</property.a>
+    <!-- Comment : commons-lang3
+
+    about org.apache.commons:commons-lang3 -->
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>1.0</version>
+    </dependency>
 
     <!-- DANGLING COMMENT -->
 
-    <!-- comment: b -->
-    <property.b>value-b</property.b>
-    <!-- comment: c -->
-    <property.c>value-c</property.c>
-  </properties>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-another</artifactId>
+      <version>1.0</version>
+    </dependency>
+
+    <!-- Comment about org.apache.commons:commons-collections4 -->
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-collections4</artifactId>
+      <version>1.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-more</artifactId>
+      <version>1.0</version>
+    </dependency>
+  </dependencies>
 
 </project>

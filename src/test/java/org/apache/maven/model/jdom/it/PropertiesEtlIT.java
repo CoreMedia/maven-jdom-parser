@@ -55,7 +55,8 @@ public class PropertiesEtlIT extends AbstractJDomModelEtlIT {
 
   @Test
   public void removeProperty() throws IOException {
-    subjectModel.getProperties().remove("property.b");
+    subjectModel.getProperties().remove("property.a");
+    subjectModel.getProperties().remove("property.c");
     assertTransformation();
   }
 }
