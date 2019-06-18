@@ -466,15 +466,7 @@ public final class JDomUtils {
       if (value != null) {
         rewriteValue(tagElement, value);
       } else {
-        int index = root.indexOf(tagElement);
-        root.removeContent(index);
-        for (int i = index - 1; i >= 0; i--) {
-          if (root.getContent(i) instanceof Text) {
-            root.removeContent(i);
-          } else {
-            break;
-          }
-        }
+        JDomUtils.removeChildAndItsCommentFromContent(root, tagElement);
       }
     } else {
       if (value != null) {
