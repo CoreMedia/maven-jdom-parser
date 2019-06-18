@@ -144,7 +144,7 @@ public class JDomProfiles extends ArrayList<Profile> implements JDomBacked {
         JDomUtils.removeChildAndItsCommentFromContent(jdomElement, ((JDomProfile) candidate).getJDomElement());
         boolean remove = super.remove(candidate);
         if (super.isEmpty()) {
-          JDomUtils.removeChildElement(parent.getJDomElement(), jdomElement);
+          JDomUtils.removeChildAndItsCommentFromContent(parent.getJDomElement(), jdomElement);
         }
         return remove;
       }
