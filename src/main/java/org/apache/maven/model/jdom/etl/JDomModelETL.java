@@ -44,7 +44,6 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -133,17 +132,7 @@ public class JDomModelETL implements ModelETL {
     if (model == null) {
       throw new IllegalStateException("A model must be extracted first");
     }
-    writePom(targetFile, false);
-  }
-
-  /**
-   * Load targetFile and do cleanup before writing the pom.
-   */
-  public void loadWithCleanup(File targetFile) throws IOException {
-    if (model == null) {
-      throw new IllegalStateException("A model must be extracted first");
-    }
-    writePom(targetFile, true);
+    writePom(targetFile);
   }
 
   @Override
@@ -165,7 +154,30 @@ public class JDomModelETL implements ModelETL {
     }
   }
 
-  private void writePom(File pomFile, boolean cleanup) throws IOException {
+  /**
+   * Clean pom.xml by
+   * <ul>
+   * <li>Remove empty profiles tags</li>
+   * <li>Remove empty tags:
+   * <ul>
+   *   <li>{@link JDomCfg#POM_ELEMENT_DEPENDENCIES}</li>
+   *   <li>{@link JDomCfg#POM_ELEMENT_DEPENDENCY_MANAGEMENT}</li>
+   * </ul>
+   * </li>
+   * </ul>
+   */
+  public void doGlobalCleanup() {
+    Element rootElement = document.getRootElement();
+
+    // Remove empty elements
+    JDomCleanupHelper.cleanupEmptyElements(rootElement, JDomCfg.POM_ELEMENT_DEPENDENCIES);
+    JDomCleanupHelper.cleanupEmptyElements(rootElement, JDomCfg.POM_ELEMENT_DEPENDENCY_MANAGEMENT);
+
+    // Remove empty (i.e. with no elements) profile and profiles tag
+    JDomCleanupHelper.cleanupEmptyProfiles(rootElement);
+  }
+
+  private void writePom(File pomFile) throws IOException {
     Element rootElement = document.getRootElement();
 
     if (modelETLRequest.isAddSchema()) {
@@ -186,18 +198,6 @@ public class JDomModelETL implements ModelETL {
         Element e = (Element) i.next();
         e.setNamespace(pomNamespace);
       }
-    }
-
-    if (cleanup) {
-      // Remove empty properties tags for project and profile tags
-      JDomCleanupHelper.cleanupEmptyProperties(rootElement, Arrays.asList(JDomCfg.POM_ELEMENT_PROJECT, JDomCfg.POM_ELEMENT_PROFILE));
-
-      // Remove empty elements
-      JDomCleanupHelper.cleanupEmptyElements(rootElement, JDomCfg.POM_ELEMENT_DEPENDENCIES);
-      JDomCleanupHelper.cleanupEmptyElements(rootElement, JDomCfg.POM_ELEMENT_DEPENDENCY_MANAGEMENT);
-
-      // Remove empty (i.e. with no elements) profile and profiles tag
-      JDomCleanupHelper.cleanupEmptyProfiles(rootElement);
     }
 
     try (Writer writer = WriterFactory.newXmlWriter(pomFile)) {

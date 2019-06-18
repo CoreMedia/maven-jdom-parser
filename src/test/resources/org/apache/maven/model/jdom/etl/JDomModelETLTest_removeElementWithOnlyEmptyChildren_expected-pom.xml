@@ -21,6 +21,11 @@
   <artifactId>my-test-project</artifactId>
   <version>1.0-SNAPSHOT</version>
 
+  <properties>
+
+    <!-- DANGLING comment -->
+
+  </properties>
 
 
 
