@@ -111,23 +111,30 @@ class JDomContentHelper {
   }
 
   static Content getSuccessorOfContentWithIndex(int index, Element parent) {
-    return index + 1 < parent.getContent().size() ? parent.getContent(index + 1) : null;
+    return isIndexValid(index + 1, parent) ? parent.getContent(index + 1) : null;
   }
 
-  static Content getAncestorOfContentWithIndex(int index, Element parent) {
-    return index - 1 >= 0 && parent.getContent().size() > 0 ? parent.getContent(index - 1) : null;
+  static Content getPredecessorOfContentWithIndex(int index, Element parent) {
+    return isIndexValid(index - 1, parent) ? parent.getContent(index - 1) : null;
   }
 
   static Content getContentWithIndex(int index, Element parent) {
-    return index >= 0 && parent.getContent().size() > 0 ? parent.getContent(index) : null;
+    return isIndexValid(index, parent) ? parent.getContent(index) : null;
   }
 
-  static boolean isContentIndexOutOfScope(int index, Element parent) {
-    int numberOfContents = parent.getContent().size();
+  /**
+   * Check if index is a valid regarding the contents of the given element
+   *
+   * @param index   the index to check
+   * @param element the element to get the contents from
+   * @return true if index is valid index: <code>element.getContent(index)</code>
+   */
+  static boolean isIndexValid(int index, Element element) {
+    int numberOfContents = element.getContent().size();
     if (index < 0 || numberOfContents == 0 || index >= numberOfContents) {
-      LOG.warn("Parent: {} has no content with index {}", JDomContentHelper.contentAsString(parent), index);
-      return true;
+      LOG.warn("Parent: {} has no content with index {}", JDomContentHelper.contentAsString(element), index);
+      return false;
     }
-    return false;
+    return true;
   }
 }

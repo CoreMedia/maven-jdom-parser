@@ -296,7 +296,7 @@ public final class JDomUtils {
    * @param parent the parent of the content
    */
   private static boolean simpleRemoveAtIndex(int index, Element parent) {
-    if (JDomContentHelper.isContentIndexOutOfScope(index, parent)) {
+    if (!JDomContentHelper.isIndexValid(index, parent)) {
       return false;
     }
     Content contentToRemove = parent.getContent(index);
@@ -313,7 +313,7 @@ public final class JDomUtils {
    * @param parent the parent of the multiline content
    */
   private static void removeFirstNewLineFromMultiline(int index, Element parent) {
-    if (JDomContentHelper.isContentIndexOutOfScope(index, parent)) {
+    if (!JDomContentHelper.isIndexValid(index, parent)) {
       return;
     }
     Content contentToRemove = parent.getContent(index);
@@ -323,11 +323,11 @@ public final class JDomUtils {
     String text = contentToRemove.getValue().replaceFirst("\n", "");
 
     // Remove indention if
-    // * ancestor has no newlines or
+    // * predecessor has no newlines or
     // * successor has newlines
-    Content ancestor = JDomContentHelper.getAncestorOfContentWithIndex(index, parent);
+    Content predecessor = JDomContentHelper.getPredecessorOfContentWithIndex(index, parent);
     Content successor = JDomContentHelper.getSuccessorOfContentWithIndex(index, parent);
-    if (JDomContentHelper.hasNewlines(successor) || (ancestor != null && !JDomContentHelper.hasNewlines(ancestor))) {
+    if (JDomContentHelper.hasNewlines(successor) || (predecessor != null && !JDomContentHelper.hasNewlines(predecessor))) {
       // remove indentation
       text = text.replaceAll(" ", "");
       LOG.debug("       Replaced intention : {}", text);
@@ -347,11 +347,11 @@ public final class JDomUtils {
    * The return value is:
    * <ul>
    * <li><b>-1</b>: Index is not valid</li>
-   * <li><b>-2</b>: Comment has been removed but there is no ancestor</li>
-   * <li><b>-3</b>: Comment has been removed but the ancestor is a multi newline (whose first line is removed as well and its indentation - if necessary)</li>
+   * <li><b>-2</b>: Comment has been removed but there is no predecessor</li>
+   * <li><b>-3</b>: Comment has been removed but the predecessor is a multi newline (whose first line is removed as well and its indentation - if necessary)</li>
    * <li><b>index</b>: The same index if content at this index is no comment</li>
-   * <li><b>index - 1</b>: Content at the given index is a comment and there is no new newline ancestor</li>
-   * <li><b>index - 2</b>: Content at the given index is a comment and there is one new newline ancestor (which is removed as well)</li>
+   * <li><b>index - 1</b>: Content at the given index is a comment and there is no new newline predecessor</li>
+   * <li><b>index - 2</b>: Content at the given index is a comment and there is one new newline predecessor (which is removed as well)</li>
    * </ul>
    *
    * @param index  the index of the content to check
@@ -359,7 +359,7 @@ public final class JDomUtils {
    * @return int the new index
    */
   private static int removeContentAtIndexIfContentIsComment(int index, Element parent) {
-    if (JDomContentHelper.isContentIndexOutOfScope(index, parent)) {
+    if (!JDomContentHelper.isIndexValid(index, parent)) {
       return -1;
     }
     Content content = parent.getContent(index);
@@ -371,16 +371,16 @@ public final class JDomUtils {
     // remove comment
     simpleRemoveAtIndex(index, parent);
 
-    // get ancestor
+    // get predecessor
     int prevIndex = index - 1;
     if (prevIndex < 0) {
       return -2;
     }
-    Content ancestor = JDomContentHelper.getAncestorOfContentWithIndex(index, parent);
-    if (JDomContentHelper.isNewline(ancestor)) {
+    Content predecessor = JDomContentHelper.getPredecessorOfContentWithIndex(index, parent);
+    if (JDomContentHelper.isNewline(predecessor)) {
       simpleRemoveAtIndex(prevIndex, parent);
       return prevIndex - 1;
-    } else if (JDomContentHelper.isMultiNewLine(ancestor)) {
+    } else if (JDomContentHelper.isMultiNewLine(predecessor)) {
       removeFirstNewLineFromMultiline(prevIndex, parent);
       return -3;
     }

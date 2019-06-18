@@ -157,8 +157,8 @@ public class JDomModelETL implements ModelETL {
   /**
    * Clean pom.xml by
    * <ul>
-   * <li>Remove empty profiles tags</li>
-   * <li>Remove empty tags:
+   * <li>removing empty profiles tags</li>
+   * <li>removing empty tags:
    * <ul>
    *   <li>{@link JDomCfg#POM_ELEMENT_DEPENDENCIES}</li>
    *   <li>{@link JDomCfg#POM_ELEMENT_DEPENDENCY_MANAGEMENT}</li>
@@ -166,7 +166,7 @@ public class JDomModelETL implements ModelETL {
    * </li>
    * </ul>
    */
-  public void doGlobalCleanup() {
+  public void cleanup() {
     Element rootElement = document.getRootElement();
 
     // Remove empty elements
