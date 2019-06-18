@@ -272,80 +272,119 @@ public final class JDomUtils {
       LOG.debug("index [{}] => REMOVE: {}", index, JDomContentHelper.contentAsString(parent.getContent(index)));
       parent.removeContent(index);
       index--;
+      Content elementToCheck = JDomContentHelper.getContentWithIndex(index, parent);
       // remove new line
-      Content elementToCheck = index >= 0 ? parent.getContent(index) : null;
-      if (index >= 0 && JDomContentHelper.isNewline(elementToCheck)) {
-        LOG.debug("NL    [{}] => REMOVE: {}", index, JDomContentHelper.contentAsString(elementToCheck));
-        simpleRemoveAtIndex(index, parent, false);
-
-        int prevIndex = index - 1;
-        if (prevIndex >= 0) {
-          // remove comment
-          LOG.debug("\t@[{}] => {}", prevIndex, JDomContentHelper.contentAsString(parent.getContent(prevIndex)));
-          int newIndex = removeCommentAtIndex(prevIndex, parent);
-          if (newIndex >= 0) {
-            LOG.debug("\t*[{}] => {}", newIndex, JDomContentHelper.contentAsString(parent.getContent(newIndex)));
-          }
-          while (newIndex >= 0 && JDomContentHelper.isComment(parent.getContent(newIndex))) {
-            LOG.debug("\t*[{}] => ALSO REMOVE: {}", newIndex, JDomContentHelper.contentAsString(parent.getContent(newIndex)));
-            newIndex = removeCommentAtIndex(newIndex, parent);
-            if (newIndex >= 0) {
-              LOG.debug("\t [{}] => NEXT       : {}", newIndex, JDomContentHelper.contentAsString(parent.getContent(newIndex)));
-            }
-            if (newIndex >= 0 && JDomContentHelper.isMultiNewLine(parent.getContent(newIndex - 1))) {
-              break;
-            }
-          }
-        }
-      } else if (index >= 0 && JDomContentHelper.isMultiNewLine(elementToCheck)) {
-        LOG.debug("ML    [{}] => REPLACE one newline and indentation: {}", index, JDomContentHelper.contentAsString(elementToCheck));
-        ((Text) elementToCheck).setText(elementToCheck.getValue().replaceFirst("\n", "").replaceAll(" ", ""));
+      if (JDomContentHelper.isNewline(elementToCheck) && simpleRemoveAtIndex(index, parent)) {
+        int newIndex = index - 1;
+        int prevIndex;
+        do {
+          prevIndex = newIndex;
+          newIndex = removeContentAtIndexIfContentIsComment(newIndex, parent);
+        } while (newIndex >= 0 && newIndex != prevIndex);
+      } else if (JDomContentHelper.isMultiNewLine(elementToCheck)) {
+        removeFirstNewLineFromMultiline(parent.indexOf(elementToCheck), parent);
       }
       // Now detach removed child
       removeChild.detach();
     }
   }
 
-  private static void simpleRemoveAtIndex(int index, Element parent, boolean removeOneLineFromMultiline) {
-    Content contentToRemove = parent.getContent(index);
-    String text = null;
-    if (removeOneLineFromMultiline) {
-      text = contentToRemove.getValue().replaceFirst("\n", "");
-      // remove indention if ancestor is no newline text or
-      // if successor is newline text
-      if ((index + 1 < parent.getContent().size() && JDomContentHelper.hasNewlines(parent.getContent(index + 1))) ||
-              (index > 0 && !JDomContentHelper.hasNewlines(parent.getContent(index - 1)))) {
-        LOG.debug("       VALUE: {}", JDomContentHelper.contentAsString(contentToRemove));
-        text = text.replaceAll(" ", "");
-      }
+  /**
+   * Remove and detach content.
+   *
+   * @param index  the index of the content
+   * @param parent the parent of the content
+   */
+  private static boolean simpleRemoveAtIndex(int index, Element parent) {
+    if (JDomContentHelper.isContentIndexOutOfScope(index, parent)) {
+      return false;
     }
+    Content contentToRemove = parent.getContent(index);
+    LOG.debug("remove content => {} from parent tag: <{}>", JDomContentHelper.contentAsString(contentToRemove), parent.getName());
     parent.removeContent(index);
     contentToRemove.detach();
-    if (null != text) {
-      parent.addContent(index, new Text(text));
-      LOG.debug("       ML  new => " + JDomContentHelper.contentAsString(parent.getContent(index)));
-    }
+    return true;
   }
 
-  private static int removeCommentAtIndex(int index, Element parent) {
-    Content content = parent.getContent(index);
-    if (JDomContentHelper.isComment(content)) {
-      //remove comment
-      LOG.debug("remove comment => {}", JDomContentHelper.contentAsString(content));
-      simpleRemoveAtIndex(index, parent, false);
-      int prevIndex = index - 1;
-      if (prevIndex >= 0 && JDomContentHelper.isNewline(parent.getContent(prevIndex))) {
-        LOG.debug("remove NL      => {}", JDomContentHelper.contentAsString(parent.getContent(prevIndex)));
-        simpleRemoveAtIndex(prevIndex, parent, false);
-        return prevIndex - 1;
-      } else if (prevIndex >= 0 && JDomContentHelper.isMultiNewLine(parent.getContent(prevIndex))) {
-        LOG.debug("remove ML      => {}", JDomContentHelper.contentAsString(parent.getContent(prevIndex)));
-        simpleRemoveAtIndex(prevIndex, parent, true);
-        return -1;
-      }
-      return index - 1;
+  /**
+   * Remove first newline from multiline
+   *
+   * @param index  the index of the multiline content
+   * @param parent the parent of the multiline content
+   */
+  private static void removeFirstNewLineFromMultiline(int index, Element parent) {
+    if (JDomContentHelper.isContentIndexOutOfScope(index, parent)) {
+      return;
     }
-    return index;
+    Content contentToRemove = parent.getContent(index);
+    LOG.debug("       Content to remove  : {}", JDomContentHelper.contentAsString(contentToRemove));
+
+    // Remove first newline
+    String text = contentToRemove.getValue().replaceFirst("\n", "");
+
+    // Remove indention if
+    // * ancestor has no newlines or
+    // * successor has newlines
+    Content ancestor = JDomContentHelper.getAncestorOfContentWithIndex(index, parent);
+    Content successor = JDomContentHelper.getSuccessorOfContentWithIndex(index, parent);
+    if (JDomContentHelper.hasNewlines(successor) || (ancestor != null && !JDomContentHelper.hasNewlines(ancestor))) {
+      // remove indentation
+      text = text.replaceAll(" ", "");
+      LOG.debug("       Replaced intention : {}", text);
+    }
+
+    // Remove multiline content
+    simpleRemoveAtIndex(index, parent);
+
+    // Add new Text content
+    Text replacement = new Text(text);
+    parent.addContent(index, replacement);
+    LOG.debug("       Content replacement: {}", JDomContentHelper.contentAsString(replacement));
+  }
+
+  /**
+   * Remove comment at index position from parent.<br>
+   * The return value is:
+   * <ul>
+   * <li><b>-1</b>: Index is not valid</li>
+   * <li><b>-2</b>: Comment has been removed but there is no ancestor</li>
+   * <li><b>-3</b>: Comment has been removed but the ancestor is a multi newline (whose first line is removed as well and its indentation - if necessary)</li>
+   * <li><b>index</b>: The same index if content at this index is no comment</li>
+   * <li><b>index - 1</b>: Content at the given index is a comment and there is no new newline ancestor</li>
+   * <li><b>index - 2</b>: Content at the given index is a comment and there is one new newline ancestor (which is removed as well)</li>
+   * </ul>
+   *
+   * @param index  the index of the content to check
+   * @param parent the parent of the content
+   * @return int the new index
+   */
+  private static int removeContentAtIndexIfContentIsComment(int index, Element parent) {
+    if (JDomContentHelper.isContentIndexOutOfScope(index, parent)) {
+      return -1;
+    }
+    Content content = parent.getContent(index);
+    if (!JDomContentHelper.isComment(content)) {
+      LOG.debug("Content at index {} is no comment", index);
+      return index;
+    }
+
+    // remove comment
+    simpleRemoveAtIndex(index, parent);
+
+    // get ancestor
+    int prevIndex = index - 1;
+    if (prevIndex < 0) {
+      return -2;
+    }
+    Content ancestor = JDomContentHelper.getAncestorOfContentWithIndex(index, parent);
+    if (JDomContentHelper.isNewline(ancestor)) {
+      simpleRemoveAtIndex(prevIndex, parent);
+      return prevIndex - 1;
+    } else if (JDomContentHelper.isMultiNewLine(ancestor)) {
+      removeFirstNewLineFromMultiline(prevIndex, parent);
+      return -3;
+    }
+    return prevIndex;
   }
 
   /**

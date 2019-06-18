@@ -24,16 +24,15 @@ import org.jdom2.Comment;
 import org.jdom2.Content;
 import org.jdom2.Element;
 import org.jdom2.Text;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Utility methods for {@link Content}.
- *
- * @author https://github.com/eva-mueller-coremedia  (for <a href="https://github.com/CoreMedia/maven-jdom-parser">Maven JDom Parser</a>, version 3.0)
  */
 class JDomContentHelper {
+
+  private static final Logger LOG = LoggerFactory.getLogger(JDomContentHelper.class);
 
   static String contentAsString(Content content) {
     if (content instanceof Element) {
@@ -42,7 +41,10 @@ class JDomContentHelper {
     if (content instanceof Text) {
       return textToString((Text) content);
     }
-    return content.getCType() + " => " + content.getValue().trim();
+    if (null != content) {
+      return content.getCType() + " => " + content.getValue().trim();
+    }
+    return "content is null";
   }
 
   private static String elementToString(Element element) {
@@ -64,7 +66,7 @@ class JDomContentHelper {
    * Check if content represent newlines.
    *
    * @param content the content to check
-   * @return boolean
+   * @return boolean Returns true if content has at least one newline
    */
   static boolean hasNewlines(Content content) {
     if (content instanceof Text) {
@@ -106,5 +108,26 @@ class JDomContentHelper {
 
   static boolean isComment(Content content) {
     return content instanceof Comment;
+  }
+
+  static Content getSuccessorOfContentWithIndex(int index, Element parent) {
+    return index + 1 < parent.getContent().size() ? parent.getContent(index + 1) : null;
+  }
+
+  static Content getAncestorOfContentWithIndex(int index, Element parent) {
+    return index - 1 >= 0 && parent.getContent().size() > 0 ? parent.getContent(index - 1) : null;
+  }
+
+  static Content getContentWithIndex(int index, Element parent) {
+    return index >= 0 && parent.getContent().size() > 0 ? parent.getContent(index) : null;
+  }
+
+  static boolean isContentIndexOutOfScope(int index, Element parent) {
+    int numberOfContents = parent.getContent().size();
+    if (index < 0 || numberOfContents == 0 || index >= numberOfContents) {
+      LOG.warn("Parent: {} has no content with index {}", JDomContentHelper.contentAsString(parent), index);
+      return true;
+    }
+    return false;
   }
 }

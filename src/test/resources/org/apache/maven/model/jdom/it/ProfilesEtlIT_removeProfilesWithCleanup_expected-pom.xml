@@ -56,6 +56,7 @@
       </properties>
     </profile>
 
+
     <profile>
       <id>profile-7</id>
       <build>
@@ -75,6 +76,7 @@
         <module>a</module>
       </modules>
     </profile>
+
 
   </profiles>
 
