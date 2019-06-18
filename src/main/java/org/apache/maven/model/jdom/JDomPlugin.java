@@ -211,17 +211,11 @@ public class JDomPlugin extends Plugin implements JDomBacked, MavenCoordinate {
     return constructKey(getGroupId(), getArtifactId());
   }
 
-  /**
-   * {@inheritDoc}
-   */
   @Override
   public Plugin clone() {
     throw new UnsupportedOperationException();
   }
 
-  /**
-   * {@inheritDoc}
-   */
   @Override
   public Element getJDomElement() {
     return jdomElement;
