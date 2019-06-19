@@ -179,6 +179,14 @@ public class JDomModelETL implements ModelETL {
     JDomCleanupHelper.cleanupEmptyProfiles(rootElement);
   }
 
+  /**
+   * Squash all multilines in document with more than two new newlines into a double new line.
+   */
+  public void squashMultilines() {
+    Element rootElement = document.getRootElement();
+    JDomCleanupHelper.squashMultilines(rootElement);
+  }
+
   private void writePom(File pomFile) throws IOException {
     Element rootElement = document.getRootElement();
 

@@ -19,15 +19,19 @@ package org.apache.maven.model.jdom.util;
  * under the License.
  */
 
+import org.codehaus.plexus.util.StringUtils;
 import org.jdom2.Comment;
 import org.jdom2.Content;
 import org.jdom2.Element;
+import org.jdom2.Text;
 import org.jdom2.filter.ElementFilter;
 import org.jdom2.util.IteratorIterable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_PROFILE;
 import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_PROFILES;
@@ -108,6 +112,42 @@ public class JDomCleanupHelper {
       if (children.size() == 0) {
         JDomUtils.removeChildAndItsCommentFromContent(elementToRemove.getParentElement(), elementToRemove);
       }
+    }
+  }
+
+  /**
+   * Replace all multilines with more than two multilines with a double newline.<br>
+   * Indentations are preserved.
+   *
+   * @param rootElement the root element.
+   */
+  public static void squashMultilines(Element rootElement) {
+    Set<Content> contentsToRemove = new HashSet<>();
+    for (Content descendant : rootElement.getDescendants()) {
+      if (JDomContentHelper.isMultiNewLine(descendant) && StringUtils.countMatches(descendant.getValue(), "\n") > 2) {
+        Text multiLineTest = (Text) descendant;
+        String newText = multiLineTest.getText().replaceAll("\n", "");
+
+        int count = 0;
+        Element parent = descendant.getParentElement();
+        int index = parent.indexOf(descendant);
+        Content predecessor = JDomContentHelper.getPredecessorOfContentWithIndex(index, parent);
+        while (JDomContentHelper.hasNewlines(predecessor)) {
+          count++;
+          contentsToRemove.add(predecessor);
+          index--;
+          predecessor = JDomContentHelper.getPredecessorOfContentWithIndex(index, parent);
+        }
+        if (count == 0) {
+          newText = "\n\n" + newText;
+        } else {
+          newText = StringUtils.repeat("\n", count) + newText;
+        }
+        multiLineTest.setText(newText);
+      }
+    }
+    for (Content content : contentsToRemove) {
+      JDomUtils.simpleRemoveAtIndex(content);
     }
   }
 
@@ -201,5 +241,4 @@ public class JDomCleanupHelper {
     }
     return children;
   }
-
 }

@@ -290,7 +290,7 @@ public final class JDomUtils {
   }
 
   /**
-   * Remove and detach content.
+   * Remove and detach content at index from parent.
    *
    * @param index  the index of the content
    * @param parent the parent of the content
@@ -304,6 +304,20 @@ public final class JDomUtils {
     parent.removeContent(index);
     contentToRemove.detach();
     return true;
+  }
+
+  /**
+   * Remove and detach content.
+   *
+   * @param content the content to remove
+   */
+  static void simpleRemoveAtIndex(Content content) {
+    Element parent = content.getParentElement();
+    int index = parent.indexOf(content);
+    Content contentToRemove = parent.getContent(index);
+    LOG.debug("remove content => {} from parent tag: <{}>", JDomContentHelper.contentAsString(contentToRemove), parent.getName());
+    parent.removeContent(index);
+    contentToRemove.detach();
   }
 
   /**
