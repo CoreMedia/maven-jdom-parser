@@ -75,26 +75,6 @@ public class JDomCleanupHelper {
   }
 
   /**
-   * Remove empty properties tags with special parents.<br>
-   * Empty tags may contain comments which will be removed as well.
-   *
-   * @param rootElement the root element.
-   * @param parentTags  Allowed parent tags.
-   */
-  public static void cleanupEmptyProperties(Element rootElement, List<String> parentTags) {
-    IteratorIterable<Element> filteredElements = rootElement.getDescendants(new ElementFilter(JDomCfg.POM_ELEMENT_PROPERTIES));
-    List<Element> properties = new ArrayList<>();
-    for (Element propertiesElement : filteredElements) {
-      if (parentTags.contains(propertiesElement.getParentElement().getName()) && propertiesElement.getChildren().size() == 0) {
-        properties.add(propertiesElement);
-      }
-    }
-    for (Element propertiesElement : properties) {
-      JDomUtils.removeChildAndItsCommentFromContent(propertiesElement.getParentElement(), propertiesElement);
-    }
-  }
-
-  /**
    * Remove empty element tags and their empty child tags.<br>
    * Empty tags may contain comments which will be removed as well.
    *
