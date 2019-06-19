@@ -28,6 +28,18 @@
 
   </properties>
 
+  <properties>
+
+    <!-- DANGLING comment -->
+
+  </properties>
+
+  <properties>
+
+    <!-- DANGLING comment -->
+
+  </properties>
+
   <dependencyManagement>
 
     <!-- DANGLING COMMENT -->

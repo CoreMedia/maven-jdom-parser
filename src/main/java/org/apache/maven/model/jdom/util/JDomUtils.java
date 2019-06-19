@@ -336,7 +336,7 @@ public final class JDomUtils {
     // Remove first newline
     String text = contentToRemove.getValue().replaceFirst("\n", "");
 
-    // Remove indention if
+    // Remove indentation if
     // * predecessor has no newlines or
     // * successor has newlines
     Content predecessor = JDomContentHelper.getPredecessorOfContentWithIndex(index, parent);

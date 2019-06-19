@@ -53,6 +53,57 @@
       <id>profile-only-module</id>
       <properties/>
     </profile>
+
+    <profile>
+      <id>1</id>
+    </profile>
+
+    <profile>
+      <id>2</id>
+    </profile>
+
+    <profile>
+      <id>3</id>
+    </profile>
+
+    <profile>
+      <id>4</id>
+    </profile>
+
+    <profile>
+      <id>5</id>
+    </profile>
+
+    <profile>
+      <id>6</id>
+    </profile>
+
+    <profile>
+      <id>7</id>
+    </profile>
+
+    <profile>
+      <id>8</id>
+    </profile>
+
+    <profile>
+      <id>9</id>
+    </profile>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   </profiles>
 
 </project>

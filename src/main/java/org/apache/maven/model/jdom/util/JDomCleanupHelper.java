@@ -102,28 +102,60 @@ public class JDomCleanupHelper {
    * @param rootElement the root element.
    */
   public static void squashMultilines(Element rootElement) {
+    // First: Squash multi newlines into one text element with three '\n'
     Set<Content> contentsToRemove = new HashSet<>();
     for (Content descendant : rootElement.getDescendants()) {
-      if (JDomContentHelper.isMultiNewLine(descendant) && StringUtils.countMatches(descendant.getValue(), "\n") > 2) {
-        Text multiLineTest = (Text) descendant;
-        String newText = multiLineTest.getText().replaceAll("\n", "");
+      if (!JDomContentHelper.hasNewlines(descendant)) {
+        int newLineCountPredecessors = 0;
 
-        int count = 0;
         Element parent = descendant.getParentElement();
-        int index = parent.indexOf(descendant);
-        Content predecessor = JDomContentHelper.getPredecessorOfContentWithIndex(index, parent);
+        int descendantIndex = parent.indexOf(descendant);
+        Content predecessor = JDomContentHelper.getPredecessorOfContentWithIndex(descendantIndex, parent);
+        String indentation = JDomContentHelper.hasNewlines(predecessor) ? predecessor.getValue().replaceAll("\n", "") : "";
+
+        Set<Content> contentsToRemoveTmp = new HashSet<>();
         while (JDomContentHelper.hasNewlines(predecessor)) {
-          count++;
+          newLineCountPredecessors += StringUtils.countMatches(predecessor.getValue(), "\n");
+          contentsToRemoveTmp.add(predecessor);
+          descendantIndex--;
+          predecessor = JDomContentHelper.getPredecessorOfContentWithIndex(descendantIndex, parent);
+        }
+
+        if (newLineCountPredecessors > 3) {
+          int index = parent.indexOf(descendant);
+          Content newLinePredecessor = JDomContentHelper.getPredecessorOfContentWithIndex(index, parent);
+          if (null != newLinePredecessor) {
+            contentsToRemoveTmp.remove(newLinePredecessor);
+            ((Text) newLinePredecessor).setText("\n\n\n" + indentation);
+            contentsToRemove.addAll(contentsToRemoveTmp);
+          }
+        }
+      }
+    }
+    for (Content content : contentsToRemove) {
+      JDomUtils.simpleRemoveAtIndex(content);
+    }
+    // Second: Squash remaining multi lines which have no successor
+    contentsToRemove = new HashSet<>();
+    for (Content descendant : rootElement.getDescendants()) {
+      if (JDomContentHelper.hasNewlines(descendant) && StringUtils.countMatches(descendant.getValue(), "\n") > 3) {
+        int newLineCount = StringUtils.countMatches(descendant.getValue(), "\n");
+        String indentation = newLineCount > 0 ? descendant.getValue().replaceAll("\n", "") : "";
+
+        Element parent = descendant.getParentElement();
+        int descendantIndex = parent.indexOf(descendant);
+        Content predecessor = JDomContentHelper.getPredecessorOfContentWithIndex(descendantIndex, parent);
+
+        while (JDomContentHelper.hasNewlines(predecessor)) {
+          newLineCount += StringUtils.countMatches(predecessor.getValue(), "\n");
           contentsToRemove.add(predecessor);
-          index--;
-          predecessor = JDomContentHelper.getPredecessorOfContentWithIndex(index, parent);
+          descendantIndex--;
+          predecessor = JDomContentHelper.getPredecessorOfContentWithIndex(descendantIndex, parent);
         }
-        if (count == 0) {
-          newText = "\n\n" + newText;
-        } else {
-          newText = StringUtils.repeat("\n", count) + newText;
+
+        if (newLineCount > 3) {
+          ((Text) descendant).setText("\n\n\n" + indentation);
         }
-        multiLineTest.setText(newText);
       }
     }
     for (Content content : contentsToRemove) {
