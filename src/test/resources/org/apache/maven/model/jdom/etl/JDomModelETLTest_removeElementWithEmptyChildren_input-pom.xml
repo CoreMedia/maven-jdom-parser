@@ -28,6 +28,22 @@
     <!-- test comment -->
   </modules>
 
+  <properties>
+    <javadoc.public-api.packages>
+      com.company.id
+      com.company.mimetype
+
+      com.company.rest.validators
+      com.company.rest.intercept
+            com.company.rest.validation
+
+      com.company.core.api
+
+      com.company.commerce.asset
+      com.company.commerce.catalog
+    </javadoc.public-api.packages>
+  </properties>
+
   <profiles>
 
     <!-- I AM an empty profile : 1-->

@@ -71,7 +71,8 @@ class JDomContentHelper {
   static boolean hasNewlines(Content content) {
     if (content instanceof Text) {
       Text text = (Text) content;
-      return StringUtils.countMatches(text.getValue(), "\n") >= 1;
+      String value = text.getValue();
+      return StringUtils.countMatches(value, "\n") >= 1 && value.trim().length() == 0;
     }
     return false;
   }
@@ -86,7 +87,8 @@ class JDomContentHelper {
   static boolean isNewline(Content content) {
     if (content instanceof Text) {
       Text text = (Text) content;
-      return StringUtils.countMatches(text.getValue(), "\n") == 1;
+      String value = text.getValue();
+      return StringUtils.countMatches(value, "\n") == 1 && value.trim().length() == 0;
     }
     return false;
   }
@@ -101,7 +103,8 @@ class JDomContentHelper {
   static boolean isMultiNewLine(Content content) {
     if (content instanceof Text) {
       Text text = (Text) content;
-      return StringUtils.countMatches(text.getValue(), "\n") > 1;
+      String value = text.getValue();
+      return StringUtils.countMatches(value, "\n") > 1 && value.trim().length() == 0;
     }
     return false;
   }
@@ -136,5 +139,27 @@ class JDomContentHelper {
       return false;
     }
     return true;
+  }
+
+  /**
+   * Count new lines of new/multiline-predecessors
+   *
+   * @param content the content to start from
+   * @return count of newlines
+   */
+  static int countNewlinesPredecessors(Content content) {
+    int newLineCount = 0;
+
+    Element parent = content.getParentElement();
+    int descendantIndex = parent.indexOf(content);
+    Content predecessor = JDomContentHelper.getPredecessorOfContentWithIndex(descendantIndex, parent);
+
+    while (JDomContentHelper.hasNewlines(predecessor)) {
+      newLineCount += StringUtils.countMatches(predecessor.getValue(), "\n");
+      descendantIndex--;
+      predecessor = JDomContentHelper.getPredecessorOfContentWithIndex(descendantIndex, parent);
+    }
+
+    return newLineCount;
   }
 }
