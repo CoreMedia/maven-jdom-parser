@@ -24,12 +24,6 @@
   <profiles>
 
 
-
-
-
-
-
-
     <!--  Just a comment somewhere -->
 
 
@@ -45,7 +39,6 @@
         <module>a</module>
       </modules>
     </profile>
-
 
 
     <!-- Above: profile-6 -->

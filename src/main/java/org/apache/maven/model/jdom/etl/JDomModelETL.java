@@ -160,8 +160,9 @@ public class JDomModelETL implements ModelETL {
    * <li>removing empty profiles tags</li>
    * <li>removing empty tags:
    * <ul>
-   *   <li>{@link JDomCfg#POM_ELEMENT_DEPENDENCIES}</li>
-   *   <li>{@link JDomCfg#POM_ELEMENT_DEPENDENCY_MANAGEMENT}</li>
+   * <li>{@link JDomCfg#POM_ELEMENT_PROPERTIES}</li>
+   * <li>{@link JDomCfg#POM_ELEMENT_DEPENDENCIES}</li>
+   * <li>{@link JDomCfg#POM_ELEMENT_DEPENDENCY_MANAGEMENT}</li>
    * </ul>
    * </li>
    * </ul>
@@ -170,11 +171,20 @@ public class JDomModelETL implements ModelETL {
     Element rootElement = document.getRootElement();
 
     // Remove empty elements
+    JDomCleanupHelper.cleanupEmptyElements(rootElement, JDomCfg.POM_ELEMENT_PROPERTIES);
     JDomCleanupHelper.cleanupEmptyElements(rootElement, JDomCfg.POM_ELEMENT_DEPENDENCIES);
     JDomCleanupHelper.cleanupEmptyElements(rootElement, JDomCfg.POM_ELEMENT_DEPENDENCY_MANAGEMENT);
 
     // Remove empty (i.e. with no elements) profile and profiles tag
     JDomCleanupHelper.cleanupEmptyProfiles(rootElement);
+  }
+
+  /**
+   * Squash all multilines in document with more than two new newlines into a double new line.
+   */
+  public void squashMultilines() {
+    Element rootElement = document.getRootElement();
+    JDomCleanupHelper.squashMultilines(rootElement);
   }
 
   private void writePom(File pomFile) throws IOException {

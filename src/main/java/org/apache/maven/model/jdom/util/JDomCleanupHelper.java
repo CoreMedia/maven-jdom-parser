@@ -19,15 +19,19 @@ package org.apache.maven.model.jdom.util;
  * under the License.
  */
 
+import org.codehaus.plexus.util.StringUtils;
 import org.jdom2.Comment;
 import org.jdom2.Content;
 import org.jdom2.Element;
+import org.jdom2.Text;
 import org.jdom2.filter.ElementFilter;
 import org.jdom2.util.IteratorIterable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_PROFILE;
 import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_PROFILES;
@@ -71,26 +75,6 @@ public class JDomCleanupHelper {
   }
 
   /**
-   * Remove empty properties tags with special parents.<br>
-   * Empty tags may contain comments which will be removed as well.
-   *
-   * @param rootElement the root element.
-   * @param parentTags  Allowed parent tags.
-   */
-  public static void cleanupEmptyProperties(Element rootElement, List<String> parentTags) {
-    IteratorIterable<Element> filteredElements = rootElement.getDescendants(new ElementFilter(JDomCfg.POM_ELEMENT_PROPERTIES));
-    List<Element> properties = new ArrayList<>();
-    for (Element propertiesElement : filteredElements) {
-      if (parentTags.contains(propertiesElement.getParentElement().getName()) && propertiesElement.getChildren().size() == 0) {
-        properties.add(propertiesElement);
-      }
-    }
-    for (Element propertiesElement : properties) {
-      JDomUtils.removeChildAndItsCommentFromContent(propertiesElement.getParentElement(), propertiesElement);
-    }
-  }
-
-  /**
    * Remove empty element tags and their empty child tags.<br>
    * Empty tags may contain comments which will be removed as well.
    *
@@ -108,6 +92,74 @@ public class JDomCleanupHelper {
       if (children.size() == 0) {
         JDomUtils.removeChildAndItsCommentFromContent(elementToRemove.getParentElement(), elementToRemove);
       }
+    }
+  }
+
+  /**
+   * Replace all multilines with more than two multilines with a double newline.<br>
+   * Indentations are preserved.
+   *
+   * @param rootElement the root element.
+   */
+  public static void squashMultilines(Element rootElement) {
+    // First: Squash multi newlines into one text element with three '\n'
+    Set<Content> contentsToRemove = new HashSet<>();
+    for (Content descendant : rootElement.getDescendants()) {
+      if (!JDomContentHelper.hasNewlines(descendant)) {
+        int newLineCountPredecessors = 0;
+
+        Element parent = descendant.getParentElement();
+        int descendantIndex = parent.indexOf(descendant);
+        Content predecessor = JDomContentHelper.getPredecessorOfContentWithIndex(descendantIndex, parent);
+        String indentation = JDomContentHelper.hasNewlines(predecessor) ? predecessor.getValue().replaceAll("\n", "") : "";
+
+        Set<Content> contentsToRemoveTmp = new HashSet<>();
+        while (JDomContentHelper.hasNewlines(predecessor)) {
+          newLineCountPredecessors += StringUtils.countMatches(predecessor.getValue(), "\n");
+          contentsToRemoveTmp.add(predecessor);
+          descendantIndex--;
+          predecessor = JDomContentHelper.getPredecessorOfContentWithIndex(descendantIndex, parent);
+        }
+
+        if (newLineCountPredecessors > 3) {
+          int index = parent.indexOf(descendant);
+          Content newLinePredecessor = JDomContentHelper.getPredecessorOfContentWithIndex(index, parent);
+          if (null != newLinePredecessor) {
+            contentsToRemoveTmp.remove(newLinePredecessor);
+            ((Text) newLinePredecessor).setText("\n\n\n" + indentation);
+            contentsToRemove.addAll(contentsToRemoveTmp);
+          }
+        }
+      }
+    }
+    for (Content content : contentsToRemove) {
+      JDomUtils.simpleRemoveAtIndex(content);
+    }
+    // Second: Squash remaining multi lines which have no successor
+    contentsToRemove = new HashSet<>();
+    for (Content descendant : rootElement.getDescendants()) {
+      if (JDomContentHelper.hasNewlines(descendant) && StringUtils.countMatches(descendant.getValue(), "\n") > 3) {
+        int newLineCount = StringUtils.countMatches(descendant.getValue(), "\n");
+        String indentation = newLineCount > 0 ? descendant.getValue().replaceAll("\n", "") : "";
+
+        Element parent = descendant.getParentElement();
+        int descendantIndex = parent.indexOf(descendant);
+        Content predecessor = JDomContentHelper.getPredecessorOfContentWithIndex(descendantIndex, parent);
+
+        while (JDomContentHelper.hasNewlines(predecessor)) {
+          newLineCount += StringUtils.countMatches(predecessor.getValue(), "\n");
+          contentsToRemove.add(predecessor);
+          descendantIndex--;
+          predecessor = JDomContentHelper.getPredecessorOfContentWithIndex(descendantIndex, parent);
+        }
+
+        if (newLineCount > 3) {
+          ((Text) descendant).setText("\n\n\n" + indentation);
+        }
+      }
+    }
+    for (Content content : contentsToRemove) {
+      JDomUtils.simpleRemoveAtIndex(content);
     }
   }
 
@@ -201,5 +253,4 @@ public class JDomCleanupHelper {
     }
     return children;
   }
-
 }

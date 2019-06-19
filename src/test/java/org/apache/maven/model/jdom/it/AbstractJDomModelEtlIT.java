@@ -106,6 +106,7 @@ public abstract class AbstractJDomModelEtlIT {
   @SuppressWarnings("WeakerAccess")
   protected void assertTransformationWithCleanup() throws IOException {
     subjectModelETL.cleanup();
+    subjectModelETL.squashMultilines();
     subjectModelETL.load(outputPomFile);
 
     String actualXml = FileUtils.fileRead(outputPomFile);
