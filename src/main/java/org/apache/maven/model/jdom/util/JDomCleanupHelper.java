@@ -138,7 +138,8 @@ public class JDomCleanupHelper {
     // Second: Squash remaining multi lines which have no successor
     contentsToRemove = new HashSet<>();
     for (Content descendant : rootElement.getDescendants()) {
-      if (JDomContentHelper.hasNewlines(descendant) && StringUtils.countMatches(descendant.getValue(), "\n") > 3) {
+      if (JDomContentHelper.hasNewlines(descendant) &&
+              JDomContentHelper.countNewlinesPredecessors(descendant) > 3) {
         int newLineCount = StringUtils.countMatches(descendant.getValue(), "\n");
         String indentation = newLineCount > 0 ? descendant.getValue().replaceAll("\n", "") : "";
 
