@@ -16,6 +16,7 @@ package org.apache.maven.model.jdom;
  * limitations under the License.
  */
 
+import org.apache.maven.model.jdom.util.JDomUtils;
 import org.jdom2.Element;
 import org.jdom2.Text;
 import org.jdom2.filter.ElementFilter;
@@ -28,7 +29,6 @@ import java.util.ListIterator;
 import static java.util.Arrays.asList;
 import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_MODULE;
 import static org.apache.maven.model.jdom.util.JDomUtils.detectIndentation;
-import static org.apache.maven.model.jdom.util.JDomUtils.removeChildElement;
 
 /**
  * JDOM implementation of POMs {@code modules} element.
@@ -80,7 +80,7 @@ public class JDomModules extends ArrayList<String> implements JDomBacked {
     });
 
     for (Element removeElement : removeElements) {
-      removeChildElement(jdomElement, removeElement);
+      JDomUtils.removeChildAndItsCommentFromContent(jdomElement, removeElement);
     }
 
     return super.remove(module);
@@ -154,13 +154,17 @@ public class JDomModules extends ArrayList<String> implements JDomBacked {
     throw new UnsupportedOperationException();
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Object clone() {
     throw new UnsupportedOperationException();
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Element getJDomElement() {
     return jdomElement;

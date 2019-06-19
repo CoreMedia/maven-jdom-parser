@@ -44,6 +44,13 @@ public class ModulesEtlIT extends AbstractJDomModelEtlIT {
   }
 
   @Test
+  public void removeModules() throws IOException {
+    subjectModel.removeModule("module-2");
+    subjectModel.removeModule("module-which-does-not-exist");
+    assertTransformation();
+  }
+
+  @Test
   public void resetProfileModules() throws IOException {
     List<Profile> profiles = subjectModel.getProfiles();
     for (Profile profile : profiles) {
