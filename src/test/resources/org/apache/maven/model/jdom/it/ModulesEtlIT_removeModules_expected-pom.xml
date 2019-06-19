@@ -21,19 +21,9 @@
   <artifactId>my-test-project</artifactId>
   <version>1.0-SNAPSHOT</version>
 
-
-  <profiles>
-
-
-    <!-- This profile includes a module -->
-    <profile>
-      <id>profile-only-module</id>
-      <modules>
-        <module>A</module>
-      </modules>
-    </profile>
-
-
-  </profiles>
+  <modules>
+    <module>module-1</module>
+    <module>module-3</module>
+  </modules>
 
 </project>

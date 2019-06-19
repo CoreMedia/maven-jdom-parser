@@ -22,6 +22,12 @@
   <artifactId>my-test-project</artifactId>
   <version>1.0-SNAPSHOT</version>
 
+  <modules>
+
+
+    <!-- test comment -->
+  </modules>
+
   <profiles>
 
     <!-- I AM an empty profile : 1-->
