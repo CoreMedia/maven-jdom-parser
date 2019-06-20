@@ -44,7 +44,9 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -169,16 +171,33 @@ public class JDomModelETL implements ModelETL {
    * </ul>
    */
   public void cleanup() {
+    cleanup(
+            Arrays.asList(JDomCfg.POM_ELEMENT_MODULES, JDomCfg.POM_ELEMENT_PROPERTIES, JDomCfg.POM_ELEMENT_DEPENDENCIES, JDomCfg.POM_ELEMENT_DEPENDENCY_MANAGEMENT),
+            Arrays.asList(JDomCfg.POM_ELEMENT_PROJECT));
+  }
+
+  /**
+   * Clean pom.xml by
+   * <ul>
+   * <li>removing empty tags (mind the order!)
+   * <li>removing empty profiles tags restricted to profiles parents</li>
+   * <ul>
+   * </ul>
+   * </li>
+   * </ul>
+   *
+   * @param cleanUpEmptyElements List of tags to remove if they are empty
+   * @param profilesParents List of profiles tag parents
+   */
+  public void cleanup(List<String> cleanUpEmptyElements, List<String> profilesParents) {
     Element rootElement = document.getRootElement();
 
     // Remove empty elements
-    JDomCleanupHelper.cleanupEmptyElements(rootElement, JDomCfg.POM_ELEMENT_MODULES);
-    JDomCleanupHelper.cleanupEmptyElements(rootElement, JDomCfg.POM_ELEMENT_PROPERTIES);
-    JDomCleanupHelper.cleanupEmptyElements(rootElement, JDomCfg.POM_ELEMENT_DEPENDENCIES);
-    JDomCleanupHelper.cleanupEmptyElements(rootElement, JDomCfg.POM_ELEMENT_DEPENDENCY_MANAGEMENT);
-
+    for (String cleanUpEmptyElement : cleanUpEmptyElements) {
+      JDomCleanupHelper.cleanupEmptyElements(rootElement, cleanUpEmptyElement);
+    }
     // Remove empty (i.e. with no elements) profile and profiles tag
-    JDomCleanupHelper.cleanupEmptyProfiles(rootElement);
+    JDomCleanupHelper.cleanupEmptyProfiles(rootElement, profilesParents);
   }
 
   /**

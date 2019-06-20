@@ -41,8 +41,6 @@ import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_PROFILES;
  * <ol>
  * <li>profiles</li>
  * </ol>
- *
- * @author https://github.com/eva-mueller-coremedia  (for <a href="https://github.com/CoreMedia/maven-jdom-parser">Maven JDom Parser</a>, version 3.0)
  */
 public class JDomCleanupHelper {
 
@@ -53,21 +51,25 @@ public class JDomCleanupHelper {
    * <li>for tag <b>profiles</b>: there are no profile tags</li>
    * <li>for tag <b>profile</b>: Either there are only the tags activation and id present or all other tags are empty</li>
    * </ul>
-   * Thus, empty tags may contain comments which will be removed as well.
+   * Thus, empty tags may contain comments which will be removed as well.<br>
+   * Only those {@code profiles} tags are removed whose parent stated via {@code profilesParents}
    *
-   * @param rootElement the root element.
+   * @param rootElement     the root element.
+   * @param profilesParents list of allowed parents for {@code profiles} tags
    */
-  public static void cleanupEmptyProfiles(Element rootElement) {
+  public static void cleanupEmptyProfiles(Element rootElement, List<String> profilesParents) {
     IteratorIterable<Element> filteredElements = rootElement.getDescendants(new ElementFilter(POM_ELEMENT_PROFILES));
     List<Element> profiles = new ArrayList<>();
     for (Element profilesElement : filteredElements) {
       profiles.add(profilesElement);
     }
     for (Element profilesElement : profiles) {
+      if (!profilesParents.contains(profilesElement.getParentElement().getName())) {
+        continue;
+      }
       removeElementWithEmptyChildren(profilesElement,
               POM_ELEMENT_PROFILE,
-              Arrays.asList(JDomCfg.POM_ELEMENT_ID, JDomCfg.POM_ELEMENT_ACTIVATION)
-      );
+              Arrays.asList(JDomCfg.POM_ELEMENT_ID, JDomCfg.POM_ELEMENT_ACTIVATION));
       if (!profilesElement.getDescendants(new ElementFilter(POM_ELEMENT_PROFILE)).hasNext()) {
         JDomUtils.removeChildAndItsCommentFromContent(profilesElement.getParentElement(), profilesElement);
       }
@@ -169,7 +171,7 @@ public class JDomCleanupHelper {
    * The child is considered as empty if the child has either:
    * <ul>
    * <li>no children itself or</li>
-   * <li>only children which are ignored or/and</li>
+   * <li>only children which are ignored or</li>
    * <li>empty children itself which are not ignored</li>
    * </ul>
    *
