@@ -171,8 +171,7 @@ public class JDomModelETL implements ModelETL {
    * </ul>
    */
   public void cleanup() {
-    cleanup(
-            Arrays.asList(JDomCfg.POM_ELEMENT_MODULES, JDomCfg.POM_ELEMENT_PROPERTIES, JDomCfg.POM_ELEMENT_DEPENDENCIES, JDomCfg.POM_ELEMENT_DEPENDENCY_MANAGEMENT),
+    cleanup(Arrays.asList(JDomCfg.POM_ELEMENT_MODULES, JDomCfg.POM_ELEMENT_PROPERTIES, JDomCfg.POM_ELEMENT_DEPENDENCIES, JDomCfg.POM_ELEMENT_DEPENDENCY_MANAGEMENT),
             Arrays.asList(JDomCfg.POM_ELEMENT_PROJECT));
   }
 
@@ -181,13 +180,10 @@ public class JDomModelETL implements ModelETL {
    * <ul>
    * <li>removing empty tags (mind the order!)
    * <li>removing empty profiles tags restricted to profiles parents</li>
-   * <ul>
-   * </ul>
-   * </li>
    * </ul>
    *
    * @param cleanUpEmptyElements List of tags to remove if they are empty
-   * @param profilesParents List of profiles tag parents
+   * @param profilesParents      List of profiles tag parents
    */
   public void cleanup(List<String> cleanUpEmptyElements, List<String> profilesParents) {
     Element rootElement = document.getRootElement();
