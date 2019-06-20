@@ -185,6 +185,9 @@ public class JDomModelETL implements ModelETL {
    * </ul>
    * </li>
    * </ul>
+   *
+   * @param cleanUpEmptyElements List of tags to remove if they are empty
+   * @param profilesParents List of profiles tag parents
    */
   public void cleanup(List<String> cleanUpEmptyElements, List<String> profilesParents) {
     Element rootElement = document.getRootElement();
