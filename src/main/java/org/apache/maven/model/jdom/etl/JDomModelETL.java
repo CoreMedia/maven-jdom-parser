@@ -44,6 +44,7 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -178,7 +179,7 @@ public class JDomModelETL implements ModelETL {
     JDomCleanupHelper.cleanupEmptyElements(rootElement, JDomCfg.POM_ELEMENT_DEPENDENCY_MANAGEMENT);
 
     // Remove empty (i.e. with no elements) profile and profiles tag
-    JDomCleanupHelper.cleanupEmptyProfiles(rootElement);
+    JDomCleanupHelper.cleanupEmptyProfiles(rootElement, Arrays.asList(JDomCfg.POM_ELEMENT_PROJECT));
   }
 
   /**

@@ -135,7 +135,7 @@ class JDomContentHelper {
   static boolean isIndexValid(int index, Element element) {
     int numberOfContents = element.getContent().size();
     if (index < 0 || numberOfContents == 0 || index >= numberOfContents) {
-      LOG.warn("Parent: {} has no content with index {}", JDomContentHelper.contentAsString(element), index);
+      LOG.trace("Parent: {} has no content with index {}", JDomContentHelper.contentAsString(element), index);
       return false;
     }
     return true;
