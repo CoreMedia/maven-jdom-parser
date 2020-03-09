@@ -80,7 +80,11 @@ public class JDomModelBase extends ModelBase implements JDomBacked {
   }
 
   public void setBuild(BuildBase build) {
-    throw new UnsupportedOperationException();
+    if (build == null) {
+      rewriteElement(POM_ELEMENT_BUILD, null, jdomElement);
+    } else {
+      new JDomBuild(insertNewElement(POM_ELEMENT_BUILD, jdomElement));
+    }
   }
 
   public DistributionManagement getDistributionManagement() {

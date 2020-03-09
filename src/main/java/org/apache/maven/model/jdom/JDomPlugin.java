@@ -31,8 +31,14 @@ import java.util.Map;
 import static java.util.Arrays.asList;
 import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_CONFIGURATION;
 import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_DEPENDENCIES;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_EXECUTION;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_EXECUTIONS;
 import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_EXTENSIONS;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_GOAL;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_GOALS;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_ID;
 import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_INHERITED;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_PHASE;
 import static org.apache.maven.model.jdom.util.JDomUtils.detectIndentation;
 import static org.apache.maven.model.jdom.util.JDomUtils.getChildElement;
 import static org.apache.maven.model.jdom.util.JDomUtils.getChildElementTextTrim;
@@ -123,7 +129,29 @@ public class JDomPlugin extends Plugin implements JDomBacked, MavenCoordinate {
 
   @Override
   public void setExecutions(List<PluginExecution> executions) {
-    throw new UnsupportedOperationException();
+    if (executions == null) {
+      rewriteElement(POM_ELEMENT_EXECUTIONS, null, jdomElement);
+    } else {
+      Element executionsElement = insertNewElement(POM_ELEMENT_EXECUTIONS, jdomElement);
+      for (PluginExecution execution : executions) {
+        Element executionElement = insertNewElement(POM_ELEMENT_EXECUTION, executionsElement);
+        if (execution.getId() != null && !"default".equals(execution.getId())) {
+          Element executionIdElement = insertNewElement(POM_ELEMENT_ID, executionElement);
+          executionIdElement.setText(execution.getId());
+        }
+        if (execution.getPhase() != null) {
+          Element executionPhaseElement = insertNewElement(POM_ELEMENT_PHASE, executionElement);
+          executionPhaseElement.setText(execution.getPhase());
+        }
+        if (execution.getGoals() != null) {
+          Element executionGoalsElement = insertNewElement(POM_ELEMENT_GOALS, executionElement);
+          for (String goal : execution.getGoals()) {
+            Element executionGoalElement = insertNewElement(POM_ELEMENT_GOAL, executionGoalsElement);
+            executionGoalElement.setText(goal);
+          }
+        }
+      }
+    }
   }
 
   @Override

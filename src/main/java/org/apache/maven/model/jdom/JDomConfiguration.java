@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.apache.maven.model.jdom.util.JDomUtils.insertNewElement;
 import static org.apache.maven.model.jdom.util.JDomUtils.rewriteValue;
 
 /**
@@ -96,6 +97,21 @@ public class JDomConfiguration extends Xpp3Dom implements JDomBacked {
   @Override
   public void addChild(Xpp3Dom xpp3Dom) {
     throw new UnsupportedOperationException();
+  }
+
+  public void setConfigurationProperty(String propertyName, String value) {
+    Element propertyElement = null;
+    for (Element element : jdomElement.getContent(new ElementFilter())) {
+      if (propertyName.equals(element.getName())) {
+        propertyElement = element;
+        break;
+      }
+    }
+    if (propertyElement == null) {
+      propertyElement = insertNewElement(propertyName, jdomElement);
+      children.add(new JDomConfiguration(propertyElement));
+    }
+    propertyElement.setText(value);
   }
 
   @Override

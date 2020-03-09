@@ -44,9 +44,13 @@ public class JDomCfg {
   public static final String POM_ELEMENT_DISTRIBUTION_MANAGEMENT = "distributionManagement";
   public static final String POM_ELEMENT_EXCLUSIONS = "exclusions";
   public static final String POM_ELEMENT_EXCLUSION = "exclusion";
+  public static final String POM_ELEMENT_EXECUTIONS = "executions";
+  public static final String POM_ELEMENT_EXECUTION = "execution";
   public static final String POM_ELEMENT_EXTENSIONS = "extensions";
   public static final String POM_ELEMENT_EXTENSION = "extension";
   public static final String POM_ELEMENT_FINAL_NAME = "finalName";
+  public static final String POM_ELEMENT_GOALS = "goals";
+  public static final String POM_ELEMENT_GOAL = "goal";
   public static final String POM_ELEMENT_GROUP_ID = "groupId";
   public static final String POM_ELEMENT_ID = "id";
   public static final String POM_ELEMENT_INCEPTION_YEAR = "inceptionYear";
@@ -64,6 +68,7 @@ public class JDomCfg {
   public static final String POM_ELEMENT_OUTPUT_DIRECTORY = "outputDirectory";
   public static final String POM_ELEMENT_PACKAGING = "packaging";
   public static final String POM_ELEMENT_PARENT = "parent";
+  public static final String POM_ELEMENT_PHASE = "phase";
   public static final String POM_ELEMENT_PLUGIN = "plugin";
   public static final String POM_ELEMENT_PLUGIN_MANAGEMENT = "pluginManagement";
   public static final String POM_ELEMENT_PLUGIN_REPOSITORIES = "pluginRepositories";

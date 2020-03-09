@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Objects;
 
 import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_PLUGIN;
 import static org.apache.maven.model.jdom.util.JDomUtils.addElement;
@@ -54,12 +55,18 @@ public class JDomPlugins extends ArrayList<Plugin> implements JDomBacked {
   }
 
   @Override
-  public boolean add(Plugin plugin) {
+  public void add(int index, Plugin plugin) {
     Element newElement;
     if (plugin instanceof JDomPlugin) {
-      addElement(((JDomPlugin) plugin).getJDomElement().clone(), jdomElement);
+      if (index == -1) {
+        addElement(((JDomPlugin) plugin).getJDomElement().clone(), jdomElement);
+      } else {
+        addElement(((JDomPlugin) plugin).getJDomElement().clone(), jdomElement, index);
+      }
     } else {
-      newElement = insertNewElement(POM_ELEMENT_PLUGIN, jdomElement);
+      newElement = index == -1
+          ? insertNewElement(POM_ELEMENT_PLUGIN, jdomElement)
+          : insertNewElement(POM_ELEMENT_PLUGIN, jdomElement, index);
       JDomPlugin jDomPlugin = new JDomPlugin(newElement);
 
       jDomPlugin.setGroupId(plugin.getGroupId());
@@ -85,15 +92,19 @@ public class JDomPlugins extends ArrayList<Plugin> implements JDomBacked {
       }
     }
 
-    return super.add(plugin);
+    if (index == -1) {
+      super.add(plugin);
+    } else {
+      super.add(index, plugin);
+    }
   }
 
   @Override
   public boolean remove(final Object plugin) {
     Plugin removePlugin = (Plugin) plugin;
     for (Plugin candidate : this) {
-      if (candidate.getGroupId().equals(removePlugin.getGroupId())
-              && candidate.getArtifactId().equals(removePlugin.getArtifactId())) {
+      if (Objects.equals(candidate.getGroupId(), removePlugin.getGroupId())
+              && Objects.equals(candidate.getArtifactId(), removePlugin.getArtifactId())) {
         removeChildElement(jdomElement, ((JDomPlugin) candidate).getJDomElement());
         return super.remove(removePlugin);
       }
@@ -138,8 +149,9 @@ public class JDomPlugins extends ArrayList<Plugin> implements JDomBacked {
   }
 
   @Override
-  public void add(int index, Plugin plugin) {
-    throw new UnsupportedOperationException();
+  public boolean add(Plugin plugin) {
+    add(-1, plugin);
+    return true;
   }
 
   @Override
