@@ -29,6 +29,7 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.Writer;
+import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -120,6 +121,12 @@ public class JDomProperties extends Properties implements JDomBacked {
 
   @Override
   public void storeToXML(OutputStream os, String comment, String encoding)
+          throws IOException {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void storeToXML(OutputStream os, String comment, Charset charset)
           throws IOException {
     throw new UnsupportedOperationException();
   }

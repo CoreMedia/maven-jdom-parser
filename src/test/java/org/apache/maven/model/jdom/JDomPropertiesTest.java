@@ -30,6 +30,7 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -89,7 +90,12 @@ public class JDomPropertiesTest {
 
   @Test(expected = UnsupportedOperationException.class)
   public void testStoreToXMLEncoded() throws Exception {
-    new JDomProperties(null).storeToXML(null, null, null);
+    new JDomProperties(null).storeToXML(null, null, "");
+  }
+
+  @Test(expected = UnsupportedOperationException.class)
+  public void testStoreToXMLEncoded2() throws Exception {
+    new JDomProperties(null).storeToXML(null, null, StandardCharsets.UTF_8);
   }
 
   @Test
