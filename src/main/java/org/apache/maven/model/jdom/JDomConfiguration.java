@@ -18,12 +18,14 @@ package org.apache.maven.model.jdom;
 
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.codehaus.plexus.util.xml.pull.XmlSerializer;
+import org.jdom2.Content;
 import org.jdom2.Element;
 import org.jdom2.filter.ElementFilter;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.apache.maven.model.jdom.util.JDomUtils.insertNewElement;
 import static org.apache.maven.model.jdom.util.JDomUtils.rewriteValue;
@@ -56,7 +58,9 @@ public class JDomConfiguration extends Xpp3Dom implements JDomBacked {
 
   @Override
   public String getValue() {
-    throw new UnsupportedOperationException();
+    return getJDomElement().getContent().stream()
+            .map(Content::getValue)
+            .collect(Collectors.joining());
   }
 
   @Override
@@ -86,12 +90,7 @@ public class JDomConfiguration extends Xpp3Dom implements JDomBacked {
 
   @Override
   public Xpp3Dom getChild(String name) {
-    for (JDomConfiguration child : children) {
-      if (child.getName().equals(name)) {
-        return child;
-      }
-    }
-    return null;
+    return children.stream().filter(c -> name.equals(c.getName())).findFirst().orElse(null);
   }
 
   @Override
@@ -121,7 +120,10 @@ public class JDomConfiguration extends Xpp3Dom implements JDomBacked {
 
   @Override
   public Xpp3Dom[] getChildren(String name) {
-    throw new UnsupportedOperationException();
+    return children.stream()
+            .filter(c -> name.equals(c.getName()))
+            .collect(Collectors.toUnmodifiableList())
+            .toArray(new Xpp3Dom[]{});
   }
 
   @Override
@@ -158,6 +160,13 @@ public class JDomConfiguration extends Xpp3Dom implements JDomBacked {
   @Override
   protected Object clone() throws CloneNotSupportedException {
     throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public String toString() {
+    return "JDomConfiguration{" +
+            "jdomElement=" + jdomElement +
+            '}';
   }
 
   /** {@inheritDoc} */
