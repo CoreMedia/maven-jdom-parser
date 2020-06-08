@@ -35,6 +35,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.apache.maven.model.jdom.util.JDomUtils.getChildElementTextTrim;
 import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
@@ -122,6 +123,24 @@ public class JDomProperties extends Properties implements JDomBacked {
   public void storeToXML(OutputStream os, String comment, String encoding)
           throws IOException {
     throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public Object get(Object key) {
+    return key instanceof String ? getProperty((String)key) : null;
+  }
+
+  @Override
+  public int size() {
+    return jdomElement.getChildren().size();
+  }
+
+  @Override
+  public String toString() {
+    String kvs = jdomElement.getChildren().stream()
+            .map(j -> j.getName()+"="+j.getTextTrim())
+            .collect(Collectors.joining("\n"));
+    return "JDomProperties{\n" + kvs + "\n}";
   }
 
   @Override
