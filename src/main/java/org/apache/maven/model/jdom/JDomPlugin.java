@@ -124,7 +124,8 @@ public class JDomPlugin extends Plugin implements JDomBacked, MavenCoordinate {
 
   @Override
   public List<PluginExecution> getExecutions() {
-    throw new UnsupportedOperationException();
+    Element executionsElm = jdomElement.getChild(POM_ELEMENT_EXECUTIONS, jdomElement.getNamespace());
+    return new JDomExecutions(executionsElm, this);
   }
 
   @Override
