@@ -20,6 +20,7 @@ import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.codehaus.plexus.util.xml.pull.XmlSerializer;
 import org.jdom2.Content;
 import org.jdom2.Element;
+import org.jdom2.Text;
 import org.jdom2.filter.ElementFilter;
 
 import java.io.IOException;
@@ -57,6 +58,23 @@ public class JDomConfiguration extends Xpp3Dom implements JDomBacked {
   }
 
   @Override
+  public void addChild(Xpp3Dom xpp3Dom) {
+    recAddChild(jdomElement, xpp3Dom);
+    children = getChildren(jdomElement);
+  }
+
+  private void recAddChild(Element parent, Xpp3Dom child) {
+    Element targetChild = insertNewElement(child.getName(), parent);
+    targetChild.setContent(new Text(child.getValue()));
+    for (String attrName : child.getAttributeNames()) {
+      targetChild.setAttribute(attrName, child.getAttribute(attrName));
+    }
+    for (Xpp3Dom grandChild : child.getChildren()) {
+      recAddChild(targetChild, grandChild);
+    }
+  }
+
+  @Override
   public String getValue() {
     return getJDomElement().getContent().stream()
             .map(Content::getValue)
@@ -91,11 +109,6 @@ public class JDomConfiguration extends Xpp3Dom implements JDomBacked {
   @Override
   public Xpp3Dom getChild(String name) {
     return children.stream().filter(c -> name.equals(c.getName())).findFirst().orElse(null);
-  }
-
-  @Override
-  public void addChild(Xpp3Dom xpp3Dom) {
-    throw new UnsupportedOperationException();
   }
 
   public void setConfigurationProperty(String propertyName, String value) {
