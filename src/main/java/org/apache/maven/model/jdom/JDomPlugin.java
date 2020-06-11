@@ -25,6 +25,7 @@ import org.apache.maven.model.PluginExecution;
 import org.apache.maven.model.jdom.util.JDomConfigurationContainerHelper;
 import org.jdom2.Element;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -95,7 +96,7 @@ public class JDomPlugin extends Plugin implements JDomBacked, MavenCoordinate {
   @Override
   public List<PluginExecution> getExecutions() {
     Element executionsElm = jdomElement.getChild(POM_ELEMENT_EXECUTIONS, jdomElement.getNamespace());
-    return new JDomExecutions(executionsElm, this);
+    return executionsElm==null ? Collections.emptyList() : new JDomExecutions(executionsElm, this);
   }
 
   @Override
