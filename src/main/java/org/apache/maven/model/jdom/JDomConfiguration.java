@@ -93,7 +93,7 @@ public class JDomConfiguration extends Xpp3Dom implements JDomBacked {
 
   @Override
   public String getAttribute(String name) {
-    throw new UnsupportedOperationException();
+    return jdomElement.getAttributeValue(name);
   }
 
   @Override
