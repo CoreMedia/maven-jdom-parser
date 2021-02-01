@@ -25,6 +25,8 @@ import org.apache.maven.model.Dependency;
 import org.apache.maven.model.DependencyManagement;
 import org.apache.maven.model.DistributionManagement;
 import org.apache.maven.model.ModelBase;
+import org.apache.maven.model.Plugin;
+import org.apache.maven.model.PluginManagement;
 import org.apache.maven.model.Reporting;
 import org.apache.maven.model.Repository;
 import org.jdom2.Element;
@@ -34,14 +36,22 @@ import java.util.Map;
 import java.util.Properties;
 
 import static java.util.Collections.emptyList;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_ARTIFACT_ID;
 import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_BUILD;
 import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_DEPENDENCIES;
 import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_DEPENDENCY_MANAGEMENT;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_GROUP_ID;
 import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_MODULES;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_PLUGIN;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_PLUGINS;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_PLUGIN_MANAGEMENT;
 import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_PROPERTIES;
 import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_REPORTING;
+import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_VERSION;
 import static org.apache.maven.model.jdom.util.JDomUtils.getChildElement;
+import static org.apache.maven.model.jdom.util.JDomUtils.insertContentElement;
 import static org.apache.maven.model.jdom.util.JDomUtils.insertNewElement;
+import static org.apache.maven.model.jdom.util.JDomUtils.insertNewNestedElements;
 import static org.apache.maven.model.jdom.util.JDomUtils.newDetachedElement;
 import static org.apache.maven.model.jdom.util.JDomUtils.rewriteElement;
 
@@ -83,7 +93,8 @@ public class JDomModelBase extends ModelBase implements JDomBacked {
     if (build == null) {
       rewriteElement(POM_ELEMENT_BUILD, null, jdomElement);
     } else {
-      new JDomBuild(insertNewElement(POM_ELEMENT_BUILD, jdomElement));
+      Element jdomBuild = insertNewElement(POM_ELEMENT_BUILD, this.jdomElement);
+      insertPluginManagement(jdomBuild, build.getPluginManagement());
     }
   }
 
@@ -206,5 +217,28 @@ public class JDomModelBase extends ModelBase implements JDomBacked {
   @Override
   public Element getJDomElement() {
     return jdomElement;
+  }
+
+
+  // --- internal ---------------------------------------------------
+
+  private static void insertPluginManagement(Element jdomParent, PluginManagement pluginManagement) {
+    if (pluginManagement != null) {
+      Element jdomPlugins = insertNewNestedElements(jdomParent, POM_ELEMENT_PLUGIN_MANAGEMENT, POM_ELEMENT_PLUGINS);
+      insertPlugins(jdomPlugins, pluginManagement.getPlugins());
+    }
+  }
+
+  private static void insertPlugins(Element jdomPlugins, List<Plugin> plugins) {
+    for (Plugin plugin : plugins) {
+      Element jdomPlugin = insertNewElement(POM_ELEMENT_PLUGIN, jdomPlugins);
+      insertGAV(jdomPlugin, plugin.getGroupId(), plugin.getArtifactId(), plugin.getVersion());
+    }
+  }
+
+  private static void insertGAV(Element jdomParent, String groupId, String artifactId, String version) {
+    insertContentElement(jdomParent, POM_ELEMENT_GROUP_ID, groupId);
+    insertContentElement(jdomParent, POM_ELEMENT_ARTIFACT_ID, artifactId);
+    insertContentElement(jdomParent, POM_ELEMENT_VERSION, version);
   }
 }
