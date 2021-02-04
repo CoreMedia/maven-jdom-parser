@@ -135,6 +135,28 @@ public final class JDomUtils {
     return newElement;
   }
 
+  /**
+   * Inserts nested elements of the given tags into jdomParent.
+   *
+   * @return the innermost element
+   */
+  public static Element insertNewNestedElements(Element jdomParent, String... tags) {
+    for (String tag : tags) {
+      jdomParent = insertNewElement(tag, jdomParent);
+    }
+    return jdomParent;
+  }
+
+  /**
+   * Inserts an element with text, like &lt;version&gt;1.2.3&lt;/version&gt;
+   */
+  public static void insertContentElement(Element jdomParent, String tag, String text) {
+    if (text != null) {
+      Element jdomVersion = insertNewElement(tag, jdomParent);
+      jdomVersion.setContent(new Text(text));
+    }
+  }
+
   private static int calcNewElementIndex(String name, Element root) {
     int addIndex = 0;
 
