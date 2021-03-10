@@ -197,7 +197,8 @@ public class JDomModelETL implements ModelETL {
   }
 
   /**
-   * Squash all multilines in document with more than two new newlines into a double new line.
+   * Squash multiple consecutive newlines into a single newline.<br>
+   * Indentations are preserved.
    */
   public void squashMultilines() {
     Element rootElement = document.getRootElement();

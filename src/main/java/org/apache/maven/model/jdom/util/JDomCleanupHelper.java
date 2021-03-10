@@ -29,9 +29,7 @@ import org.jdom2.util.IteratorIterable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_PROFILE;
 import static org.apache.maven.model.jdom.util.JDomCfg.POM_ELEMENT_PROFILES;
@@ -98,71 +96,54 @@ public class JDomCleanupHelper {
   }
 
   /**
-   * Replace all multilines with more than two multilines with a double newline.<br>
+   * Squash multiple consecutive newlines into a single newline.<br>
    * Indentations are preserved.
    *
    * @param rootElement the root element.
    */
   public static void squashMultilines(Element rootElement) {
-    // First: Squash multi newlines into one text element with three '\n'
-    Set<Content> contentsToRemove = new HashSet<>();
+    // Compute groups of consecutive sibling content with only newlines (and whitespace)
+    List<List<Text>> newLineGroups = new ArrayList<>();
+    List<Text> currentGroup = new ArrayList<>();
     for (Content descendant : rootElement.getDescendants()) {
-      if (!JDomContentHelper.hasNewlines(descendant)) {
-        int newLineCountPredecessors = 0;
-
-        Element parent = descendant.getParentElement();
-        int descendantIndex = parent.indexOf(descendant);
-        Content predecessor = JDomContentHelper.getPredecessorOfContentWithIndex(descendantIndex, parent);
-        String indentation = JDomContentHelper.hasNewlines(predecessor) ? predecessor.getValue().replaceAll("\n", "") : "";
-
-        Set<Content> contentsToRemoveTmp = new HashSet<>();
-        while (JDomContentHelper.hasNewlines(predecessor)) {
-          newLineCountPredecessors += StringUtils.countMatches(predecessor.getValue(), "\n");
-          contentsToRemoveTmp.add(predecessor);
-          descendantIndex--;
-          predecessor = JDomContentHelper.getPredecessorOfContentWithIndex(descendantIndex, parent);
-        }
-
-        if (newLineCountPredecessors > 3) {
-          int index = parent.indexOf(descendant);
-          Content newLinePredecessor = JDomContentHelper.getPredecessorOfContentWithIndex(index, parent);
-          if (null != newLinePredecessor) {
-            contentsToRemoveTmp.remove(newLinePredecessor);
-            ((Text) newLinePredecessor).setText("\n\n\n" + indentation);
-            contentsToRemove.addAll(contentsToRemoveTmp);
+      if (JDomContentHelper.hasNewlines(descendant)) {
+        if (!currentGroup.isEmpty()) {
+          Element parent = currentGroup.get(0).getParent();
+          if (!parent.equals(descendant.getParentElement())) {
+            newLineGroups.add(currentGroup);
+            currentGroup = new ArrayList<>();
           }
         }
-      }
-    }
-    for (Content content : contentsToRemove) {
-      JDomUtils.simpleRemoveAtIndex(content);
-    }
-    // Second: Squash remaining multi lines which have no successor
-    contentsToRemove = new HashSet<>();
-    for (Content descendant : rootElement.getDescendants()) {
-      if (JDomContentHelper.hasNewlines(descendant) &&
-              JDomContentHelper.countNewlinesPredecessors(descendant) > 3) {
-        int newLineCount = StringUtils.countMatches(descendant.getValue(), "\n");
-        String indentation = newLineCount > 0 ? descendant.getValue().replaceAll("\n", "") : "";
-
-        Element parent = descendant.getParentElement();
-        int descendantIndex = parent.indexOf(descendant);
-        Content predecessor = JDomContentHelper.getPredecessorOfContentWithIndex(descendantIndex, parent);
-
-        while (JDomContentHelper.hasNewlines(predecessor)) {
-          newLineCount += StringUtils.countMatches(predecessor.getValue(), "\n");
-          contentsToRemove.add(predecessor);
-          descendantIndex--;
-          predecessor = JDomContentHelper.getPredecessorOfContentWithIndex(descendantIndex, parent);
-        }
-
-        if (newLineCount > 3) {
-          ((Text) descendant).setText("\n\n\n" + indentation);
+        currentGroup.add((Text) descendant);
+      } else {
+        if (!currentGroup.isEmpty()) {
+          newLineGroups.add(currentGroup);
+          currentGroup = new ArrayList<>();
         }
       }
     }
-    for (Content content : contentsToRemove) {
-      JDomUtils.simpleRemoveAtIndex(content);
+    if (!currentGroup.isEmpty()) {
+      newLineGroups.add(currentGroup);
+    }
+
+    // For every group keep the last element (because it might be followed by whitespace which we want to keep for indentation)
+    // and set its text to two newlines (+ whitespace).
+    // Delete all other predecessor elements in the group.
+    for (List<Text> group : newLineGroups) {
+      int newlineCount = 0;
+      for (Text text : group) {
+        newlineCount += StringUtils.countMatches(text.getText(), "\n");
+      }
+
+      if (newlineCount > 2) {
+        Text last = group.get(group.size() - 1);
+        last.setText("\n\n" + last.getText().replaceAll("\n", ""));
+        group.remove(last);
+        for (Text text : group) {
+          text.getParentElement().removeContent(text);
+          text.detach();
+        }
+      }
     }
   }
 
