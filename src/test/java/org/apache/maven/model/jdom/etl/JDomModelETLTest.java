@@ -17,4 +17,9 @@ public class JDomModelETLTest extends AbstractJDomModelEtlIT {
     assertTransformationWithCleanup();
   }
 
+  @Test
+  public void removeNewLines() throws IOException {
+    assertTransformationWithCleanup();
+  }
+
 }
