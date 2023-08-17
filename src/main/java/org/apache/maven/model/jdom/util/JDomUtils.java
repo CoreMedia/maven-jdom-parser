@@ -67,7 +67,9 @@ public final class JDomUtils {
    * Inserts a new child element to the given root element at the given index.
    * For details see {@link #addElement(Element, Element)}
    *
-   * @param index the index where the element should be inserted.
+   * @param element the element to add.
+   * @param root    the root element.
+   * @param index   the index where the element should be inserted.
    */
   public static void addElement(Element element, Element root, int index) {
     root.addContent(index, element);
@@ -114,6 +116,8 @@ public final class JDomUtils {
    * Inserts a new child element to the given root element at the given index.
    * For details see {@link #insertNewElement(String, Element)}
    *
+   * @param name  the name of the new element.
+   * @param root  the root element.
    * @param index the index where the element should be inserted.
    */
   public static Element insertNewElement(String name, Element root, int index) {
@@ -138,6 +142,8 @@ public final class JDomUtils {
   /**
    * Inserts nested elements of the given tags into jdomParent.
    *
+   * @param jdomParent the parent element
+   * @param tags       the names of the new elements
    * @return the innermost element
    */
   public static Element insertNewNestedElements(Element jdomParent, String... tags) {
@@ -149,6 +155,10 @@ public final class JDomUtils {
 
   /**
    * Inserts an element with text, like &lt;version&gt;1.2.3&lt;/version&gt;
+   *
+   * @param jdomParent the parent element
+   * @param tag        the name of the new element
+   * @param text       the content of the new element
    */
   public static void insertContentElement(Element jdomParent, String tag, String text) {
     if (text != null) {
