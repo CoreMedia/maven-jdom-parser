@@ -119,6 +119,7 @@ public final class JDomUtils {
    * @param name  the name of the new element.
    * @param root  the root element.
    * @param index the index where the element should be inserted.
+   * @return the new element.
    */
   public static Element insertNewElement(String name, Element root, int index) {
     Element newElement;
