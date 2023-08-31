@@ -45,14 +45,19 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
-    <surefire.version>2.22.1</surefire.version>
+    <surefire.version>3.1.2</surefire.version>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-core</artifactId>
-      <version>3.8.2</version>
+      <!--
+        Keep this in sync with the Maven version in the CMCC Supported Environments:
+        https://releases.coremedia.com/cmcc-11/artifacts/CMCC%2011%20-%20Supported%20Environments.pdf
+        (Just to be safe.  No concrete problems with newer versions known, though.)
+      -->
+      <version>3.8.6</version>
     </dependency>
     <dependency>
       <groupId>org.jdom</groupId>
@@ -83,7 +88,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-deploy-plugin</artifactId>
-          <version>2.7</version>
+          <version>3.1.1</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
